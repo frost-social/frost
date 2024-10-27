@@ -28,7 +28,7 @@ async function run() {
   ctx.userId = user.userId;
 
   console.log('create');
-  const createResult = await LeafRepository.create({
+  const createResult = await LeafRepository.createTimelineLeaf({
     userId: ctx.userId,
     content: 'This is a leaf content.',
   }, ctx, container);

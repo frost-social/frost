@@ -33,7 +33,7 @@ async function run() {
       container.rebind(TYPES.db).toConstantValue(tx);
       // create 10 posts
       for (let i = 0; i < 10; i++) {
-        const createResult = await LeafRepository.create({
+        const createResult = await LeafRepository.createTimelineLeaf({
           userId: ctx.userId,
           content: `This is a post content ${i}.`,
         }, ctx, container);
