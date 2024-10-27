@@ -2,13 +2,7 @@
 -- @param {String} $2:cursor
 -- @param {Int} $3:limit
 
-SELECT
-  p.post_id,
-  p.post_kind,
-  p.chat_room_id,
-  p.user_id,
-  p.content,
-  p.created_at
+SELECT *
 FROM "post" AS p,
   (SELECT x.post_id, x.created_at FROM post AS x WHERE x.post_id = CAST($2 AS UUID)) AS cur
 WHERE p.post_kind = 'timeline'
