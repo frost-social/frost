@@ -42,7 +42,7 @@ async function run() {
 
       // fetch posts
       console.log('タイムライン取得');
-      const posts = await LeafRepository.fetchTimeline({
+      const posts = await LeafRepository.fetchHomeTimeline({
         kind: 'home',
         limit: 8,
       }, ctx, container);
