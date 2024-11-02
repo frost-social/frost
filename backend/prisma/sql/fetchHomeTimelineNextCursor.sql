@@ -8,6 +8,7 @@ FROM "post" AS p,
 WHERE p.post_kind = 'timeline'
   AND CAST($1 AS UUID) = CAST($1 AS UUID)
   -- カーソル値よりも新しいリソースを取得
+  -- 作成日時がカーソル側より後であるかで判定。作成日時が同じ場合はリーフIDがカーソル側より大きいかで判定。
   AND p.created_at > cur.created_at
   OR (p.created_at = cur.created_at AND p.post_id > cur.post_id)
 ORDER BY p.created_at ASC, p.post_id ASC

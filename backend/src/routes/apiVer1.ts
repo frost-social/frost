@@ -177,7 +177,7 @@ export class ApiVer1Router {
           ...params,
           limit: Number(params.limit),
         };
-        const result = await LeafService.fetchTimeline(params2, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await LeafService.fetchHomeTimeline(params2, { userId: ctx.getUser().userId }, ctx.container);
         return result;
       },
     });

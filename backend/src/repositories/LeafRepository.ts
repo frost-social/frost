@@ -70,9 +70,10 @@ export async function get(
 }
 
 /**
- * タイムラインを取得する
+ * タイムラインを取得する\
+ * prevCursorとnextCursorはleafIdを指定します。
 */
-export async function fetchTimeline(
+export async function fetchHomeTimeline(
   params: { kind: string, prevCursor?: string, nextCursor?: string, limit?: number },
   ctx: AccessContext,
   container: Container,

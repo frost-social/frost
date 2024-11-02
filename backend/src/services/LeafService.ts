@@ -49,12 +49,12 @@ export async function getLeaf(
 /**
  * タイムライン取得
 */
-export async function fetchTimeline(
+export async function fetchHomeTimeline(
   params: { kind: string, prevCursor?: string, nextCursor?: string, limit?: number },
   ctx: AccessContext,
   container: Container,
 ): Promise<LeafEntity[]> {
-  return LeafRepository.fetchTimeline(params, ctx, container);
+  return LeafRepository.fetchHomeTimeline(params, ctx, container);
 }
 
 /**
