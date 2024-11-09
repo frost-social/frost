@@ -29,6 +29,13 @@ model Leaf {
   chatRoomId?: string;
   userId: string;
   content: string;
+  createdAt: string;
+}
+
+model GetTimelineResult {
+  leafs: Leaf[];
+  nextCursor?: string;
+  prevCursor?: string;
 }
 
 model ChatRoom {

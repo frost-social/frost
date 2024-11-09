@@ -132,9 +132,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Api.v1.Leaf'
+                $ref: '#/components/schemas/Api.v1.GetTimelineResult'
   /api/v1/chatRoom/searchChatRooms:
     get:
       tags:
@@ -328,9 +326,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Api.v1.Leaf'
+                $ref: '#/components/schemas/Api.v1.GetTimelineResult'
   /api/v1/user/getUser:
     get:
       tags:
@@ -540,12 +536,26 @@ components:
           type: string
         limit:
           type: string
+    Api.v1.GetTimelineResult:
+      type: object
+      required:
+        - leafs
+      properties:
+        leafs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api.v1.Leaf'
+        nextCursor:
+          type: string
+        prevCursor:
+          type: string
     Api.v1.Leaf:
       type: object
       required:
         - leafId
         - userId
         - content
+        - createdAt
       properties:
         leafId:
           type: string
@@ -554,6 +564,8 @@ components:
         userId:
           type: string
         content:
+          type: string
+        createdAt:
           type: string
     Api.v1.SearchChatRoomsQueryString:
       type: object
