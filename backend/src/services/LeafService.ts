@@ -47,17 +47,6 @@ export async function getLeaf(
 }
 
 /**
- * タイムライン取得
-*/
-export async function fetchHomeTimeline(
-  params: { kind: string, prevCursor?: string, nextCursor?: string, limit?: number },
-  ctx: AccessContext,
-  container: Container,
-): Promise<LeafEntity[]> {
-  return LeafRepository.fetchHomeTimeline(params, ctx, container);
-}
-
-/**
  * 投稿を削除します。
 */
 export async function deleteLeaf(
