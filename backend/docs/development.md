@@ -1,13 +1,30 @@
-## DBのマイグレーションを作成する
-開発時にDrizzleのスキーマの変更が生じた場合は、\
-以下のコマンドを実行してDBのマイグレーションを作成・適用してください。
+## 開発時: DBをリセットする
+現在あるDBを削除し、DBをマイグレーションが適用された状態まで進めます。
 ```
-pnpm migration:generate --name [このマイグレーションの名前]
-pnpm migration:apply
+pnpm db:reset
 ```
 
-例:
+まだマイグレーションが作成されていないスキーマの変更をDBに適用します。\
+マイグレーションとスキーマが同じ状態であればこの操作は必要ありません。
 ```
-pnpm migration:generate --name honi
-pnpm migration:apply
+pnpm db:push
+```
+
+DBに初期データを作成します。
+```
+pnpm db:seed
+```
+
+## 開発時: スキーマ変更を適用する
+開発時は、基本的にマイグレーションの作成を行わず、
+DBのスキーマ変更だけを行います。
+```
+pnpm db:push
+```
+
+## マイグレーションの作成
+DBに適用するスキーマの変更が確定したら、マイグレーションを作成します。
+```
+pnpm db:push
+pnpm db:create-migration
 ```

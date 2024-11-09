@@ -22,6 +22,8 @@ model user {
   name                      String    @db.VarChar(64) @unique(map: "user_name_unique")
   display_name              String    @db.VarChar(64) @default("frost user")
   password_auth_enabled     Boolean
+  created_at                DateTime  @db.Timestamp(3) @default(now())
+  row_version               Int       @default(1)
 
   // relations
   passwords                 password_verification[]
@@ -36,6 +38,7 @@ model password_verification {
   salt                      String    @db.VarChar(32)
   iteration                 Int
   hash                      String    @db.VarChar(128)
+  row_version               Int       @default(1)
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
@@ -47,6 +50,8 @@ model token {
   user_id                   String    @db.Uuid // FK
   token                     String    @db.VarChar(32)
   expires                   DateTime? @db.Timestamp(6)
+  created_at                DateTime  @db.Timestamp(3) @default(now())
+  row_version               Int       @default(1)
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
@@ -57,6 +62,7 @@ model token_scope {
   token_scope_id            String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
   token_id                  String    @db.Uuid // FK
   scope_name                String    @db.VarChar(32)
+  row_version               Int       @default(1)
 
   // relations
   token                     token     @relation(fields: [token_id], references: [token_id], onDelete: Restrict, onUpdate: Restrict)
@@ -64,9 +70,12 @@ model token_scope {
 
 model post {
   post_id                   String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  post_kind                 String    @db.VarChar(16)
   chat_room_id              String?   @db.Uuid // FK
   user_id                   String    @db.Uuid // FK
   content                   String    @db.VarChar(256)
+  created_at                DateTime  @db.Timestamp(3) @default(now())
+  row_version               Int       @default(1)
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)

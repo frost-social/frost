@@ -80,22 +80,7 @@ function createMiddlewareStack<R>(
     }
 
     async function asyncHandler() {
-      let returnValue;
-      const db = container.get<PrismaClient>(TYPES.db);
-      try {
-        if (method == 'POST' || method == 'DELETE') {
-          // 変更操作(POST, DELETE)の場合はトランザクションを開始
-          returnValue = await db.$transaction(async (tx) => {
-            container.rebind(TYPES.db).toConstantValue(tx);
-            return await handler(new ApiRouteContext(params, container, req, res, user, scopes));
-          });
-        } else {
-          // 読み出し操作の場合はそのままハンドラを呼ぶ
-          returnValue = await handler(new ApiRouteContext(params, container, req, res, user, scopes));
-        }
-      } finally {
-        container.rebind(TYPES.db).toConstantValue(db);
-      }
+      const returnValue = await handler(new ApiRouteContext(params, container, req, res, user, scopes));
       // ハンドラ内でレスポンスが設定されなければレスポンスを生成する。
       if (res.statusCode == 0) {
         if (returnValue != null) {

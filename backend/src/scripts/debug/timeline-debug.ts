@@ -1,5 +1,4 @@
 import { Container } from 'inversify';
-import { BACKEND_URSR_ID } from '../../constants/specialUserId';
 import { setupContainer } from '../../container/inversify.config';
 import { TYPES } from '../../container/types';
 import { AccessContext } from '../../modules/AccessContext';
@@ -12,7 +11,7 @@ async function run() {
   const container = new Container();
   setupContainer(container);
 
-  const ctx: AccessContext = { userId: BACKEND_URSR_ID };
+  const ctx: AccessContext = { userId: '' };
 
   // debugユーザーを取得。無ければ作る。
   console.log('get debug user');
@@ -27,29 +26,37 @@ async function run() {
   }
   ctx.userId = user.userId;
 
-  console.log('create');
-  const createResult = await LeafRepository.createTimelineLeaf({
-    userId: ctx.userId,
-    content: 'This is a leaf content.',
-  }, ctx, container);
-  console.log(inspect(createResult, { depth: 10 }));
+  container.snapshot();
+  try {
+    const db = container.get<PrismaClient>(TYPES.db);
+    await db.$transaction(async (tx) => {
+      container.rebind(TYPES.db).toConstantValue(tx);
+      // create 10 posts
+      for (let i = 0; i < 10; i++) {
+        const createResult = await LeafRepository.createTimelineLeaf({
+          userId: ctx.userId,
+          content: `This is a post content ${i}.`,
+        }, ctx, container);
+        console.log(inspect(createResult, { depth: 10 }));
+      }
 
-  console.log('get');
-  const getResult = await LeafRepository.get({
-    leafId: createResult.leafId,
-  }, ctx, container);
-  console.log(inspect(getResult, { depth: 10 }));
+      // fetch posts
+      console.log('タイムライン取得');
+      const posts = await LeafRepository.fetchHomeTimeline({
+        kind: 'home',
+        limit: 8,
+      }, ctx, container);
+      console.log(inspect(posts, { depth: 10 }));
 
-  console.log('remove');
-  const removeResult = await LeafRepository.remove({
-    leafId: createResult.leafId,
-  }, ctx, container);
-  console.log(inspect(removeResult, { depth: 10 }));
+      console.log('finish');
 
-  console.log('finish');
-
-  const db = container.get<PrismaClient>(TYPES.db);
-  await db.$disconnect();
+      throw new Error('rollback');
+    });
+  } finally {
+    container.restore();
+    const db = container.get<PrismaClient>(TYPES.db);
+    await db.$disconnect();
+  }
 }
 run()
   .catch(err => {

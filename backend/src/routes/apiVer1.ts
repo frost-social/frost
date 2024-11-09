@@ -7,6 +7,7 @@ import { corsApi } from '../modules/httpRoute/cors';
 import type { Endpoints } from '../modules/httpRoute/endpoints';
 import * as LeafService from '../services/LeafService';
 import * as UserService from '../services/UserService';
+import * as AuthService from '../services/AuthService';
 
 const zUuid = z.string().length(36);
 
@@ -32,7 +33,7 @@ export class ApiVer1Router {
             password: z.string().min(1).optional(),
           })
         );
-        const result = await UserService.signin(params, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await AuthService.signin(params, { userId: ctx.getUser().userId }, ctx.container);
         return result;
       },
     });
@@ -49,7 +50,7 @@ export class ApiVer1Router {
             displayName: z.string().min(1),
           })
         );
-        const result = await UserService.signup(params, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await AuthService.signup(params, { userId: ctx.getUser().userId }, ctx.container);
         return result;
       },
     });
@@ -165,7 +166,20 @@ export class ApiVer1Router {
       path: '/user/getHomeTimeline',
       scope: ['user.read', 'leaf.read'],
       async requestHandler(ctx): Promise<Endpoints['/api/v1/user/getHomeTimeline']['result']> {
-        throw new Error('not implemented');
+        const params: Endpoints['/api/v1/user/getHomeTimeline']['query'] = ctx.validateParams(
+          z.object({
+            nextCursor: z.string().length(36).optional(),
+            prevCursor: z.string().length(36).optional(),
+            limit: z.string().regex(/^[+-]?\d*\.?\d+$/, { message: 'invalid numeric string' }).optional(),
+          })
+        );
+        const params2 = {
+          kind: 'home',
+          ...params,
+          limit: Number(params.limit),
+        };
+        const result = await UserService.fetchHomeTimeline(params2, { userId: ctx.getUser().userId }, ctx.container);
+        return result;
       },
     });
 
@@ -177,7 +191,7 @@ export class ApiVer1Router {
         const params: Endpoints['/api/v1/user/getUser']['query'] = ctx.validateParams(
           z.object({
             userId: zUuid.optional(),
-            username: z.string().min(1).optional(),
+            userName: z.string().min(1).optional(),
           })
         );
         const result = await UserService.getUser(params, { userId: ctx.getUser().userId }, ctx.container);

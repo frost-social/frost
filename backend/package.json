@@ -9,11 +9,11 @@
     "clean": "rm -rf dist",
     "update-spec": "mkdir -p openapi/generated && cp -r ../spec/generated/* openapi/generated",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "prisma:migrate-create": "prisma migrate dev --create-only",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:push":"prisma db push",
-    "prisma:generate": "prisma generate",
-    "prisma:generate-sql": "prisma generate --sql",
+    "db:push": "prisma db push",
+    "db:reset": "prisma migrate reset --skip-seed",
+    "db:seed": "prisma db seed",
+    "db:create-migration": "prisma migrate dev --create-only",
+    "db:generate": "prisma generate && prisma generate --sql",
     "start": "node --enable-source-maps dist/main",
     "start:dev": "node --enable-source-maps --watch dist/main",
     "start:prod": "node dist/main",
@@ -21,6 +21,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.19.0",
@@ -30,6 +33,7 @@
     "passport-http-bearer": "^1.0.1",
     "reflect-metadata": "^0.2.0",
     "threads": "^1.7.0",
+    "ts-node": "^10.9.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

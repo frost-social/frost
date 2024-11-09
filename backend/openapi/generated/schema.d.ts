@@ -371,11 +371,17 @@ export interface components {
             prevCursor?: string;
             limit?: string;
         };
+        "Api.v1.GetTimelineResult": {
+            leafs: components["schemas"]["Api.v1.Leaf"][];
+            nextCursor?: string;
+            prevCursor?: string;
+        };
         "Api.v1.Leaf": {
             leafId: string;
             chatRoomId?: string;
             userId: string;
             content: string;
+            createdAt: string;
         };
         "Api.v1.SearchChatRoomsQueryString": {
             offset?: string;
@@ -590,7 +596,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Api.v1.Leaf"][];
+                    "application/json": components["schemas"]["Api.v1.GetTimelineResult"];
                 };
             };
         };
@@ -848,7 +854,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Api.v1.Leaf"][];
+                    "application/json": components["schemas"]["Api.v1.GetTimelineResult"];
                 };
             };
         };

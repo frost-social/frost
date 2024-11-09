@@ -17,7 +17,7 @@ export async function createLeaf(
       { message: 'content invalid.' },
     ]));
   }
-  const leaf = await LeafRepository.create({
+  const leaf = await LeafRepository.createTimelineLeaf({
     userId: ctx.userId,
     content: params.content,
   }, ctx, container);

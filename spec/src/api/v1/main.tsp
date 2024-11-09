@@ -49,7 +49,7 @@ interface UserApi {
 
   @route("/getHomeTimeline")
   @tag("Leaf")
-  @get GetHomeTimeline(...GetHomeTimelineQueryString): Leaf[];
+  @get GetHomeTimeline(...GetHomeTimelineQueryString): GetTimelineResult;
 }
 
 @route("/leaf")
@@ -89,5 +89,5 @@ interface ChatRoomApi {
 
   @route("/getTimeline")
   @tag("Leaf")
-  @get GetTimeline(...GetChatRoomTimelineQueryString): Leaf[];
+  @get GetTimeline(...GetChatRoomTimelineQueryString): GetTimelineResult;
 }

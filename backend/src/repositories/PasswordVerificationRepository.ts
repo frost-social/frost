@@ -11,7 +11,7 @@ export async function create(
   params: { userId: string, algorithm: string, salt: string, iteration: number, hash: string },
   ctx: AccessContext,
   container: Container,
-): Promise<password_verification> {
+): Promise<PasswordVerificationEntity> {
   const db = container.get<DB>(TYPES.db);
   const row = await db.password_verification.create({
     data: {
@@ -23,7 +23,7 @@ export async function create(
     },
   });
 
-  return row;
+  return mapEntity(row);
 }
 
 /*
@@ -33,7 +33,7 @@ export async function get(
   params: { userId: string },
   ctx: AccessContext,
   container: Container,
-): Promise<password_verification | undefined> {
+): Promise<PasswordVerificationEntity | undefined> {
   const db = container.get<DB>(TYPES.db);
   const row = await db.password_verification.findFirst({
     where: {
@@ -45,8 +45,16 @@ export async function get(
     return undefined;
   }
 
-  return row;
+  return mapEntity(row);
 }
+
+export type PasswordVerificationEntity = {
+  userId: string,
+  algorithm: string,
+  salt: string,
+  iteration: number,
+  hash: string,
+};
 
 /**
  * パスワード検証情報を削除する
@@ -65,4 +73,14 @@ export async function remove(
   });
 
   return (result.count > 0);
+}
+
+function mapEntity(row: password_verification): PasswordVerificationEntity {
+  return {
+    userId: row.user_id,
+    algorithm: row.algorithm,
+    salt: row.salt,
+    iteration: row.iteration,
+    hash: row.hash,
+  };
 }

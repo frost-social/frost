@@ -39,7 +39,7 @@ GET /api/v1/user/getUser
 
 ### query string
 - userId (optional)
-- username (optional)
+- userName (optional)
 
 
 

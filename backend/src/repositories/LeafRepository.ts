@@ -1,4 +1,5 @@
 import { post } from "@prisma/client";
+import * as sql from "@prisma/client/sql";
 import { Container } from "inversify";
 import { TYPES } from "../container/types";
 import { AccessContext } from "../modules/AccessContext";
@@ -8,14 +9,35 @@ import { LeafEntity } from "../modules/entities";
 /**
  * 投稿を作成する
 */
-export async function create(
-  params: { chatRoomId?: string, userId: string, content: string },
+export async function createTimelineLeaf(
+  params: { userId: string, content: string },
   ctx: AccessContext,
   container: Container,
 ): Promise<LeafEntity> {
   const db = container.get<DB>(TYPES.db);
   const row = await db.post.create({
     data: {
+      post_kind: 'timeline',
+      user_id: params.userId,
+      content: params.content,
+    },
+  });
+
+  return mapEntity(row);
+}
+
+/**
+ * チャット投稿を作成する
+*/
+export async function createChatLeaf(
+  params: { chatRoomId: string, userId: string, content: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<LeafEntity> {
+  const db = container.get<DB>(TYPES.db);
+  const row = await db.post.create({
+    data: {
+      post_kind: 'chatroom',
       chat_room_id: params.chatRoomId,
       user_id: params.userId,
       content: params.content,
@@ -48,6 +70,30 @@ export async function get(
 }
 
 /**
+ * タイムラインを取得する\
+ * prevCursorとnextCursorはleafIdを指定します。
+*/
+export async function fetchHomeTimeline(
+  params: { kind: string, prevCursor?: string, nextCursor?: string, limit?: number },
+  ctx: AccessContext,
+  container: Container,
+): Promise<LeafEntity[]> {
+  const db = container.get<DB>(TYPES.db);
+  const limit = params.limit ?? 50;
+  if (params.nextCursor != null) {
+    const rows = await db.$queryRawTyped(sql.fetchHomeTimelineNextCursor(ctx.userId, params.nextCursor, limit));
+    rows.reverse();
+    return rows.map(x => mapEntity(x));
+  } else if (params.prevCursor != null) {
+    const rows = await db.$queryRawTyped(sql.fetchHomeTimelinePrevCursor(ctx.userId, params.prevCursor, limit));
+    return rows.map(x => mapEntity(x));
+  } else {
+    const rows = await db.$queryRawTyped(sql.fetchHomeTimelineLatest(ctx.userId, limit));
+    return rows.map(x => mapEntity(x));
+  }
+}
+
+/**
  * 投稿を削除する
  * @returns 削除に成功したかどうか
 */
@@ -69,6 +115,7 @@ function mapEntity(row: post): LeafEntity {
   const leaf: LeafEntity = {
     leafId: row.post_id,
     userId: row.user_id,
+    createdAt: row.created_at.toJSON(),
     content: row.content,
   };
 
