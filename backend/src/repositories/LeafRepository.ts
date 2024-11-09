@@ -115,6 +115,7 @@ function mapEntity(row: post): LeafEntity {
   const leaf: LeafEntity = {
     leafId: row.post_id,
     userId: row.user_id,
+    createdAt: row.created_at.toJSON(),
     content: row.content,
   };
 

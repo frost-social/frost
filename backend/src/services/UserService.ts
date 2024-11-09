@@ -56,6 +56,11 @@ export async function fetchHomeTimeline(
   params: { kind: string, prevCursor?: string, nextCursor?: string, limit?: number },
   ctx: AccessContext,
   container: Container,
-): Promise<LeafEntity[]> {
-  return LeafRepository.fetchHomeTimeline(params, ctx, container);
+): Promise<{ leafs: LeafEntity[], nextCursor?: string, prevCursor?: string }> {
+  const leafs = await LeafRepository.fetchHomeTimeline(params, ctx, container);
+  return {
+    leafs: leafs,
+    nextCursor: leafs[0]?.leafId,
+    prevCursor: leafs[leafs.length - 1]?.leafId,
+  };
 }
