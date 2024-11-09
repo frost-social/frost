@@ -1,7 +1,7 @@
 -- @param {String} $1:userId
 -- @param {Int} $2:limit
 
-SELECT *
+SELECT p.*
 FROM "post" AS p
 WHERE p.post_kind = 'timeline'
   AND CAST($1 AS UUID) = CAST($1 AS UUID)
