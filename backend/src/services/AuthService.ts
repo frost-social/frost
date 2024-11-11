@@ -17,7 +17,7 @@ export async function signup(
 ): Promise<AuthResultEntity> {
   if (params.userName.length < 5) {
     throw appError(new BadRequest([
-      { message: 'name invalid.' },
+      { message: 'userName invalid.' },
     ]));
   }
 
@@ -68,7 +68,7 @@ export async function signin(
 ): Promise<AuthResultEntity> {
   if (params.userName.length < 1) {
     throw appError(new BadRequest([
-      { message: 'name invalid.' },
+      { message: 'userName invalid.' },
     ]));
   }
 

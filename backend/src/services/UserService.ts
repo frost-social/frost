@@ -13,10 +13,10 @@ export async function getUser(
   ctx: AccessContext,
   container: Container,
 ): Promise<UserEntity> {
-  // either userId or name must be specified
+  // either userId or userName must be specified
   if ([params.userId, params.userName].every(x => x == null)) {
     throw appError(new BadRequest([
-      { message: "Please specify the userId or name." },
+      { message: "Please specify the userId or userName." },
     ]));
   }
 
