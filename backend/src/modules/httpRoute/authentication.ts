@@ -23,7 +23,6 @@ export function configureServer(container: Container) {
       return done(null, user, { scope: tokenInfo.scopes });
     } catch (err) {
       return done(err);
-    } finally {
     }
   }));
 }

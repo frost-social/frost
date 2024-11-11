@@ -1,6 +1,5 @@
 import express from "express";
 import { Container } from "inversify";
-import { AppConfig } from "../app";
 import { TYPES } from "../container/types";
 import { RootRouter } from "../routes";
 import { AppError, ErrorObject, ServerError } from "./appErrors";

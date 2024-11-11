@@ -66,7 +66,7 @@ export async function getTokenInfo(
 */
 export async function generateTokenValue(length: number) {
   let token = "";
-  for (const [_index, byte] of crypto.randomBytes(length).entries()) {
+  for (const byte of crypto.randomBytes(length).values()) {
     token += asciiTable[byte % asciiTable.length];
   }
   return token;

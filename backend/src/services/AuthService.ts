@@ -1,11 +1,10 @@
 import { Container } from "inversify";
 import { AccessContext } from "../modules/AccessContext";
 import { appError, BadRequest, ResourceNotFound } from "../modules/appErrors";
-import { AuthResultEntity, LeafEntity, UserEntity } from "../modules/entities";
+import { AuthResultEntity } from "../modules/entities";
 import * as UserRepository from "../repositories/UserRepository";
 import * as PasswordVerificationService from "./PasswordVerificationService";
 import * as TokenService from "./TokenService";
-import * as LeafRepository from "../repositories/LeafRepository";
 
 /**
  * ユーザーを登録します。

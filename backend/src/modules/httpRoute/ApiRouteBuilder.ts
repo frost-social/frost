@@ -1,10 +1,8 @@
 import express from "express";
 import { Container } from "inversify";
-import { TYPES } from "../../container/types";
 import { UserEntity } from "../entities";
 import { authenticate } from "./authentication";
 import { ApiRouteContext } from "./ApiRouteContext";
-import { PrismaClient } from "@prisma/client";
 
 export class ApiRouteBuilder {
   public router: express.Router;
