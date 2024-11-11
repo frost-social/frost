@@ -24,7 +24,7 @@ export async function create(
     throw appError(new ResourceNotFound('user'));
   }
 
-  const tokenValue = await generateTokenValue(32);
+  const tokenValue = generateTokenValue(32);
 
   // TODO: 一応トークンの重複を確認
 
@@ -64,9 +64,9 @@ export async function getTokenInfo(
  * トークンの値を生成します。
  * @internal
 */
-export async function generateTokenValue(length: number) {
+export function generateTokenValue(length: number) {
   let token = "";
-  for (const [_index, byte] of crypto.randomBytes(length).entries()) {
+  for (const byte of crypto.randomBytes(length).values()) {
     token += asciiTable[byte % asciiTable.length];
   }
   return token;
