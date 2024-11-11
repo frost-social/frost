@@ -3,7 +3,7 @@ import { Container } from "inversify";
 import * as UserRepository from "../../src/repositories/UserRepository";
 import * as PasswordVerificationService from "../../src/services/PasswordVerificationService";
 import * as TokenService from "../../src/services/TokenService";
-import * as UserService from "../../src/services/UserService";
+import * as AuthService from "../../src/services/AuthService";
 import { AppError } from "../../src/modules/appErrors";
 
 jest.mock("../../src/repositories/UserRepository");
@@ -36,7 +36,7 @@ describe('signup', () => {
       scopes: ["user.read", "user.write", "leaf.read", "leaf.write", "leaf.delete"],
     });
 
-    const result = await UserService.signup({
+    const result = await AuthService.signup({
       userName: 'frost123',
       password: 'strongpasswordhere',
       displayName: 'frost 123',
@@ -57,7 +57,7 @@ describe('signup', () => {
   it('何も認証情報を与えなければユーザー作成に失敗する', async () => {
     let appError;
     try {
-      const user = await UserService.signup({
+      const user = await AuthService.signup({
         userName: 'frost123',
         displayName: 'frost 123',
       }, { userId: '' }, new Container());
