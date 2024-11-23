@@ -1,10 +1,10 @@
 -- @param {String} $1:userId
 -- @param {Int} $2:limit
 
-SELECT p.*
-FROM "post" AS p
-WHERE p.post_kind = 'timeline'
+SELECT post.*
+FROM "post" AS post
+WHERE post.post_kind = 'timeline'
   AND CAST($1 AS UUID) = CAST($1 AS UUID)
-ORDER BY p.created_at DESC, p.post_id DESC
+ORDER BY post.created_at DESC, post.post_id DESC
 LIMIT $2
 ;
