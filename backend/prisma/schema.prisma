@@ -28,7 +28,7 @@ model user {
   // relations
   passwords                 password_verification[]
   tokens                    token[]
-  posts                     post[]
+  leafs                     leaf[]
   user_followed_by          user_following[] @relation("user_followed_by")
   user_following            user_following[] @relation("user_following")
 
@@ -78,9 +78,9 @@ model token_scope {
   @@id(fields: [token_scope_id])
 }
 
-model post {
-  post_id                   String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
-  post_kind                 String    @db.VarChar(16)
+model leaf {
+  leaf_id                   String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
+  leaf_kind                 String    @db.VarChar(16)
   chat_room_id              String?   @db.Uuid // FK
   user_id                   String    @db.Uuid // FK
   content                   String    @db.VarChar(256)
@@ -90,7 +90,7 @@ model post {
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
 
-  @@id(fields: [post_id])
+  @@id(fields: [leaf_id])
 }
 
 model user_following {

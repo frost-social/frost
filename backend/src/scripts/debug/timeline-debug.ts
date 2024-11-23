@@ -31,22 +31,22 @@ async function run() {
     const db = container.get<PrismaClient>(TYPES.db);
     await db.$transaction(async (tx) => {
       container.rebind(TYPES.db).toConstantValue(tx);
-      // create 10 posts
+      // create 10 leafs
       for (let i = 0; i < 10; i++) {
         const createResult = await LeafRepository.createTimelineLeaf({
           userId: ctx.userId,
-          content: `This is a post content ${i}.`,
+          content: `This is a leaf content ${i}.`,
         }, ctx, container);
         console.log(inspect(createResult, { depth: 10 }));
       }
 
-      // fetch posts
+      // fetch leafs
       console.log('タイムライン取得');
-      const posts = await LeafRepository.fetchHomeTimeline({
+      const leafs = await LeafRepository.fetchHomeTimeline({
         kind: 'home',
         limit: 8,
       }, ctx, container);
-      console.log(inspect(posts, { depth: 10 }));
+      console.log(inspect(leafs, { depth: 10 }));
 
       console.log('finish');
 
