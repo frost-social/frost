@@ -32,6 +32,38 @@ export async function getUser(
   return userEntity;
 }
 
+export async function followUser(
+  params: { userId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<void> {
+  throw new Error('not implemented');
+}
+
+export async function unfollowUser(
+  params: { userId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<void> {
+  throw new Error('not implemented');
+}
+
+export async function getFollowings(
+  params: { userId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  throw new Error('not implemented');
+}
+
+export async function getFollowedBy(
+  params: { userId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  throw new Error('not implemented');
+}
+
 /**
  * ユーザー情報を削除します。
 */

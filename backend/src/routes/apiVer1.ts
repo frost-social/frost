@@ -148,7 +148,12 @@ export class ApiVer1Router {
       path: '/user/followUser',
       scope: 'user.write',
       async requestHandler(ctx): Promise<Endpoints['/api/v1/user/followUser']['result']> {
-        throw new Error('not implemented');
+        const params: Endpoints['/api/v1/user/followUser']['body'] = ctx.validateParams(
+          z.object({
+            userId: zUuid,
+          })
+        );
+        await UserService.followUser(params, { userId: ctx.getUser().userId }, ctx.container);
       },
     });
 
@@ -160,6 +165,15 @@ export class ApiVer1Router {
         throw new Error('not implemented');
       },
     });
+
+    // builder.register({
+    //   method: 'GET',
+    //   path: '/user/getFollowedBy',
+    //   scope: 'user.read',
+    //   async requestHandler(ctx): Promise<Endpoints['/api/v1/user/getFollowedBy']['result']> {
+    //     throw new Error('not implemented');
+    //   },
+    // });
 
     builder.register({
       method: 'GET',
@@ -213,7 +227,12 @@ export class ApiVer1Router {
       path: '/user/unfollowUser',
       scope: 'user.write',
       async requestHandler(ctx): Promise<Endpoints['/api/v1/user/unfollowUser']['result']> {
-        throw new Error('not implemented');
+        const params: Endpoints['/api/v1/user/unfollowUser']['body'] = ctx.validateParams(
+          z.object({
+            userId: zUuid,
+          })
+        );
+        await UserService.unfollowUser(params, { userId: ctx.getUser().userId }, ctx.container);
       },
     });
 
