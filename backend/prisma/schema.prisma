@@ -18,7 +18,7 @@ datasource db {
 // https://www.prisma.io/docs/orm/reference/prisma-schema-reference#unique
 
 model user {
-  user_id                   String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  user_id                   String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   name                      String    @db.VarChar(64) @unique(map: "user_name_unique")
   display_name              String    @db.VarChar(64) @default("frost user")
   password_auth_enabled     Boolean
@@ -31,10 +31,12 @@ model user {
   posts                     post[]
   user_followed_by          user_following[] @relation("user_followed_by")
   user_following            user_following[] @relation("user_following")
+
+  @@id(fields: [user_id])
 }
 
 model password_verification {
-  password_verification_id  String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  password_verification_id  String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   user_id                   String    @db.Uuid // FK
   algorithm                 String    @db.VarChar(16)
   salt                      String    @db.VarChar(32)
@@ -44,10 +46,12 @@ model password_verification {
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@id(fields: [password_verification_id])
 }
 
 model token {
-  token_id                  String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  token_id                  String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   token_kind                String    @db.VarChar(16)
   user_id                   String    @db.Uuid // FK
   token                     String    @db.VarChar(32)
@@ -58,20 +62,24 @@ model token {
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
   scopes                    token_scope[]
+
+  @@id(fields: [token_id])
 }
 
 model token_scope {
-  token_scope_id            String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  token_scope_id            String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   token_id                  String    @db.Uuid // FK
   scope_name                String    @db.VarChar(32)
   row_version               Int       @default(1)
 
   // relations
   token                     token     @relation(fields: [token_id], references: [token_id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@id(fields: [token_scope_id])
 }
 
 model post {
-  post_id                   String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  post_id                   String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   post_kind                 String    @db.VarChar(16)
   chat_room_id              String?   @db.Uuid // FK
   user_id                   String    @db.Uuid // FK
@@ -81,6 +89,8 @@ model post {
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@id(fields: [post_id])
 }
 
 model user_following {
