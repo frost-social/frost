@@ -5,7 +5,7 @@
 SELECT leaf.*
 
 FROM
-  "user_following" AS user_following
+  "user_following" AS user_following,
   (SELECT x.leaf_id, x.created_at FROM "leaf" AS x WHERE x.leaf_id = CAST($2 AS UUID)) AS cur
 
 JOIN "leaf" AS leaf
