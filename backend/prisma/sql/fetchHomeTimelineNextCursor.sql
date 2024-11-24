@@ -11,11 +11,14 @@ ON curLeaf.leaf_id = CAST($2 AS UUID)
 
 WHERE
   leaf.leaf_kind = 'timeline'
-  -- このユーザーがフォローしてる人のリーフ
-  AND leaf.user_id = (
+  AND leaf.user_id IN (
+    -- このユーザーがフォローしてる人
     SELECT user_following.user_id_following
     FROM "user_following" AS user_following
     WHERE user_following.user_id_followed_by = CAST($1 AS UUID)
+    UNION ALL
+    -- このユーザー自身
+    SELECT CAST($1 AS UUID)
   )
   -- カーソル値よりも新しいリソースを取得
   -- 作成日時がカーソル側より後であるかで判定。作成日時が同じ場合はリーフIDがカーソル側より大きいかで判定。
