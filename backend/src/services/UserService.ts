@@ -49,19 +49,29 @@ export async function unfollowUser(
 }
 
 export async function getFollowings(
-  params: { userId: string },
+  params: { userId: string, offset?: number, limit?: number },
   ctx: AccessContext,
   container: Container,
 ): Promise<UserEntity[]> {
-  throw new Error('not implemented');
+  const users = await UserRepository.getFollowings({
+    userId: params.userId,
+    offset: params.offset ?? 0,
+    limit: params.limit ?? 10,
+  }, ctx, container);
+  return users;
 }
 
 export async function getFollowedBy(
-  params: { userId: string },
+  params: { userId: string, offset?: number, limit?: number },
   ctx: AccessContext,
   container: Container,
 ): Promise<UserEntity[]> {
-  throw new Error('not implemented');
+  const users = await UserRepository.getFollowedBy({
+    userId: params.userId,
+    offset: params.offset ?? 0,
+    limit: params.limit ?? 10,
+  }, ctx, container);
+  return users;
 }
 
 /**

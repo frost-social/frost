@@ -67,9 +67,13 @@ export type Endpoints = {
     body: paths['/api/v1/user/followUser']['post']['requestBody']['content']['application/json'],
     result: paths['/api/v1/user/followUser']['post']['responses']['204']['content'],
   },
-  '/api/v1/user/getFollowings': {
-    query: paths['/api/v1/user/getFollowings']['get']['parameters']['query'],
-    result: paths['/api/v1/user/getFollowings']['get']['responses']['200']['content']['application/json'],
+  '/api/v1/user/listFollowing': {
+    query: paths['/api/v1/user/listFollowing']['get']['parameters']['query'],
+    result: paths['/api/v1/user/listFollowing']['get']['responses']['200']['content']['application/json'],
+  },
+  '/api/v1/user/listFollowedBy': {
+    query: paths['/api/v1/user/listFollowedBy']['get']['parameters']['query'],
+    result: paths['/api/v1/user/listFollowedBy']['get']['responses']['200']['content']['application/json'],
   },
   '/api/v1/user/getHomeTimeline': {
     query: paths['/api/v1/user/getHomeTimeline']['get']['parameters']['query'],

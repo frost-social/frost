@@ -10,6 +10,7 @@ import * as UserService from '../services/UserService';
 import * as AuthService from '../services/AuthService';
 
 const zUuid = z.string().length(36);
+const zNumericString = z.string().regex(/^[+-]?\d*\.?\d+$/, { message: 'invalid numeric string' });
 
 @injectable()
 export class ApiVer1Router {
@@ -159,21 +160,47 @@ export class ApiVer1Router {
 
     builder.register({
       method: 'GET',
-      path: '/user/getFollowings',
+      path: '/user/listFollowing',
       scope: 'user.read',
-      async requestHandler(ctx): Promise<Endpoints['/api/v1/user/getFollowings']['result']> {
-        throw new Error('not implemented');
+      async requestHandler(ctx): Promise<Endpoints['/api/v1/user/listFollowing']['result']> {
+        const params: Endpoints['/api/v1/user/listFollowing']['query'] = ctx.validateParams(
+          z.object({
+            offset: zNumericString.optional(),
+            limit: zNumericString.optional(),
+            userId: zUuid,
+          })
+        );
+        const params2 = {
+          ...params,
+          offset: Number(params.offset),
+          limit: Number(params.limit),
+        };
+        const result = await UserService.getFollowings(params2, { userId: ctx.getUser().userId }, ctx.container);
+        return result;
       },
     });
 
-    // builder.register({
-    //   method: 'GET',
-    //   path: '/user/getFollowedBy',
-    //   scope: 'user.read',
-    //   async requestHandler(ctx): Promise<Endpoints['/api/v1/user/getFollowedBy']['result']> {
-    //     throw new Error('not implemented');
-    //   },
-    // });
+    builder.register({
+      method: 'GET',
+      path: '/user/getFollowedBy',
+      scope: 'user.read',
+      async requestHandler(ctx): Promise<Endpoints['/api/v1/user/listFollowedBy']['result']> {
+        const params: Endpoints['/api/v1/user/listFollowedBy']['query'] = ctx.validateParams(
+          z.object({
+            offset: zNumericString.optional(),
+            limit: zNumericString.optional(),
+            userId: zUuid,
+          })
+        );
+        const params2 = {
+          ...params,
+          offset: Number(params.offset),
+          limit: Number(params.limit),
+        };
+        const result = await UserService.getFollowedBy(params2, { userId: ctx.getUser().userId }, ctx.container);
+        return result;
+      },
+    });
 
     builder.register({
       method: 'GET',
@@ -184,7 +211,7 @@ export class ApiVer1Router {
           z.object({
             nextCursor: z.string().length(36).optional(),
             prevCursor: z.string().length(36).optional(),
-            limit: z.string().regex(/^[+-]?\d*\.?\d+$/, { message: 'invalid numeric string' }).optional(),
+            limit: zNumericString.optional(),
           })
         );
         const params2 = {

@@ -244,22 +244,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/user/getFollowings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["UserApi_GetFollowings"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/user/getHomeTimeline": {
         parameters: {
             query?: never;
@@ -284,6 +268,38 @@ export interface paths {
             cookie?: never;
         };
         get: operations["UserApi_GetUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/listFollowedBy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UserApi_ListFollowedBy"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/listFollowing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UserApi_ListFollowing"];
         put?: never;
         post?: never;
         delete?: never;
@@ -424,10 +440,11 @@ export interface components {
         "Api.v1.CursorControl.nextCursor": string;
         "Api.v1.CursorControl.prevCursor": string;
         "Api.v1.GetChatRoomQueryString": string;
-        "Api.v1.GetFollowingsQueryString.userId": string;
         "Api.v1.GetLeafQueryString": string;
         "Api.v1.GetUserQueryString.userId": string;
         "Api.v1.GetUserQueryString.userName": string;
+        "Api.v1.ListFollowedByQueryString.userId": string;
+        "Api.v1.ListFollowingQueryString.userId": string;
         "Api.v1.OffsetControl.limit": string;
         "Api.v1.OffsetControl.offset": string;
     };
@@ -811,30 +828,6 @@ export interface operations {
             };
         };
     };
-    UserApi_GetFollowings: {
-        parameters: {
-            query: {
-                offset?: components["parameters"]["Api.v1.OffsetControl.offset"];
-                limit?: components["parameters"]["Api.v1.OffsetControl.limit"];
-                userId: components["parameters"]["Api.v1.GetFollowingsQueryString.userId"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The request has succeeded. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Api.v1.User"][];
-                };
-            };
-        };
-    };
     UserApi_GetHomeTimeline: {
         parameters: {
             query?: {
@@ -878,6 +871,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Api.v1.User"];
+                };
+            };
+        };
+    };
+    UserApi_ListFollowedBy: {
+        parameters: {
+            query: {
+                offset?: components["parameters"]["Api.v1.OffsetControl.offset"];
+                limit?: components["parameters"]["Api.v1.OffsetControl.limit"];
+                userId: components["parameters"]["Api.v1.ListFollowedByQueryString.userId"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The request has succeeded. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Api.v1.User"][];
+                };
+            };
+        };
+    };
+    UserApi_ListFollowing: {
+        parameters: {
+            query: {
+                offset?: components["parameters"]["Api.v1.OffsetControl.offset"];
+                limit?: components["parameters"]["Api.v1.OffsetControl.limit"];
+                userId: components["parameters"]["Api.v1.ListFollowingQueryString.userId"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The request has succeeded. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Api.v1.User"][];
                 };
             };
         };

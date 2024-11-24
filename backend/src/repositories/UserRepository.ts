@@ -74,6 +74,50 @@ export async function remove(
   return (result.count > 0);
 }
 
+/**
+ * フォローしているユーザーを取得する
+*/
+export async function getFollowings(
+  params: { userId: string, offset: number, limit: number },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  const db = container.get<DB>(TYPES.db);
+
+  const rows = await db.user_following.findMany({
+    where: {
+      user_id_followed_by: params.userId,
+    },
+    include: { user_following: true },
+    skip: params.offset,
+    take: params.limit,
+  });
+
+  return rows.map(row => mapEntity(row.user_following));
+}
+
+/**
+ * フォローされているユーザーを取得する
+*/
+export async function getFollowedBy(
+  params: { userId: string, offset: number, limit: number },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  const db = container.get<DB>(TYPES.db);
+
+  const rows = await db.user_following.findMany({
+    where: {
+      user_id_following: params.userId,
+    },
+    include: { user_followed_by: true },
+    skip: params.offset,
+    take: params.limit,
+  });
+
+  return rows.map(row => mapEntity(row.user_followed_by));
+}
+
 function mapEntity(row: user): UserEntity {
   return {
     userId: row.user_id,

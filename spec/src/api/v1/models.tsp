@@ -84,7 +84,11 @@ model DeleteUserBody {
   userId: string;
 }
 
-model GetFollowingsQueryString is OffsetControl {
+model ListFollowingQueryString is OffsetControl {
+  @query userId: string;
+}
+
+model ListFollowedByQueryString is OffsetControl {
   @query userId: string;
 }
 

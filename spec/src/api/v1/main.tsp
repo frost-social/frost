@@ -38,8 +38,11 @@ interface UserApi {
   @route("/deleteUser")
   @post DeleteUser(@body body: DeleteUserBody): void;
 
-  @route("/getFollowings")
-  @get GetFollowings(...GetFollowingsQueryString): User[];
+  @route("/listFollowing")
+  @get ListFollowing(...ListFollowingQueryString): User[];
+
+  @route("/listFollowedBy")
+  @get ListFollowedBy(...ListFollowedByQueryString): User[];
 
   @route("/followUser")
   @post FollowUser(@body body: FollowUserBody): void;
