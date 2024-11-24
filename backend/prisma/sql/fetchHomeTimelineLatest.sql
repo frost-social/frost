@@ -3,13 +3,16 @@
 
 SELECT leaf.*
 
-FROM "user_following" AS user_following
+FROM "leaf" AS leaf
 
-JOIN "leaf" AS leaf
-  ON leaf.user_id = user_following.user_id_following
-
-WHERE user_following.user_id_followed_by = CAST($1 AS UUID)
-  AND leaf.leaf_kind = 'timeline'
+WHERE
+  leaf.leaf_kind = 'timeline'
+  -- このユーザーがフォローしてる人のリーフ
+  AND leaf.user_id = (
+    SELECT user_following.user_id_following
+    FROM "user_following" AS user_following
+    WHERE user_following.user_id_followed_by = CAST($1 AS UUID)
+  )
 
 ORDER BY leaf.created_at DESC, leaf.leaf_id DESC
 LIMIT $2
