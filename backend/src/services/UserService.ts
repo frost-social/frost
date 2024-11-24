@@ -37,6 +37,20 @@ export async function followUser(
   ctx: AccessContext,
   container: Container,
 ): Promise<void> {
+  const relationExisting = await UserRepository.getUserFollowing({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
+
+  // 既にフォローしているユーザーをフォローできない
+  if (relationExisting) {
+    throw appError({
+      code: "userAlreadyFollowing",
+      message: "specified user already following.",
+      status: 400,
+    });
+  }
+
   await UserRepository.followUser({
     followedByUserId: ctx.userId,
     followingUserId: params.userId,
@@ -48,6 +62,20 @@ export async function unfollowUser(
   ctx: AccessContext,
   container: Container,
 ): Promise<void> {
+  const relationExisting = await UserRepository.getUserFollowing({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
+
+  // フォローしていないユーザーをフォロー解除できない
+  if (!relationExisting) {
+    throw appError({
+      code: "userNotFollowing",
+      message: "specified user not following.",
+      status: 400,
+    });
+  }
+
   await UserRepository.unfollowUser({
     followedByUserId: ctx.userId,
     followingUserId: params.userId,

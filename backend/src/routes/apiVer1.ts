@@ -172,8 +172,8 @@ export class ApiVer1Router {
         );
         const params2 = {
           ...params,
-          offset: Number(params.offset),
-          limit: Number(params.limit),
+          offset: (params.offset != null ? Number(params.offset) : undefined),
+          limit: (params.limit != null ? Number(params.limit) : undefined),
         };
         const result = await UserService.getFollowings(params2, { userId: ctx.getUser().userId }, ctx.container);
         return result;
@@ -182,7 +182,7 @@ export class ApiVer1Router {
 
     builder.register({
       method: 'GET',
-      path: '/user/getFollowedBy',
+      path: '/user/listFollowedBy',
       scope: 'user.read',
       async requestHandler(ctx): Promise<Endpoints['/api/v1/user/listFollowedBy']['result']> {
         const params: Endpoints['/api/v1/user/listFollowedBy']['query'] = ctx.validateParams(
@@ -194,8 +194,8 @@ export class ApiVer1Router {
         );
         const params2 = {
           ...params,
-          offset: Number(params.offset),
-          limit: Number(params.limit),
+          offset: (params.offset != null ? Number(params.offset) : undefined),
+          limit: (params.limit != null ? Number(params.limit) : undefined),
         };
         const result = await UserService.getFollowedBy(params2, { userId: ctx.getUser().userId }, ctx.container);
         return result;

@@ -77,11 +77,33 @@ export async function remove(
 /**
  * ユーザーをフォローする
 */
+export async function getUserFollowing(
+  params: { followedByUserId: string, followingUserId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<boolean> {
+  const db = container.get<DB>(TYPES.db);
+
+  const row = await db.user_following.findUnique({
+    where: {
+      user_id_followed_by_user_id_following: {
+        user_id_followed_by: params.followedByUserId,
+        user_id_following: params.followingUserId,
+      }
+    },
+  });
+
+  return (row != null);
+}
+
+/**
+ * ユーザーをフォローする
+*/
 export async function followUser(
   params: { followedByUserId: string, followingUserId: string },
   ctx: AccessContext,
   container: Container,
-) {
+): Promise<void> {
   const db = container.get<DB>(TYPES.db);
 
   await db.user_following.create({
