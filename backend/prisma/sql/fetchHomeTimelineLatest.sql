@@ -7,6 +7,7 @@ FROM "leaf" AS leaf
 
 WHERE
   leaf.leaf_kind = 'timeline'
+  -- 対象ユーザー
   AND leaf.user_id IN (
     -- このユーザーがフォローしてる人
     SELECT user_following.user_id_following
