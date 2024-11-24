@@ -75,7 +75,45 @@ export async function remove(
 }
 
 /**
- * フォローしているユーザーを取得する
+ * ユーザーをフォローする
+*/
+export async function followUser(
+  params: { followedByUserId: string, followingUserId: string },
+  ctx: AccessContext,
+  container: Container,
+) {
+  const db = container.get<DB>(TYPES.db);
+
+  await db.user_following.create({
+    data: {
+      user_id_followed_by: params.followedByUserId,
+      user_id_following: params.followingUserId,
+    },
+  });
+}
+
+/**
+ * ユーザーをフォロー解除する
+*/
+export async function unfollowUser(
+  params: { followedByUserId: string, followingUserId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<void> {
+  const db = container.get<DB>(TYPES.db);
+
+  await db.user_following.delete({
+    where: {
+      user_id_followed_by_user_id_following: {
+        user_id_followed_by: params.followedByUserId,
+        user_id_following: params.followingUserId,
+      }
+    },
+  });
+}
+
+/**
+ * 指定ユーザーがフォローしているユーザーの一覧を取得する
 */
 export async function getFollowings(
   params: { userId: string, offset: number, limit: number },
@@ -97,7 +135,7 @@ export async function getFollowings(
 }
 
 /**
- * フォローされているユーザーを取得する
+ * 指定ユーザーをフォローしているユーザーの一覧を取得する
 */
 export async function getFollowedBy(
   params: { userId: string, offset: number, limit: number },

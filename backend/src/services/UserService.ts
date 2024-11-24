@@ -37,7 +37,10 @@ export async function followUser(
   ctx: AccessContext,
   container: Container,
 ): Promise<void> {
-  throw new Error('not implemented');
+  await UserRepository.followUser({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
 }
 
 export async function unfollowUser(
@@ -45,7 +48,10 @@ export async function unfollowUser(
   ctx: AccessContext,
   container: Container,
 ): Promise<void> {
-  throw new Error('not implemented');
+  await UserRepository.unfollowUser({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
 }
 
 export async function getFollowings(
