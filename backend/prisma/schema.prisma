@@ -18,21 +18,25 @@ datasource db {
 // https://www.prisma.io/docs/orm/reference/prisma-schema-reference#unique
 
 model user {
-  user_id                   String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  user_id                   String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   name                      String    @db.VarChar(64) @unique(map: "user_name_unique")
   display_name              String    @db.VarChar(64) @default("frost user")
   password_auth_enabled     Boolean
-  created_at                DateTime  @db.Timestamp(3) @default(now())
+  created_at                DateTime  @db.Timestamptz(3) @default(now())
   row_version               Int       @default(1)
 
   // relations
   passwords                 password_verification[]
   tokens                    token[]
-  posts                     post[]
+  leafs                     leaf[]
+  user_followed_by          user_following[] @relation("user_followed_by")
+  user_following            user_following[] @relation("user_following")
+
+  @@id(fields: [user_id])
 }
 
 model password_verification {
-  password_verification_id  String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  password_verification_id  String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   user_id                   String    @db.Uuid // FK
   algorithm                 String    @db.VarChar(16)
   salt                      String    @db.VarChar(32)
@@ -42,41 +46,61 @@ model password_verification {
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@id(fields: [password_verification_id])
 }
 
 model token {
-  token_id                  String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  token_id                  String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   token_kind                String    @db.VarChar(16)
   user_id                   String    @db.Uuid // FK
   token                     String    @db.VarChar(32)
-  expires                   DateTime? @db.Timestamp(6)
-  created_at                DateTime  @db.Timestamp(3) @default(now())
+  expires                   DateTime? @db.Timestamptz(3)
+  created_at                DateTime  @db.Timestamptz(3) @default(now())
   row_version               Int       @default(1)
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
   scopes                    token_scope[]
+
+  @@id(fields: [token_id])
 }
 
 model token_scope {
-  token_scope_id            String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
+  token_scope_id            String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
   token_id                  String    @db.Uuid // FK
   scope_name                String    @db.VarChar(32)
   row_version               Int       @default(1)
 
   // relations
   token                     token     @relation(fields: [token_id], references: [token_id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@id(fields: [token_scope_id])
 }
 
-model post {
-  post_id                   String    @db.Uuid @id @default(dbgenerated("gen_random_uuid()")) // PK
-  post_kind                 String    @db.VarChar(16)
+model leaf {
+  leaf_id                   String    @db.Uuid @default(dbgenerated("gen_random_uuid()")) // PK
+  leaf_kind                 String    @db.VarChar(16)
   chat_room_id              String?   @db.Uuid // FK
   user_id                   String    @db.Uuid // FK
   content                   String    @db.VarChar(256)
-  created_at                DateTime  @db.Timestamp(3) @default(now())
+  created_at                DateTime  @db.Timestamptz(3) @default(now())
   row_version               Int       @default(1)
 
   // relations
   user                      user      @relation(fields: [user_id], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@id(fields: [leaf_id])
+}
+
+model user_following {
+  user_id_followed_by       String    @db.Uuid // PK, FK
+  user_id_following         String    @db.Uuid // PK, FK
+  created_at                DateTime  @db.Timestamptz(3) @default(now())
+
+  // relations
+  user_followed_by          user      @relation("user_followed_by", fields: [user_id_followed_by], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
+  user_following            user      @relation("user_following", fields: [user_id_following], references: [user_id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@id(fields: [user_id_followed_by, user_id_following])
 }

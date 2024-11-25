@@ -292,24 +292,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Api.v1.FollowUserBody'
-  /api/v1/user/getFollowings:
-    get:
-      tags:
-        - User
-      operationId: UserApi_GetFollowings
-      parameters:
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
-        - $ref: '#/components/parameters/Api.v1.GetFollowingsQueryString.userId'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Api.v1.User'
   /api/v1/user/getHomeTimeline:
     get:
       tags:
@@ -342,6 +324,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Api.v1.User'
+  /api/v1/user/listFollowedBy:
+    get:
+      tags:
+        - User
+      operationId: UserApi_ListFollowedBy
+      parameters:
+        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
+        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
+        - $ref: '#/components/parameters/Api.v1.ListFollowedByQueryString.userId'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Api.v1.User'
+  /api/v1/user/listFollowing:
+    get:
+      tags:
+        - User
+      operationId: UserApi_ListFollowing
+      parameters:
+        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
+        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
+        - $ref: '#/components/parameters/Api.v1.ListFollowingQueryString.userId'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Api.v1.User'
   /api/v1/user/searchUsers:
     get:
       tags:
@@ -400,12 +418,6 @@ components:
       required: true
       schema:
         type: string
-    Api.v1.GetFollowingsQueryString.userId:
-      name: userId
-      in: query
-      required: true
-      schema:
-        type: string
     Api.v1.GetLeafQueryString:
       name: leafId
       in: query
@@ -422,6 +434,18 @@ components:
       name: userName
       in: query
       required: false
+      schema:
+        type: string
+    Api.v1.ListFollowedByQueryString.userId:
+      name: userId
+      in: query
+      required: true
+      schema:
+        type: string
+    Api.v1.ListFollowingQueryString.userId:
+      name: userId
+      in: query
+      required: true
       schema:
         type: string
     Api.v1.OffsetControl.limit:

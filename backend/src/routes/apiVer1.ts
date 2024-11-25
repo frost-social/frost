@@ -10,6 +10,7 @@ import * as UserService from '../services/UserService';
 import * as AuthService from '../services/AuthService';
 
 const zUuid = z.string().length(36);
+const zNumericString = z.string().regex(/^[+-]?\d*\.?\d+$/, { message: 'invalid numeric string' });
 
 @injectable()
 export class ApiVer1Router {
@@ -148,16 +149,56 @@ export class ApiVer1Router {
       path: '/user/followUser',
       scope: 'user.write',
       async requestHandler(ctx): Promise<Endpoints['/api/v1/user/followUser']['result']> {
-        throw new Error('not implemented');
+        const params: Endpoints['/api/v1/user/followUser']['body'] = ctx.validateParams(
+          z.object({
+            userId: zUuid,
+          })
+        );
+        await UserService.followUser(params, { userId: ctx.getUser().userId }, ctx.container);
       },
     });
 
     builder.register({
       method: 'GET',
-      path: '/user/getFollowings',
+      path: '/user/listFollowing',
       scope: 'user.read',
-      async requestHandler(ctx): Promise<Endpoints['/api/v1/user/getFollowings']['result']> {
-        throw new Error('not implemented');
+      async requestHandler(ctx): Promise<Endpoints['/api/v1/user/listFollowing']['result']> {
+        const params: Endpoints['/api/v1/user/listFollowing']['query'] = ctx.validateParams(
+          z.object({
+            offset: zNumericString.optional(),
+            limit: zNumericString.optional(),
+            userId: zUuid,
+          })
+        );
+        const params2 = {
+          ...params,
+          offset: (params.offset != null ? Number(params.offset) : undefined),
+          limit: (params.limit != null ? Number(params.limit) : undefined),
+        };
+        const result = await UserService.getFollowings(params2, { userId: ctx.getUser().userId }, ctx.container);
+        return result;
+      },
+    });
+
+    builder.register({
+      method: 'GET',
+      path: '/user/listFollowedBy',
+      scope: 'user.read',
+      async requestHandler(ctx): Promise<Endpoints['/api/v1/user/listFollowedBy']['result']> {
+        const params: Endpoints['/api/v1/user/listFollowedBy']['query'] = ctx.validateParams(
+          z.object({
+            offset: zNumericString.optional(),
+            limit: zNumericString.optional(),
+            userId: zUuid,
+          })
+        );
+        const params2 = {
+          ...params,
+          offset: (params.offset != null ? Number(params.offset) : undefined),
+          limit: (params.limit != null ? Number(params.limit) : undefined),
+        };
+        const result = await UserService.getFollowedBy(params2, { userId: ctx.getUser().userId }, ctx.container);
+        return result;
       },
     });
 
@@ -170,7 +211,7 @@ export class ApiVer1Router {
           z.object({
             nextCursor: z.string().length(36).optional(),
             prevCursor: z.string().length(36).optional(),
-            limit: z.string().regex(/^[+-]?\d*\.?\d+$/, { message: 'invalid numeric string' }).optional(),
+            limit: zNumericString.optional(),
           })
         );
         const params2 = {
@@ -213,7 +254,12 @@ export class ApiVer1Router {
       path: '/user/unfollowUser',
       scope: 'user.write',
       async requestHandler(ctx): Promise<Endpoints['/api/v1/user/unfollowUser']['result']> {
-        throw new Error('not implemented');
+        const params: Endpoints['/api/v1/user/unfollowUser']['body'] = ctx.validateParams(
+          z.object({
+            userId: zUuid,
+          })
+        );
+        await UserService.unfollowUser(params, { userId: ctx.getUser().userId }, ctx.container);
       },
     });
 

@@ -1,4 +1,4 @@
-import { post } from "@prisma/client";
+import { leaf } from "@prisma/client";
 import * as sql from "@prisma/client/sql";
 import { Container } from "inversify";
 import { TYPES } from "../container/types";
@@ -15,9 +15,9 @@ export async function createTimelineLeaf(
   container: Container,
 ): Promise<LeafEntity> {
   const db = container.get<DB>(TYPES.db);
-  const row = await db.post.create({
+  const row = await db.leaf.create({
     data: {
-      post_kind: 'timeline',
+      leaf_kind: 'timeline',
       user_id: params.userId,
       content: params.content,
     },
@@ -35,9 +35,9 @@ export async function createChatLeaf(
   container: Container,
 ): Promise<LeafEntity> {
   const db = container.get<DB>(TYPES.db);
-  const row = await db.post.create({
+  const row = await db.leaf.create({
     data: {
-      post_kind: 'chatroom',
+      leaf_kind: 'chatroom',
       chat_room_id: params.chatRoomId,
       user_id: params.userId,
       content: params.content,
@@ -56,9 +56,9 @@ export async function get(
   container: Container,
 ): Promise<LeafEntity | undefined> {
   const db = container.get<DB>(TYPES.db);
-  const row = await db.post.findFirst({
+  const row = await db.leaf.findFirst({
     where: {
-      post_id: params.leafId,
+      leaf_id: params.leafId,
     },
   });
 
@@ -103,17 +103,17 @@ export async function remove(
   container: Container,
 ): Promise<boolean> {
   const db = container.get<DB>(TYPES.db);
-  const result = await db.post.deleteMany({
+  const result = await db.leaf.deleteMany({
     where: {
-      post_id: params.leafId,
+      leaf_id: params.leafId,
     },
   });
   return (result.count > 0);
 }
 
-function mapEntity(row: post): LeafEntity {
+function mapEntity(row: leaf): LeafEntity {
   const leaf: LeafEntity = {
-    leafId: row.post_id,
+    leafId: row.leaf_id,
     userId: row.user_id,
     createdAt: row.created_at.toJSON(),
     content: row.content,

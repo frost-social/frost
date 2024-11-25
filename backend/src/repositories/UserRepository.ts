@@ -74,6 +74,110 @@ export async function remove(
   return (result.count > 0);
 }
 
+/**
+ * ユーザーをフォローする
+*/
+export async function getUserFollowing(
+  params: { followedByUserId: string, followingUserId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<boolean> {
+  const db = container.get<DB>(TYPES.db);
+
+  const row = await db.user_following.findUnique({
+    where: {
+      user_id_followed_by_user_id_following: {
+        user_id_followed_by: params.followedByUserId,
+        user_id_following: params.followingUserId,
+      }
+    },
+  });
+
+  return (row != null);
+}
+
+/**
+ * ユーザーをフォローする
+*/
+export async function followUser(
+  params: { followedByUserId: string, followingUserId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<void> {
+  const db = container.get<DB>(TYPES.db);
+
+  await db.user_following.create({
+    data: {
+      user_id_followed_by: params.followedByUserId,
+      user_id_following: params.followingUserId,
+    },
+  });
+}
+
+/**
+ * ユーザーをフォロー解除する
+*/
+export async function unfollowUser(
+  params: { followedByUserId: string, followingUserId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<void> {
+  const db = container.get<DB>(TYPES.db);
+
+  await db.user_following.delete({
+    where: {
+      user_id_followed_by_user_id_following: {
+        user_id_followed_by: params.followedByUserId,
+        user_id_following: params.followingUserId,
+      }
+    },
+  });
+}
+
+/**
+ * 指定ユーザーがフォローしているユーザーの一覧を取得する
+*/
+export async function getFollowings(
+  params: { userId: string, offset: number, limit: number },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  const db = container.get<DB>(TYPES.db);
+
+  const rows = await db.user_following.findMany({
+    where: {
+      user_id_followed_by: params.userId,
+    },
+    include: { user_following: true },
+    skip: params.offset,
+    take: params.limit,
+  });
+
+  return rows.map(row => mapEntity(row.user_following));
+}
+
+/**
+ * 指定ユーザーをフォローしているユーザーの一覧を取得する
+*/
+export async function getFollowedBy(
+  params: { userId: string, offset: number, limit: number },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  const db = container.get<DB>(TYPES.db);
+
+  const rows = await db.user_following.findMany({
+    where: {
+      user_id_following: params.userId,
+    },
+    include: { user_followed_by: true },
+    skip: params.offset,
+    take: params.limit,
+  });
+
+  return rows.map(row => mapEntity(row.user_followed_by));
+}
+
 function mapEntity(row: user): UserEntity {
   return {
     userId: row.user_id,

@@ -13,10 +13,10 @@ export async function getUser(
   ctx: AccessContext,
   container: Container,
 ): Promise<UserEntity> {
-  // either userId or name must be specified
+  // either userId or userName must be specified
   if ([params.userId, params.userName].every(x => x == null)) {
     throw appError(new BadRequest([
-      { message: "Please specify the userId or name." },
+      { message: "Please specify the userId or userName." },
     ]));
   }
 
@@ -30,6 +30,82 @@ export async function getUser(
   }
 
   return userEntity;
+}
+
+export async function followUser(
+  params: { userId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<void> {
+  const relationExisting = await UserRepository.getUserFollowing({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
+
+  // 既にフォローしているユーザーをフォローできない
+  if (relationExisting) {
+    throw appError({
+      code: "userAlreadyFollowing",
+      message: "specified user already following.",
+      status: 400,
+    });
+  }
+
+  await UserRepository.followUser({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
+}
+
+export async function unfollowUser(
+  params: { userId: string },
+  ctx: AccessContext,
+  container: Container,
+): Promise<void> {
+  const relationExisting = await UserRepository.getUserFollowing({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
+
+  // フォローしていないユーザーをフォロー解除できない
+  if (!relationExisting) {
+    throw appError({
+      code: "userNotFollowing",
+      message: "specified user not following.",
+      status: 400,
+    });
+  }
+
+  await UserRepository.unfollowUser({
+    followedByUserId: ctx.userId,
+    followingUserId: params.userId,
+  }, ctx, container);
+}
+
+export async function getFollowings(
+  params: { userId: string, offset?: number, limit?: number },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  const users = await UserRepository.getFollowings({
+    userId: params.userId,
+    offset: params.offset ?? 0,
+    limit: params.limit ?? 10,
+  }, ctx, container);
+  return users;
+}
+
+export async function getFollowedBy(
+  params: { userId: string, offset?: number, limit?: number },
+  ctx: AccessContext,
+  container: Container,
+): Promise<UserEntity[]> {
+  const users = await UserRepository.getFollowedBy({
+    userId: params.userId,
+    offset: params.offset ?? 0,
+    limit: params.limit ?? 10,
+  }, ctx, container);
+  return users;
 }
 
 /**

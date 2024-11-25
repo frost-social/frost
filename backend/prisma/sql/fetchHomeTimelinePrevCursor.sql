@@ -2,18 +2,37 @@
 -- @param {String} $2:cursor
 -- @param {Int} $3:limit
 
-SELECT p.*
-FROM
-  "post" AS p,
-  (SELECT x.post_id, x.created_at FROM post AS x WHERE x.post_id = CAST($2 AS UUID)) AS cur
-WHERE p.post_kind = 'timeline'
-  AND CAST($1 AS UUID) = CAST($1 AS UUID)
-  -- カーソル値よりも古いリソースを取得
-  -- 作成日時がカーソル側より前であるかで判定。作成日時が同じ場合はリーフIDがカーソル側より小さいかで判定。
-  AND (
-    p.created_at < cur.created_at
-    OR (p.created_at = cur.created_at AND p.post_id < cur.post_id)
+SELECT leaf.*
+
+FROM "leaf" AS leaf
+
+-- カーソルとして使用するリーフ
+JOIN "leaf" AS curLeaf
+ON curLeaf.leaf_id = CAST($2 AS UUID)
+
+WHERE
+  leaf.leaf_kind = 'timeline'
+  -- 対象ユーザー
+  AND leaf.user_id IN (
+    -- このユーザーがフォローしてる人
+    SELECT user_following.user_id_following
+    FROM "user_following" AS user_following
+    WHERE user_following.user_id_followed_by = CAST($1 AS UUID)
+    UNION ALL
+    -- このユーザー自身
+    SELECT CAST($1 AS UUID)
   )
-ORDER BY p.created_at DESC, p.post_id DESC
+  -- カーソル値よりも古いリソースを取得
+  AND (
+    -- 作成日時がカーソル側より前であるかで判定。
+    leaf.created_at < curLeaf.created_at
+    -- 作成日時が同じ場合はリーフIDがカーソル側より小さいかで判定。
+    OR (
+      leaf.created_at = curLeaf.created_at
+      AND leaf.leaf_id < curLeaf.leaf_id
+    )
+  )
+
+ORDER BY leaf.created_at DESC, leaf.leaf_id DESC
 LIMIT $3
 ;
