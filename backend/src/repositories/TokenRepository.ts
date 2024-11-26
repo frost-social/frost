@@ -58,7 +58,7 @@ export async function get(
   const db = container.get<DB>(TYPES.db);
 
   // トークン情報を取得
-  const t = await db.token.findFirst({
+  const row = await db.token.findFirst({
     where: {
       token: params.token,
     },
@@ -66,14 +66,14 @@ export async function get(
       scopes: true,
     },
   });
-  if (t == null) {
+  if (row == null) {
     return undefined;
   }
 
   return {
-    userId: t.user_id,
-    tokenKind: t.token_kind as TokenKind,
-    scopes: t.scopes.map(x => x.scope_name),
+    userId: row.user_id,
+    tokenKind: row.token_kind as TokenKind,
+    scopes: row.scopes.map(x => x.scope_name),
   };
 }
 
