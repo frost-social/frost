@@ -1,4 +1,3 @@
-import * as sql from "@prisma/client/sql";
 import { Container } from "inversify";
 import { TYPES } from "../container/types";
 import { AccessContext } from "../modules/AccessContext";
@@ -59,16 +58,22 @@ export async function get(
   const db = container.get<DB>(TYPES.db);
 
   // トークン情報を取得
-  const rows = await db.$queryRawTyped(sql.getTokenInfo(params.token));
-  if (rows.length == 0) {
+  const row = await db.token.findFirst({
+    where: {
+      token: params.token,
+    },
+    include: {
+      scopes: true,
+    },
+  });
+  if (row == null) {
     return undefined;
   }
-  const row = rows[0]!;
 
   return {
     userId: row.user_id,
     tokenKind: row.token_kind as TokenKind,
-    scopes: row.scopes ?? [],
+    scopes: row.scopes.map(x => x.scope_name),
   };
 }
 
