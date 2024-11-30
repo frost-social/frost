@@ -1,6 +1,6 @@
 import express from "express";
 import { Container } from "inversify";
-import { UserEntity } from "../entities";
+import { UserObject } from "../valueObject";
 import { authenticate } from "./authentication";
 import { ApiRouteContext } from "./ApiRouteContext";
 
@@ -70,10 +70,10 @@ function createMiddlewareStack<R>(
     }
 
     // ハンドラ用の認証情報
-    let user: UserEntity | undefined;
+    let user: UserObject | undefined;
     let scopes: string[] | undefined;
     if (req.authInfo != null) {
-      user = req.user as UserEntity;
+      user = req.user as UserObject;
       scopes = (req.authInfo as { scope: string[] }).scope;
     }
 

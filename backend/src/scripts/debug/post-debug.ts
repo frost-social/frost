@@ -16,10 +16,10 @@ async function run() {
 
   // debugユーザーを取得。無ければ作る。
   console.log('get debug user');
-  let user = await UserRepository.get({ userName: 'debug' }, ctx, container);
+  let user = await UserRepository.getUser({ userName: 'debug' }, ctx, container);
   if (user == null) {
     console.log('create debug user');
-    user = await UserRepository.create({
+    user = await UserRepository.createUser({
       userName: 'debug',
       displayName: 'Debug',
       passwordAuthEnabled: false,
@@ -35,13 +35,13 @@ async function run() {
   console.log(inspect(createResult, { depth: 10 }));
 
   console.log('get');
-  const getResult = await LeafRepository.get({
+  const getResult = await LeafRepository.getLeaf({
     leafId: createResult.leafId,
   }, ctx, container);
   console.log(inspect(getResult, { depth: 10 }));
 
   console.log('remove');
-  const removeResult = await LeafRepository.remove({
+  const removeResult = await LeafRepository.deleteLeaf({
     leafId: createResult.leafId,
   }, ctx, container);
   console.log(inspect(removeResult, { depth: 10 }));

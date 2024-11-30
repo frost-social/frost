@@ -1,7 +1,7 @@
 import { Container } from "inversify";
 import { AccessContext } from "../modules/AccessContext";
 import { AccessDenied, appError, BadRequest, ResourceNotFound } from "../modules/appErrors";
-import { LeafEntity } from "../modules/entities";
+import { LeafObject } from "../modules/valueObject";
 import * as LeafRepository from "../repositories/LeafRepository";
 
 /**
@@ -11,7 +11,7 @@ export async function createLeaf(
   params: { content: string },
   ctx: AccessContext,
   container: Container,
-): Promise<LeafEntity> {
+): Promise<LeafObject> {
   if (params.content.length < 1) {
     throw appError(new BadRequest([
       { message: 'content invalid.' },
@@ -31,13 +31,13 @@ export async function getLeaf(
   params: { leafId: string },
   ctx: AccessContext,
   container: Container,
-): Promise<LeafEntity> {
+): Promise<LeafObject> {
   if (params.leafId.length < 1) {
     throw appError(new BadRequest([
       { message: 'leafId invalid.' },
     ]));
   }
-  const leaf = await LeafRepository.get({
+  const leaf = await LeafRepository.getLeaf({
     leafId: params.leafId
   }, ctx, container);
   if (leaf == null) {
@@ -61,7 +61,7 @@ export async function deleteLeaf(
   }
 
   // 作成者以外は削除できない
-  const leaf = await LeafRepository.get({
+  const leaf = await LeafRepository.getLeaf({
     leafId: params.leafId
   }, ctx, container);
   if (leaf == null) {
@@ -71,10 +71,7 @@ export async function deleteLeaf(
     throw appError(new AccessDenied());
   }
 
-  const success = await LeafRepository.remove({
+  await LeafRepository.deleteLeaf({
     leafId: params.leafId,
   }, ctx, container);
-  if (!success) {
-    throw appError(new ResourceNotFound("Leaf"));
-  }
 }
