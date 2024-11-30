@@ -2,14 +2,18 @@ import { Container } from "inversify";
 import { TYPES } from "../container/types";
 import { AccessContext } from "../modules/AccessContext";
 import { DB } from "../modules/db";
-import { TokenEntity } from "../modules/entities";
 
 export type TokenKind = "access_token" | "refresh_token";
+
+export type TokenEntity = {
+  token: string;
+  scopes: string[];
+};
 
 /**
  * トークン情報を追加する
 */
-export async function create(
+export async function createToken(
   params: { userId: string, tokenKind: TokenKind, scopes: string[], token: string, },
   ctx: AccessContext,
   container: Container,
@@ -50,7 +54,7 @@ export async function create(
 /**
  * トークン情報を取得する
 */
-export async function get(
+export async function getToken(
   params: { token: string },
   ctx: AccessContext,
   container: Container,
@@ -81,7 +85,7 @@ export async function get(
  * トークン情報を削除する
  * @returns 削除に成功したかどうか
 */
-export async function remove(
+export async function deleteToken(
   params: { token: string },
   ctx: AccessContext,
   container: Container,

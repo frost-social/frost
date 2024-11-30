@@ -6,6 +6,7 @@ import { PrismaClient } from '@prisma/client';
 import { inspect } from 'util';
 import * as UserRepository from '../../repositories/UserRepository';
 import * as LeafRepository from '../../repositories/LeafRepository';
+import * as QueryService from '../../services/QueryService';
 
 async function run() {
   const container = new Container();
@@ -15,10 +16,10 @@ async function run() {
 
   // debugユーザーを取得。無ければ作る。
   console.log('get debug user');
-  let user = await UserRepository.get({ userName: 'debug' }, ctx, container);
+  let user = await UserRepository.getUser({ userName: 'debug' }, ctx, container);
   if (user == null) {
     console.log('create debug user');
-    user = await UserRepository.create({
+    user = await UserRepository.createUser({
       userName: 'debug',
       displayName: 'Debug',
       passwordAuthEnabled: false,
@@ -42,7 +43,7 @@ async function run() {
 
       // fetch leafs
       console.log('タイムライン取得');
-      const leafs = await LeafRepository.fetchHomeTimeline({
+      const leafs = await QueryService.fetchHomeTimeline({
         kind: 'home',
         limit: 8,
       }, ctx, container);

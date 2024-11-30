@@ -2,22 +2,28 @@ import { Container } from "inversify";
 import crypto from "node:crypto";
 import { AccessContext } from "../modules/AccessContext";
 import { appError, BadRequest, ResourceNotFound, Unauthenticated } from "../modules/appErrors";
-import { TokenEntity } from "../modules/entities";
+import { TokenObject } from "../modules/valueObject";
 import * as TokenRepository from "../repositories/TokenRepository";
 import * as UserRepository from "../repositories/UserRepository";
 
 const asciiTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+export type tokenInfoObject = {
+  tokenKind: TokenRepository.TokenKind,
+  userId: string,
+  scopes: string[]
+};
+
 /**
  * トークン情報を追加します。
 */
-export async function create(
+export async function createToken(
   params: { userId: string, tokenKind: TokenRepository.TokenKind, scopes: string[] },
   ctx: AccessContext,
   container: Container,
-): Promise<TokenEntity> {
+): Promise<TokenObject> {
   // ユーザーが存在しないトークンは作成できない
-  const userEntity = await UserRepository.get({
+  const userEntity = await UserRepository.getUser({
     userId: params.userId,
   }, ctx, container);
   if (userEntity == null) {
@@ -28,7 +34,7 @@ export async function create(
 
   // TODO: 一応トークンの重複を確認
 
-  const tokenEntity = await TokenRepository.create({
+  const tokenEntity = await TokenRepository.createToken({
     userId: params.userId,
     tokenKind: params.tokenKind,
     scopes: params.scopes,
@@ -51,7 +57,7 @@ export async function getTokenInfo(
       { message: 'token invalid.' },
     ]));
   }
-  const info = await TokenRepository.get({
+  const info = await TokenRepository.getToken({
     token: params.token,
   }, ctx, container);
   if (info == null) {
@@ -64,7 +70,7 @@ export async function getTokenInfo(
  * トークンの値を生成します。
  * @internal
 */
-export function generateTokenValue(length: number) {
+export function generateTokenValue(length: number): string {
   let token = "";
   for (const byte of crypto.randomBytes(length).values()) {
     token += asciiTable[byte % asciiTable.length];

@@ -22,7 +22,7 @@ async function run() {
 
   const ctx: AccessContext = { userId: BACKEND_URSR_ID };
 
-  const success = await TokenRepository.remove({
+  const success = await TokenRepository.deleteToken({
     token,
   }, ctx, container);
   if (success) {

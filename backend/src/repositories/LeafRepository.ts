@@ -1,10 +1,17 @@
 import { leaf } from "@prisma/client";
-import * as sql from "@prisma/client/sql";
 import { Container } from "inversify";
 import { TYPES } from "../container/types";
 import { AccessContext } from "../modules/AccessContext";
 import { DB } from "../modules/db";
-import { LeafEntity } from "../modules/entities";
+
+export type LeafEntity = {
+  leafId: string,
+  leafKind: string,
+  userId: string,
+  chatRoomId?: string,
+  createdAt: string,
+  content: string,
+};
 
 /**
  * 投稿を作成する
@@ -23,7 +30,7 @@ export async function createTimelineLeaf(
     },
   });
 
-  return mapEntity(row);
+  return toEntity(row);
 }
 
 /**
@@ -44,13 +51,13 @@ export async function createChatLeaf(
     },
   });
 
-  return mapEntity(row);
+  return toEntity(row);
 }
 
 /**
  * 投稿を取得する
 */
-export async function get(
+export async function getLeaf(
   params: { leafId: string },
   ctx: AccessContext,
   container: Container,
@@ -66,54 +73,32 @@ export async function get(
     return undefined;
   }
 
-  return mapEntity(row);
-}
-
-/**
- * タイムラインを取得する\
- * prevCursorとnextCursorはleafIdを指定します。
-*/
-export async function fetchHomeTimeline(
-  params: { kind: string, prevCursor?: string, nextCursor?: string, limit?: number },
-  ctx: AccessContext,
-  container: Container,
-): Promise<LeafEntity[]> {
-  const db = container.get<DB>(TYPES.db);
-  const limit = params.limit ?? 50;
-  if (params.nextCursor != null) {
-    const rows = await db.$queryRawTyped(sql.fetchHomeTimelineNextCursor(ctx.userId, params.nextCursor, limit));
-    rows.reverse();
-    return rows.map(x => mapEntity(x));
-  } else if (params.prevCursor != null) {
-    const rows = await db.$queryRawTyped(sql.fetchHomeTimelinePrevCursor(ctx.userId, params.prevCursor, limit));
-    return rows.map(x => mapEntity(x));
-  } else {
-    const rows = await db.$queryRawTyped(sql.fetchHomeTimelineLatest(ctx.userId, limit));
-    return rows.map(x => mapEntity(x));
-  }
+  return toEntity(row);
 }
 
 /**
  * 投稿を削除する
- * @returns 削除に成功したかどうか
 */
-export async function remove(
+export async function deleteLeaf(
   params: { leafId: string },
   ctx: AccessContext,
   container: Container,
-): Promise<boolean> {
+): Promise<void> {
   const db = container.get<DB>(TYPES.db);
   const result = await db.leaf.deleteMany({
     where: {
       leaf_id: params.leafId,
     },
   });
-  return (result.count > 0);
+  if (result.count == 0) {
+    throw new Error('failed to remove a resource.');
+  }
 }
 
-function mapEntity(row: leaf): LeafEntity {
+export function toEntity(row: leaf): LeafEntity {
   const leaf: LeafEntity = {
     leafId: row.leaf_id,
+    leafKind: row.leaf_kind,
     userId: row.user_id,
     createdAt: row.created_at.toJSON(),
     content: row.content,

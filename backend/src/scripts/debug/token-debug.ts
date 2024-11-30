@@ -17,10 +17,10 @@ async function run() {
 
   // debugユーザーを取得。無ければ作る。
   console.log('get debug user');
-  let user = await UserRepository.get({ userName: 'debug' }, ctx, container);
+  let user = await UserRepository.getUser({ userName: 'debug' }, ctx, container);
   if (user == null) {
     console.log('create debug user');
-    user = await UserRepository.create({
+    user = await UserRepository.createUser({
       userName: 'debug',
       displayName: 'Debug',
       passwordAuthEnabled: false,
@@ -29,7 +29,7 @@ async function run() {
   ctx.userId = user.userId;
 
   console.log('create');
-  const createResult = await TokenRepository.create({
+  const createResult = await TokenRepository.createToken({
     tokenKind: 'access_token',
     scopes: ['user.read', 'user.write'],
     token: await TokenService.generateTokenValue(32),
@@ -39,14 +39,14 @@ async function run() {
   console.log(inspect(createResult, { depth: 10 }));
 
   console.log('get');
-  const getResult = await TokenRepository.get({
+  const getResult = await TokenRepository.getToken({
     token: createResult.token,
   }, ctx, container);
 
   console.log(inspect(getResult, { depth: 10 }));
 
   console.log('remove');
-  const removeResult = await TokenRepository.remove({
+  const removeResult = await TokenRepository.deleteToken({
     token: createResult.token,
   }, ctx, container);
 

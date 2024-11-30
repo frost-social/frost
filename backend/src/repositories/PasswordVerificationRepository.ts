@@ -4,10 +4,18 @@ import { TYPES } from "../container/types";
 import { AccessContext } from "../modules/AccessContext";
 import { DB } from "../modules/db";
 
+export type PasswordVerificationEntity = {
+  userId: string,
+  algorithm: string,
+  salt: string,
+  iteration: number,
+  hash: string,
+};
+
 /*
  * パスワード検証情報を追加する
 */
-export async function create(
+export async function createVerification(
   params: { userId: string, algorithm: string, salt: string, iteration: number, hash: string },
   ctx: AccessContext,
   container: Container,
@@ -29,7 +37,7 @@ export async function create(
 /*
  * パスワード検証情報を取得する
 */
-export async function get(
+export async function getVerification(
   params: { userId: string },
   ctx: AccessContext,
   container: Container,
@@ -48,19 +56,11 @@ export async function get(
   return mapEntity(row);
 }
 
-export type PasswordVerificationEntity = {
-  userId: string,
-  algorithm: string,
-  salt: string,
-  iteration: number,
-  hash: string,
-};
-
 /**
  * パスワード検証情報を削除する
  * @returns 削除に成功したかどうか
 */
-export async function remove(
+export async function deleteVerification(
   params: { userId: string },
   ctx: AccessContext,
   container: Container,
@@ -75,7 +75,7 @@ export async function remove(
   return (result.count > 0);
 }
 
-function mapEntity(row: password_verification): PasswordVerificationEntity {
+export function mapEntity(row: password_verification): PasswordVerificationEntity {
   return {
     userId: row.user_id,
     algorithm: row.algorithm,

@@ -15,10 +15,10 @@ async function run() {
 
   // debugユーザーを取得。無ければ作る。
   console.log('get debug user');
-  let user = await UserRepository.get({ userName: 'debug' }, ctx, container);
+  let user = await UserRepository.getUser({ userName: 'debug' }, ctx, container);
   if (user == null) {
     console.log('create debug user');
-    user = await UserRepository.create({
+    user = await UserRepository.createUser({
       userName: 'debug',
       displayName: 'Debug',
       passwordAuthEnabled: false,
@@ -27,7 +27,7 @@ async function run() {
   ctx.userId = user.userId;
 
   console.log('create');
-  const userResult = await UserRepository.create({
+  const userResult = await UserRepository.createUser({
     userName: 'debuguser',
     displayName: 'debug user',
     passwordAuthEnabled: true,
@@ -40,19 +40,19 @@ async function run() {
   }
 
   console.log('get (userId)');
-  const getResult1 = await UserRepository.get({
+  const getResult1 = await UserRepository.getUser({
     userId: userResult.userId,
   }, ctx, container);
   console.log(inspect(getResult1, { depth: 10 }));
 
   console.log('get (userName)');
-  const getResult2 = await UserRepository.get({
+  const getResult2 = await UserRepository.getUser({
     userName: userResult.userName,
   }, ctx, container);
   console.log(inspect(getResult2, { depth: 10 }));
 
   console.log('remove');
-  const removeResult = await UserRepository.remove({
+  const removeResult = await UserRepository.deleteUser({
     userId: userResult.userId,
   }, ctx, container);
   console.log(inspect(removeResult, { depth: 10 }));

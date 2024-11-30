@@ -1,14 +1,20 @@
 import { user } from "@prisma/client";
 import { AccessContext } from "../modules/AccessContext";
 import { DB } from "../modules/db";
-import { UserEntity } from "../modules/entities";
 import { Container } from "inversify";
 import { TYPES } from "../container/types";
+
+export type UserEntity = {
+  userId: string;
+  userName: string;
+  displayName: string;
+  passwordAuthEnabled: boolean;
+};
 
 /**
  * ユーザーを追加する
 */
-export async function create(
+export async function createUser(
   params: { userName: string, displayName: string, passwordAuthEnabled: boolean },
   ctx: AccessContext,
   container: Container,
@@ -29,7 +35,7 @@ export async function create(
 /**
  * ユーザーを取得する
 */
-export async function get(
+export async function getUser(
   params: { userId?: string, userName?: string },
   ctx: AccessContext,
   container: Container,
@@ -58,7 +64,7 @@ export async function get(
  * ユーザーを削除する
  * @returns 削除に成功したかどうか
 */
-export async function remove(
+export async function deleteUser(
   params: { userId: string },
   ctx: AccessContext,
   container: Container,
@@ -178,7 +184,7 @@ export async function getFollowedBy(
   return rows.map(row => mapEntity(row.user_followed_by));
 }
 
-function mapEntity(row: user): UserEntity {
+export function mapEntity(row: user): UserEntity {
   return {
     userId: row.user_id,
     userName: row.name,
