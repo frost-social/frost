@@ -1,18 +1,16 @@
 import express from 'express';
-import { inject, injectable } from 'inversify';
-import { TYPES } from '../container/types';
 import { ApiVer1Router } from './apiVer1';
+import { DB } from '../modules/db';
 
-@injectable()
 export class RootRouter {
-  constructor(
-    @inject(TYPES.ApiVer1Router) private readonly apiVer1Router: ApiVer1Router
-  ) {}
+  private apiVer1Router: ApiVer1Router = new ApiVer1Router();
 
-  public create() {
+  constructor() {}
+
+  public create(db: DB) {
     const router = express.Router();
 
-    router.use('/api/v1', this.apiVer1Router.create());
+    router.use('/api/v1', this.apiVer1Router.create(db));
 
     return router;
   }

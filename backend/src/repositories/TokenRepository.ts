@@ -1,11 +1,12 @@
-import { Container } from "inversify";
-import { TYPES } from "../container/types";
-import { AccessContext } from "../modules/AccessContext";
+import { AccessInfo } from "../modules/AccessInfo";
 import { DB } from "../modules/db";
+import { token, Prisma, token_scope } from "@prisma/client/";
 
 export type TokenKind = "access_token" | "refresh_token";
 
 export type TokenEntity = {
+  userId: string;
+  tokenKind: TokenKind;
   token: string;
   scopes: string[];
 };
@@ -15,10 +16,14 @@ export type TokenEntity = {
 */
 export async function createToken(
   params: { userId: string, tokenKind: TokenKind, scopes: string[], token: string, },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<TokenEntity> {
-  const db = container.get<DB>(TYPES.db);
+  const tokenScopes: Prisma.token_scopeCreateManyTokenInput[] = params.scopes.map(scope => {
+    return {
+      scope_name: scope,
+    };
+  });
 
   // トークンを登録
   const token = await db.token.create({
@@ -26,29 +31,18 @@ export async function createToken(
       token_kind: params.tokenKind,
       user_id: params.userId,
       token: params.token,
+      scopes: {
+        createMany: {
+          data: tokenScopes,
+        }
+      },
     },
-    select: {
-      token_id: true,
+    include: {
+      scopes: true,
     },
   });
 
-  // トークンの権限を登録
-  if (params.scopes.length > 0) {
-    const tokenScopes: { token_id: string, scope_name: string }[] = params.scopes.map(scope => {
-      return {
-        token_id: token.token_id,
-        scope_name: scope,
-      };
-    });
-    await db.token_scope.createMany({
-      data: tokenScopes,
-    });
-  }
-
-  return {
-    token: params.token,
-    scopes: [...params.scopes],
-  };
+  return mapEntity(token);
 }
 
 /**
@@ -56,11 +50,9 @@ export async function createToken(
 */
 export async function getToken(
   params: { token: string },
-  ctx: AccessContext,
-  container: Container,
-): Promise<{ tokenKind: TokenKind, userId: string, scopes: string[] } | undefined> {
-  const db = container.get<DB>(TYPES.db);
-
+  info: AccessInfo,
+  db: DB,
+): Promise<TokenEntity | undefined> {
   // トークン情報を取得
   const row = await db.token.findFirst({
     where: {
@@ -74,11 +66,7 @@ export async function getToken(
     return undefined;
   }
 
-  return {
-    userId: row.user_id,
-    tokenKind: row.token_kind as TokenKind,
-    scopes: row.scopes.map(x => x.scope_name),
-  };
+  return mapEntity(row);
 }
 
 /**
@@ -87,11 +75,9 @@ export async function getToken(
 */
 export async function deleteToken(
   params: { token: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<boolean> {
-  const db = container.get<DB>(TYPES.db);
-
   const tokenRecord = await db.token.findFirst({
     where: {
       token: params.token,
@@ -122,4 +108,13 @@ export async function deleteToken(
   }
 
   return true;
+}
+
+export function mapEntity(row: token & { scopes: token_scope[] }): TokenEntity {
+  return {
+    userId: row.user_id,
+    tokenKind: row.token_kind as TokenKind,
+    token: row.token,
+    scopes: row.scopes.map(x => x.scope_name),
+  };
 }

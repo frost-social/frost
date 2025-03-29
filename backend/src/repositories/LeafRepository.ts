@@ -1,7 +1,5 @@
 import { leaf } from "@prisma/client";
-import { Container } from "inversify";
-import { TYPES } from "../container/types";
-import { AccessContext } from "../modules/AccessContext";
+import { AccessInfo } from "../modules/AccessInfo";
 import { DB } from "../modules/db";
 
 export type LeafEntity = {
@@ -18,10 +16,9 @@ export type LeafEntity = {
 */
 export async function createTimelineLeaf(
   params: { userId: string, content: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<LeafEntity> {
-  const db = container.get<DB>(TYPES.db);
   const row = await db.leaf.create({
     data: {
       leaf_kind: 'timeline',
@@ -38,10 +35,9 @@ export async function createTimelineLeaf(
 */
 export async function createChatLeaf(
   params: { chatRoomId: string, userId: string, content: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<LeafEntity> {
-  const db = container.get<DB>(TYPES.db);
   const row = await db.leaf.create({
     data: {
       leaf_kind: 'chatroom',
@@ -59,10 +55,9 @@ export async function createChatLeaf(
 */
 export async function getLeaf(
   params: { leafId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<LeafEntity | undefined> {
-  const db = container.get<DB>(TYPES.db);
   const row = await db.leaf.findFirst({
     where: {
       leaf_id: params.leafId,
@@ -81,10 +76,9 @@ export async function getLeaf(
 */
 export async function deleteLeaf(
   params: { leafId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<void> {
-  const db = container.get<DB>(TYPES.db);
   const result = await db.leaf.deleteMany({
     where: {
       leaf_id: params.leafId,

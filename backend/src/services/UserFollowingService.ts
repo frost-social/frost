@@ -1,19 +1,18 @@
-import { Container } from "inversify";
-import { AccessContext } from "../modules/AccessContext";
+import { AccessInfo } from "../modules/AccessInfo";
 import { appError } from "../modules/appErrors";
-import { UserEntity } from "../repositories/UserRepository";
 import * as UserRepository from "../repositories/UserRepository";
 import { UserObject } from "../modules/valueObject";
+import { DB } from "../modules/db";
 
 export async function followUser(
   params: { userId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<void> {
   const relationExisting = await UserRepository.getUserFollowing({
-    followedByUserId: ctx.userId,
+    followedByUserId: info.userId,
     followingUserId: params.userId,
-  }, ctx, container);
+  }, info, db);
 
   // 既にフォローしているユーザーをフォローできない
   if (relationExisting) {
@@ -25,20 +24,20 @@ export async function followUser(
   }
 
   await UserRepository.followUser({
-    followedByUserId: ctx.userId,
+    followedByUserId: info.userId,
     followingUserId: params.userId,
-  }, ctx, container);
+  }, info, db);
 }
 
 export async function unfollowUser(
   params: { userId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<void> {
   const relationExisting = await UserRepository.getUserFollowing({
-    followedByUserId: ctx.userId,
+    followedByUserId: info.userId,
     followingUserId: params.userId,
-  }, ctx, container);
+  }, info, db);
 
   // フォローしていないユーザーをフォロー解除できない
   if (!relationExisting) {
@@ -50,33 +49,33 @@ export async function unfollowUser(
   }
 
   await UserRepository.unfollowUser({
-    followedByUserId: ctx.userId,
+    followedByUserId: info.userId,
     followingUserId: params.userId,
-  }, ctx, container);
+  }, info, db);
 }
 
 export async function getFollowings(
   params: { userId: string, offset?: number, limit?: number },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<UserObject[]> {
   const users = await UserRepository.getFollowings({
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,
-  }, ctx, container);
+  }, info, db);
   return users;
 }
 
 export async function getFollowedBy(
   params: { userId: string, offset?: number, limit?: number },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<UserObject[]> {
   const users = await UserRepository.getFollowedBy({
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,
-  }, ctx, container);
+  }, info, db);
   return users;
 }

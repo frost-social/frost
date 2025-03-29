@@ -1,49 +1,42 @@
 import 'reflect-metadata';
 import { PrismaClient } from '@prisma/client';
-import { Container } from 'inversify';
-import { TYPES } from '../src/container/types';
-import { AccessContext } from '../src/modules/AccessContext';
+import { AccessInfo } from '../src/modules/AccessInfo';
 import * as UserRepository from '../src/repositories/UserRepository';
 import * as TokenService from '../src/services/TokenService';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // setup container
-  const container = new Container();
-  container.bind<Container>(TYPES.Container).toConstantValue(container);
-  container.bind<PrismaClient>(TYPES.db).toConstantValue(prisma);
-
-  const ctx: AccessContext = { userId: '' };
+  const ctx: AccessInfo = { userId: '' };
 
   // create root user
-  let rootUser = await UserRepository.get({ userName: 'root' }, ctx, container);
+  let rootUser = await UserRepository.getUser({ userName: 'root' }, ctx, prisma);
   if (rootUser == null) {
-    rootUser = await UserRepository.create({
+    rootUser = await UserRepository.createUser({
       userName: 'root',
       displayName: 'root',
       passwordAuthEnabled: false,
-    }, ctx, container);
+    }, ctx, prisma);
     console.log('User "root" has been created.');
   }
   ctx.userId = rootUser.userId;
 
   // create public user
-  let publicUser = await UserRepository.get({ userName: 'public' }, ctx, container);
+  let publicUser = await UserRepository.getUser({ userName: 'public' }, ctx, prisma);
   if (publicUser == null) {
-    publicUser = await UserRepository.create({
+    publicUser = await UserRepository.createUser({
       userName: 'public',
       displayName: 'public',
       passwordAuthEnabled: false,
-    }, ctx, container);
+    }, ctx, prisma);
 
     // create token for public
     const scopes = ["user.auth"];
-    await TokenService.create({
+    await TokenService.createToken({
       userId: publicUser.userId,
       tokenKind: "access_token",
       scopes: scopes,
-    }, ctx, container);
+    }, ctx, prisma);
 
     console.log('User "public" has been created.');
   }

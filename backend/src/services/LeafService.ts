@@ -1,16 +1,16 @@
-import { Container } from "inversify";
-import { AccessContext } from "../modules/AccessContext";
+import { AccessInfo } from "../modules/AccessInfo";
 import { AccessDenied, appError, BadRequest, ResourceNotFound } from "../modules/appErrors";
 import { LeafObject } from "../modules/valueObject";
 import * as LeafRepository from "../repositories/LeafRepository";
+import { DB } from "../modules/db";
 
 /**
  * 投稿を作成します。
 */
 export async function createLeaf(
   params: { content: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<LeafObject> {
   if (params.content.length < 1) {
     throw appError(new BadRequest([
@@ -18,9 +18,9 @@ export async function createLeaf(
     ]));
   }
   const leaf = await LeafRepository.createTimelineLeaf({
-    userId: ctx.userId,
+    userId: info.userId,
     content: params.content,
-  }, ctx, container);
+  }, info, db);
   return leaf;
 }
 
@@ -29,8 +29,8 @@ export async function createLeaf(
 */
 export async function getLeaf(
   params: { leafId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<LeafObject> {
   if (params.leafId.length < 1) {
     throw appError(new BadRequest([
@@ -39,7 +39,7 @@ export async function getLeaf(
   }
   const leaf = await LeafRepository.getLeaf({
     leafId: params.leafId
-  }, ctx, container);
+  }, info, db);
   if (leaf == null) {
     throw appError(new ResourceNotFound("Leaf"));
   }
@@ -51,8 +51,8 @@ export async function getLeaf(
 */
 export async function deleteLeaf(
   params: { leafId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<void> {
   if (params.leafId.length < 1) {
     throw appError(new BadRequest([
@@ -63,15 +63,15 @@ export async function deleteLeaf(
   // 作成者以外は削除できない
   const leaf = await LeafRepository.getLeaf({
     leafId: params.leafId
-  }, ctx, container);
+  }, info, db);
   if (leaf == null) {
     throw appError(new ResourceNotFound("Leaf"));
   }
-  if (leaf.userId != ctx.userId) {
+  if (leaf.userId != info.userId) {
     throw appError(new AccessDenied());
   }
 
   await LeafRepository.deleteLeaf({
     leafId: params.leafId,
-  }, ctx, container);
+  }, info, db);
 }
