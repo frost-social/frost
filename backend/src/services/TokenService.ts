@@ -1,10 +1,10 @@
-import { Container } from "inversify";
 import crypto from "node:crypto";
-import { AccessContext } from "../modules/AccessContext";
+import { AccessInfo } from "../modules/AccessInfo";
 import { appError, BadRequest, ResourceNotFound, Unauthenticated } from "../modules/appErrors";
 import { TokenObject } from "../modules/valueObject";
 import * as TokenRepository from "../repositories/TokenRepository";
 import * as UserRepository from "../repositories/UserRepository";
+import { DB } from "../modules/db";
 
 const asciiTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -19,13 +19,13 @@ export type tokenInfoObject = {
 */
 export async function createToken(
   params: { userId: string, tokenKind: TokenRepository.TokenKind, scopes: string[] },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<TokenObject> {
   // ユーザーが存在しないトークンは作成できない
   const userEntity = await UserRepository.getUser({
     userId: params.userId,
-  }, ctx, container);
+  }, info, db);
   if (userEntity == null) {
     throw appError(new ResourceNotFound('user'));
   }
@@ -39,7 +39,7 @@ export async function createToken(
     tokenKind: params.tokenKind,
     scopes: params.scopes,
     token: tokenValue,
-  }, ctx, container);
+  }, info, db);
 
   return tokenEntity;
 }
@@ -49,21 +49,21 @@ export async function createToken(
 */
 export async function getTokenInfo(
   params: { token: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<{ tokenKind: TokenRepository.TokenKind, userId: string, scopes: string[] }> {
   if (params.token.length < 1) {
     throw appError(new BadRequest([
       { message: 'token invalid.' },
     ]));
   }
-  const info = await TokenRepository.getToken({
+  const t = await TokenRepository.getToken({
     token: params.token,
-  }, ctx, container);
-  if (info == null) {
+  }, info, db);
+  if (t == null) {
     throw appError(new Unauthenticated());
   }
-  return info;
+  return t;
 }
 
 /**

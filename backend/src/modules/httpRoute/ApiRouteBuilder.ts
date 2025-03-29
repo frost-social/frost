@@ -1,14 +1,14 @@
 import express from "express";
-import { Container } from "inversify";
 import { UserObject } from "../valueObject";
 import { authenticate } from "./authentication";
 import { ApiRouteContext } from "./ApiRouteContext";
+import { DB } from "../db";
 
 export class ApiRouteBuilder {
   public router: express.Router;
 
   constructor(
-    private container: Container,
+    private db: DB,
   ) {
     this.router = express.Router();
   }
@@ -21,7 +21,7 @@ export class ApiRouteBuilder {
       requestHandler: (ctx: ApiRouteContext) => Promise<R>,
     },
   ) {
-    const middlewares = createMiddlewareStack<R>(params.method, params.scope, this.container, params.requestHandler);
+    const middlewares = createMiddlewareStack<R>(params.method, params.scope, this.db, params.requestHandler);
     switch (params.method) {
       case 'POST': {
         this.router.post(params.path, ...middlewares);
@@ -42,7 +42,7 @@ export class ApiRouteBuilder {
 function createMiddlewareStack<R>(
   method: 'POST' | 'DELETE' | 'GET',
   requiredScope: string | string[] | undefined,
-  container: Container,
+  db: DB,
   handler: (ctx: ApiRouteContext) => Promise<R> | R
 ): express.RequestHandler[] {
   const middlewares: express.RequestHandler[] = [];
@@ -78,7 +78,7 @@ function createMiddlewareStack<R>(
     }
 
     async function asyncHandler() {
-      const returnValue = await handler(new ApiRouteContext(params, container, req, res, user, scopes));
+      const returnValue = await handler(new ApiRouteContext(params, db, req, res, user, scopes));
       // ハンドラ内でレスポンスが設定されなければレスポンスを生成する。
       if (res.statusCode == 0) {
         if (returnValue != null) {

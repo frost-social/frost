@@ -1,7 +1,5 @@
 import { password_verification } from "@prisma/client";
-import { Container } from "inversify";
-import { TYPES } from "../container/types";
-import { AccessContext } from "../modules/AccessContext";
+import { AccessInfo } from "../modules/AccessInfo";
 import { DB } from "../modules/db";
 
 export type PasswordVerificationEntity = {
@@ -17,10 +15,9 @@ export type PasswordVerificationEntity = {
 */
 export async function createVerification(
   params: { userId: string, algorithm: string, salt: string, iteration: number, hash: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<PasswordVerificationEntity> {
-  const db = container.get<DB>(TYPES.db);
   const row = await db.password_verification.create({
     data: {
       user_id: params.userId,
@@ -39,10 +36,9 @@ export async function createVerification(
 */
 export async function getVerification(
   params: { userId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<PasswordVerificationEntity | undefined> {
-  const db = container.get<DB>(TYPES.db);
   const row = await db.password_verification.findFirst({
     where: {
       user_id: params.userId,
@@ -62,10 +58,9 @@ export async function getVerification(
 */
 export async function deleteVerification(
   params: { userId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<boolean> {
-  const db = container.get<DB>(TYPES.db);
   const result = await db.password_verification.deleteMany({
     where: {
       user_id: params.userId,

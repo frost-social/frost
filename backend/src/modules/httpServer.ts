@@ -1,9 +1,8 @@
 import express from "express";
-import { Container } from "inversify";
-import { TYPES } from "../container/types";
 import { RootRouter } from "../routes";
 import { AppError, ErrorObject, ServerError } from "./appErrors";
 import * as auth from "./httpRoute/authentication";
+import { DB } from "./db";
 
 /**
  * 任意のエラー情報を元にREST APIのエラーを組み立てます。
@@ -23,9 +22,7 @@ function buildRestApiError(err: unknown): { error: ErrorObject } {
   };
 }
 
-export async function createHttpServer(container: Container) {
-  const rootRouter = container.get<RootRouter>(TYPES.RootRouter);
-
+export async function createHttpServer(rootRouter: RootRouter, db: DB) {
   const app = express();
   app.disable("x-powered-by");
 
@@ -35,11 +32,11 @@ export async function createHttpServer(container: Container) {
     next();
   });
 
-  auth.configureServer(container);
+  auth.configureServer(db);
 
   app.use(express.json());
 
-  app.use(rootRouter.create());
+  app.use(rootRouter.create(db));
 
   // @ts-ignore
   app.use((err, req, res, next) => {

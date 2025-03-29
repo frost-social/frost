@@ -1,8 +1,6 @@
 import { user } from "@prisma/client";
-import { AccessContext } from "../modules/AccessContext";
+import { AccessInfo } from "../modules/AccessInfo";
 import { DB } from "../modules/db";
-import { Container } from "inversify";
-import { TYPES } from "../container/types";
 
 export type UserEntity = {
   userId: string;
@@ -16,11 +14,9 @@ export type UserEntity = {
 */
 export async function createUser(
   params: { userName: string, displayName: string, passwordAuthEnabled: boolean },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ) {
-  const db = container.get<DB>(TYPES.db);
-
   const row = await db.user.create({
     data: {
       name: params.userName,
@@ -37,11 +33,9 @@ export async function createUser(
 */
 export async function getUser(
   params: { userId?: string, userName?: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<UserEntity | undefined> {
-  const db = container.get<DB>(TYPES.db);
-
   if ([params.userId, params.userName].every(x => x == null)) {
     throw new Error("invalid condition");
   }
@@ -66,11 +60,9 @@ export async function getUser(
 */
 export async function deleteUser(
   params: { userId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<boolean> {
-  const db = container.get<DB>(TYPES.db);
-
   const result = await db.user.deleteMany({
     where: {
       user_id: params.userId,
@@ -85,11 +77,9 @@ export async function deleteUser(
 */
 export async function getUserFollowing(
   params: { followedByUserId: string, followingUserId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<boolean> {
-  const db = container.get<DB>(TYPES.db);
-
   const row = await db.user_following.findUnique({
     where: {
       user_id_followed_by_user_id_following: {
@@ -107,11 +97,9 @@ export async function getUserFollowing(
 */
 export async function followUser(
   params: { followedByUserId: string, followingUserId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<void> {
-  const db = container.get<DB>(TYPES.db);
-
   await db.user_following.create({
     data: {
       user_id_followed_by: params.followedByUserId,
@@ -125,11 +113,9 @@ export async function followUser(
 */
 export async function unfollowUser(
   params: { followedByUserId: string, followingUserId: string },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<void> {
-  const db = container.get<DB>(TYPES.db);
-
   await db.user_following.delete({
     where: {
       user_id_followed_by_user_id_following: {
@@ -145,11 +131,9 @@ export async function unfollowUser(
 */
 export async function getFollowings(
   params: { userId: string, offset: number, limit: number },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<UserEntity[]> {
-  const db = container.get<DB>(TYPES.db);
-
   const rows = await db.user_following.findMany({
     where: {
       user_id_followed_by: params.userId,
@@ -167,11 +151,9 @@ export async function getFollowings(
 */
 export async function getFollowedBy(
   params: { userId: string, offset: number, limit: number },
-  ctx: AccessContext,
-  container: Container,
+  info: AccessInfo,
+  db: DB,
 ): Promise<UserEntity[]> {
-  const db = container.get<DB>(TYPES.db);
-
   const rows = await db.user_following.findMany({
     where: {
       user_id_following: params.userId,

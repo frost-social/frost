@@ -1,6 +1,4 @@
-import { Container, inject, injectable } from 'inversify';
 import z from 'zod';
-import { TYPES } from '../container/types';
 import { appError, EndpointNotFound } from '../modules/appErrors';
 import { ApiRouteBuilder } from '../modules/httpRoute/ApiRouteBuilder';
 import { corsApi } from '../modules/httpRoute/cors';
@@ -9,18 +7,16 @@ import * as LeafService from '../services/LeafService';
 import * as UserService from '../services/UserService';
 import * as UserFollowingService from '../services/UserFollowingService';
 import * as QueryService from '../services/QueryService';
+import { DB } from '../modules/db';
 
 const zUuid = z.string().length(36);
 const zNumericString = z.string().regex(/^[+-]?\d*\.?\d+$/, { message: 'invalid numeric string' });
 
-@injectable()
 export class ApiVer1Router {
-  constructor(
-    @inject(TYPES.Container) private readonly container: Container,
-  ) {}
+  constructor() {}
 
-  public create() {
-    const builder = new ApiRouteBuilder(this.container);
+  public create(db: DB) {
+    const builder = new ApiRouteBuilder(db);
 
     builder.router.use(corsApi());
 
@@ -35,7 +31,7 @@ export class ApiVer1Router {
             password: z.string().min(1).optional(),
           })
         );
-        const result = await UserService.signin(params, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await UserService.signin(params, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -52,7 +48,7 @@ export class ApiVer1Router {
             displayName: z.string().min(1),
           })
         );
-        const result = await UserService.signup(params, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await UserService.signup(params, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -93,7 +89,7 @@ export class ApiVer1Router {
             content: z.string().min(1),
           })
         );
-        const result = await LeafService.createLeaf(params, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await LeafService.createLeaf(params, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -108,7 +104,7 @@ export class ApiVer1Router {
             leafId: zUuid,
           })
         );
-        await LeafService.deleteLeaf(params, { userId: ctx.getUser().userId }, ctx.container);
+        await LeafService.deleteLeaf(params, { userId: ctx.getUser().userId }, ctx.db);
       },
     });
 
@@ -122,7 +118,7 @@ export class ApiVer1Router {
             leafId: zUuid,
           })
         );
-        const result = await LeafService.getLeaf(params, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await LeafService.getLeaf(params, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -155,7 +151,7 @@ export class ApiVer1Router {
             userId: zUuid,
           })
         );
-        await UserFollowingService.followUser(params, { userId: ctx.getUser().userId }, ctx.container);
+        await UserFollowingService.followUser(params, { userId: ctx.getUser().userId }, ctx.db);
       },
     });
 
@@ -176,7 +172,7 @@ export class ApiVer1Router {
           offset: (params.offset != null ? Number(params.offset) : undefined),
           limit: (params.limit != null ? Number(params.limit) : undefined),
         };
-        const result = await UserFollowingService.getFollowings(params2, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await UserFollowingService.getFollowings(params2, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -198,7 +194,7 @@ export class ApiVer1Router {
           offset: (params.offset != null ? Number(params.offset) : undefined),
           limit: (params.limit != null ? Number(params.limit) : undefined),
         };
-        const result = await UserFollowingService.getFollowedBy(params2, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await UserFollowingService.getFollowedBy(params2, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -220,7 +216,7 @@ export class ApiVer1Router {
           ...params,
           limit: Number(params.limit),
         };
-        const result = await QueryService.fetchHomeTimeline(params2, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await QueryService.fetchHomeTimeline(params2, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -236,7 +232,7 @@ export class ApiVer1Router {
             userName: z.string().min(1).optional(),
           })
         );
-        const result = await UserService.getUser(params, { userId: ctx.getUser().userId }, ctx.container);
+        const result = await UserService.getUser(params, { userId: ctx.getUser().userId }, ctx.db);
         return result;
       },
     });
@@ -260,7 +256,7 @@ export class ApiVer1Router {
             userId: zUuid,
           })
         );
-        await UserFollowingService.unfollowUser(params, { userId: ctx.getUser().userId }, ctx.container);
+        await UserFollowingService.unfollowUser(params, { userId: ctx.getUser().userId }, ctx.db);
       },
     });
 

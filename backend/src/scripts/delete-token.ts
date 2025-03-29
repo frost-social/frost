@@ -1,9 +1,5 @@
-import { Container } from 'inversify';
-import { BACKEND_URSR_ID } from '../constants/specialUserId';
-import { setupContainer } from '../container/inversify.config';
-import { TYPES } from '../container/types';
 import * as TokenRepository from '../repositories/TokenRepository';
-import { AccessContext } from '../modules/AccessContext';
+import { AccessInfo } from '../modules/AccessInfo';
 import { PrismaClient } from '@prisma/client';
 
 async function run() {
@@ -13,18 +9,13 @@ async function run() {
     return;
   }
 
-  // setup container
-  const container = new Container();
-  setupContainer(container);
+  const db = new PrismaClient();
 
-  // get instance
-  const db = container.get<PrismaClient>(TYPES.db);
-
-  const ctx: AccessContext = { userId: BACKEND_URSR_ID };
+  const info: AccessInfo = { userId: 'internal' };
 
   const success = await TokenRepository.deleteToken({
     token,
-  }, ctx, container);
+  }, info, db);
   if (success) {
     console.log(`トークン'${token}'を削除しました`);
   } else {

@@ -2,14 +2,14 @@ import express from "express";
 import z from 'zod';
 import { UserObject } from "../valueObject";
 import { appError, BadRequest } from "../appErrors";
-import { Container } from "inversify";
+import { DB } from "../db";
 
 export class ApiRouteContext {
   private _user: UserObject | undefined;
   private _scopes: string[] | undefined;
   constructor(
     public params: unknown,
-    public container: Container,
+    public db: DB,
     public req: express.Request,
     public res: express.Response,
     user: UserObject | undefined,
