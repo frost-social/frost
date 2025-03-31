@@ -4,11 +4,11 @@
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
   "postCreateCommand": "/workspace/.devcontainer/post_create.sh",
-  "remoteUser": "ubuntu",
+  "remoteUser": "vscode",
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
   "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/ubuntu/.ssh,readonly,type=bind"
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,uid=1000,gid=1000"
   ],
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
