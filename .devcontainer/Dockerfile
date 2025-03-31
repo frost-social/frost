@@ -12,7 +12,7 @@ FROM mcr.microsoft.com/devcontainers/base:noble AS devcontainer
 RUN apt-get update
 
 # Add sudoers (for post_create_custom.sh)
-RUN echo "ubuntu ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/ubuntu
+RUN echo "vscode ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/vscode
 
 # Install network tools
 RUN apt-get install -y iputils-ping net-tools
