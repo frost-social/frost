@@ -21,6 +21,12 @@ BACKEND_PACKAGE_PATH="${WORKSPACE_PATH}/backend"
 FRONTEND_PACKAGE_PATH="${WORKSPACE_PATH}/frontend"
 CUSTOM_POST_CREATE_SCRIPT_PATH="${WORKSPACE_PATH}/.devcontainer/post_create_custom.sh"
 
+# SSH ディレクトリのパーミッションを設定
+chmod 700 /home/vscode/.ssh
+find /home/vscode/.ssh -type f -exec chmod 600 {} \;
+find /home/vscode/.ssh -name "*.pub" -exec chmod 644 {} \;
+chown -R vscode:vscode /home/vscode/.ssh
+
 # 各パッケージの package.json を参照して pnpm と依存関係をインストールする
 echo "Install spec dependencies..."
 cd "$SPEC_PACKAGE_PATH"
