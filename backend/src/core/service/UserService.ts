@@ -1,12 +1,12 @@
 import crypto from "node:crypto";
 import { components } from '../../../openapi/generated/schema';
 import { DB } from "../database";
-import { BadRequest, ResourceNotFound, RestError } from "../errors";
 import * as PasswordVerificationRepository from "../repository/PasswordVerificationRepository";
 import { PasswordVerificationEntity } from "../repository/PasswordVerificationRepository";
 import * as UserRepository from "../repository/UserRepository";
 import { AccessInfo } from "../service";
 import * as TokenService from "./TokenService";
+import { BadRequest, ResourceNotFound, RestError } from "../restApi";
 
 export type UserObject = components['schemas']['Api.v1.User'];
 export type AuthResultObject = components['schemas']['Api.v1.AuthInfo'];

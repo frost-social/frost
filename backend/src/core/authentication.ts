@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
-import { AccessDenied, RestError, Unauthenticated } from "./errors";
+import { AccessDenied, RestError, Unauthenticated } from "./restApi";
 import * as TokenService from "./service/TokenService";
 import * as UserService from "./service/UserService";
 import { DB } from "./database";

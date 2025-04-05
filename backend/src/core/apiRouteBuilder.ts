@@ -2,7 +2,7 @@ import express from "express";
 import z from 'zod';
 import * as authentication from "./authentication";
 import { DB } from "./database";
-import { BadRequest, RestError } from "./errors";
+import { BadRequest, RestError } from "./restApi";
 import { UserObject } from "./service/UserService";
 
 export function registerRoute<R>(

@@ -1,5 +1,5 @@
 import { AccessInfo, DB } from "../core";
-import { RestError } from "../core/errors";
+import { RestError } from "../core/restApi";
 import * as UserRepository from "../core/repository/UserRepository";
 import { UserObject } from "../core/service/UserService";
 

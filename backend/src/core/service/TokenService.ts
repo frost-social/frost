@@ -1,10 +1,10 @@
 import crypto from "node:crypto";
 import { components } from '../../../openapi/generated/schema';
 import { DB } from "../database";
-import { BadRequest, ResourceNotFound, RestError, Unauthenticated } from "../errors";
 import * as TokenRepository from "../repository/TokenRepository";
 import * as UserRepository from "../repository/UserRepository";
 import { AccessInfo } from "../service";
+import { BadRequest, ResourceNotFound, RestError, Unauthenticated } from "../restApi";
 
 const asciiTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

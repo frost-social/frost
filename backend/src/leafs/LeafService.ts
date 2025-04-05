@@ -1,6 +1,6 @@
 import { components } from '../../openapi/generated/schema';
 import { AccessInfo, DB } from "../core";
-import { AccessDenied, BadRequest, ResourceNotFound, RestError } from "../core/errors";
+import { AccessDenied, BadRequest, ResourceNotFound, RestError } from "../core/restApi";
 import * as LeafRepository from "./LeafRepository";
 
 export type LeafObject = components['schemas']['Api.v1.Leaf'];
