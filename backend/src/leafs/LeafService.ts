@@ -1,8 +1,9 @@
-import { AccessInfo } from "../modules/AccessInfo";
-import { AccessDenied, appError, BadRequest, ResourceNotFound } from "../modules/appErrors";
-import { LeafObject } from "../modules/valueObject";
-import * as LeafRepository from "../repositories/LeafRepository";
-import { DB } from "../modules/db";
+import { components } from '../../openapi/generated/schema';
+import { AccessInfo, DB } from "../core";
+import { AccessDenied, BadRequest, ResourceNotFound, RestError } from "../core/restApi";
+import * as LeafRepository from "./LeafRepository";
+
+export type LeafObject = components['schemas']['Api.v1.Leaf'];
 
 /**
  * 投稿を作成します。
@@ -13,7 +14,7 @@ export async function createLeaf(
   db: DB,
 ): Promise<LeafObject> {
   if (params.content.length < 1) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: 'content invalid.' },
     ]));
   }
@@ -33,7 +34,7 @@ export async function getLeaf(
   db: DB,
 ): Promise<LeafObject> {
   if (params.leafId.length < 1) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: 'leafId invalid.' },
     ]));
   }
@@ -41,7 +42,7 @@ export async function getLeaf(
     leafId: params.leafId
   }, info, db);
   if (leaf == null) {
-    throw appError(new ResourceNotFound("Leaf"));
+    throw new RestError(new ResourceNotFound("Leaf"));
   }
   return leaf;
 }
@@ -55,7 +56,7 @@ export async function deleteLeaf(
   db: DB,
 ): Promise<void> {
   if (params.leafId.length < 1) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: 'leafId invalid.' },
     ]));
   }
@@ -65,10 +66,10 @@ export async function deleteLeaf(
     leafId: params.leafId
   }, info, db);
   if (leaf == null) {
-    throw appError(new ResourceNotFound("Leaf"));
+    throw new RestError(new ResourceNotFound("Leaf"));
   }
   if (leaf.userId != info.userId) {
-    throw appError(new AccessDenied());
+    throw new RestError(new AccessDenied());
   }
 
   await LeafRepository.deleteLeaf({
