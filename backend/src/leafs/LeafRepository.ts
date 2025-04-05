@@ -1,6 +1,5 @@
 import { leaf } from "@prisma/client";
-import { AccessInfo } from "../modules/AccessInfo";
-import { DB } from "../modules/db";
+import { AccessInfo, DB } from "../core";
 
 export type LeafEntity = {
   leafId: string,

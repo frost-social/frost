@@ -1,12 +1,15 @@
 import crypto from "node:crypto";
-import { AccessInfo } from "../modules/AccessInfo";
-import { appError, BadRequest, ResourceNotFound } from "../modules/appErrors";
-import { AuthResultObject, UserObject } from "../modules/valueObject";
-import * as UserRepository from "../repositories/UserRepository";
-import * as PasswordVerificationRepository from "../repositories/PasswordVerificationRepository";
-import { PasswordVerificationEntity } from "../repositories/PasswordVerificationRepository";
+import { components } from '../../../openapi/generated/schema';
+import { DB } from "../database";
+import { BadRequest, ResourceNotFound, RestError } from "../errors";
+import * as PasswordVerificationRepository from "../repository/PasswordVerificationRepository";
+import { PasswordVerificationEntity } from "../repository/PasswordVerificationRepository";
+import * as UserRepository from "../repository/UserRepository";
+import { AccessInfo } from "../service";
 import * as TokenService from "./TokenService";
-import { DB } from "../modules/db";
+
+export type UserObject = components['schemas']['Api.v1.User'];
+export type AuthResultObject = components['schemas']['Api.v1.AuthInfo'];
 
 /**
  * ユーザーを登録します。
@@ -18,13 +21,13 @@ export async function signup(
   db: DB,
 ): Promise<AuthResultObject> {
   if (params.userName.length < 5) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: 'userName invalid.' },
     ]));
   }
 
   if (params.password == null) {
-    throw appError({
+    throw new RestError({
       code: "authMethodRequired",
       message: "Authentication method required.",
       status: 400,
@@ -69,7 +72,7 @@ export async function signin(
   db: DB,
 ): Promise<AuthResultObject> {
   if (params.userName.length < 1) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: 'userName invalid.' },
     ]));
   }
@@ -79,12 +82,12 @@ export async function signin(
   }, info, db);
 
   if (user == null) {
-    throw appError(new ResourceNotFound("User"));
+    throw new RestError(new ResourceNotFound("User"));
   }
 
   if (user.passwordAuthEnabled) {
     if (params.password == null || params.password.length < 1) {
-      throw appError(new BadRequest([
+      throw new RestError(new BadRequest([
         { message: 'password invalid.' },
       ]));
     }
@@ -93,7 +96,7 @@ export async function signin(
       password: params.password,
     }, info, db);
     if (!verification) {
-      throw appError({
+      throw new RestError({
         code: "incorrectCredential",
         message: "The userName and/or password is incorrect.",
         status: 401,
@@ -125,7 +128,7 @@ export async function registerPassword(
   db: DB,
 ): Promise<void> {
   if (params.password.length < 8) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: 'password invalid.' },
     ]));
   }
@@ -145,7 +148,7 @@ export async function verifyPassword(
   db: DB,
 ): Promise<boolean> {
   if (params.password.length < 1) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: 'password invalid.' },
     ]));
   }
@@ -221,7 +224,7 @@ export async function getUser(
 ): Promise<UserObject> {
   // either userId or userName must be specified
   if ([params.userId, params.userName].every(x => x == null)) {
-    throw appError(new BadRequest([
+    throw new RestError(new BadRequest([
       { message: "Please specify the userId or userName." },
     ]));
   }
@@ -232,7 +235,7 @@ export async function getUser(
   }, info, db);
 
   if (userEntity == null) {
-    throw appError(new ResourceNotFound("User"));
+    throw new RestError(new ResourceNotFound("User"));
   }
 
   return userEntity;
@@ -251,6 +254,6 @@ export async function deleteUser(
   }, info, db);
 
   if (!success) {
-    throw appError(new ResourceNotFound("User"));
+    throw new RestError(new ResourceNotFound("User"));
   }
 }

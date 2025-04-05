@@ -1,8 +1,7 @@
-import { AccessInfo } from "../modules/AccessInfo";
-import { appError } from "../modules/appErrors";
-import * as UserRepository from "../repositories/UserRepository";
-import { UserObject } from "../modules/valueObject";
-import { DB } from "../modules/db";
+import { AccessInfo, DB } from "../core";
+import { RestError } from "../core/errors";
+import * as UserRepository from "../core/repository/UserRepository";
+import { UserObject } from "../core/service/UserService";
 
 export async function followUser(
   params: { userId: string },
@@ -16,7 +15,7 @@ export async function followUser(
 
   // 既にフォローしているユーザーをフォローできない
   if (relationExisting) {
-    throw appError({
+    throw new RestError({
       code: "userAlreadyFollowing",
       message: "specified user already following.",
       status: 400,
@@ -41,7 +40,7 @@ export async function unfollowUser(
 
   // フォローしていないユーザーをフォロー解除できない
   if (!relationExisting) {
-    throw appError({
+    throw new RestError({
       code: "userNotFollowing",
       message: "specified user not following.",
       status: 400,

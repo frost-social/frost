@@ -1,12 +1,12 @@
 import express from "express";
 import passport from "passport";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
-import * as TokenService from "../../services/TokenService";
-import * as UserService from "../../services/UserService";
-import { AccessDenied, appError, Unauthenticated } from "../appErrors";
-import { DB } from "../db";
+import { AccessDenied, RestError, Unauthenticated } from "./errors";
+import * as TokenService from "./service/TokenService";
+import * as UserService from "./service/UserService";
+import { DB } from "./database";
 
-export function configureServer(db: DB) {
+export function configure(db: DB) {
   passport.use(new BearerStrategy(async (token, done) => {
     try {
       const info = { userId: 'internal' };
@@ -14,7 +14,7 @@ export function configureServer(db: DB) {
         token
       }, info, db);
       if (tokenInfo.tokenKind != "access_token") {
-        return done(appError(new Unauthenticated()));
+        return done(new RestError(new Unauthenticated()));
       }
       const user = await UserService.getUser({
         userId: tokenInfo.userId
@@ -26,7 +26,7 @@ export function configureServer(db: DB) {
   }));
 }
 
-export function authenticate(scope: string | string[]) {
+export function getMiddlewares(scope: string | string[]) {
   const authBearer = passport.authenticate("bearer", { session: false });
 
   const checkScopes = (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -39,7 +39,7 @@ export function authenticate(scope: string | string[]) {
     // check all required scopes
     for (const requiredScope of requiredScopes) {
       if (!(req.authInfo as { scope: string[] }).scope.includes(requiredScope)) {
-        next(appError(new AccessDenied()));
+        next(new RestError(new AccessDenied()));
         return;
       }
     }
