@@ -1,0 +1,42 @@
+[name "テスト用"]
+GET /echo {
+  [name "認証情報"]
+  header Authorization: string;
+
+  query {
+    [name "メッセージ"]
+    [description "返答するメッセージを設定します。"]
+    field message: string;
+  }
+
+  [name "OK"]
+  [description "リクエスト成功"]
+  [format json]
+  200 response: {};
+
+  [name "無効なリクエスト"]
+  [format json]
+  400 response: {};
+}
+
+[name "テスト用"]
+POST /echo {
+  [name "認証情報"]
+  header Authorization: string;
+
+  [format json]
+  body {
+    [name "メッセージ"]
+    [description "返答するメッセージを設定します。"]
+    field message: string;
+  }
+
+  [name "OK"]
+  [description "リクエスト成功"]
+  [format json]
+  200 response: {};
+
+  [name "無効なリクエスト"]
+  [format json]
+  400 response: {};
+}
