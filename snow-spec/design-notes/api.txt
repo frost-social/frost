@@ -12,11 +12,11 @@ GET /echo {
   [name "OK"]
   [description "リクエスト成功"]
   [format json]
-  200 response: {};
+  response 200: {};
 
   [name "無効なリクエスト"]
   [format json]
-  400 response: {};
+  response 400: {};
 }
 
 [name "テスト用"]
@@ -34,9 +34,9 @@ POST /echo {
   [name "OK"]
   [description "リクエスト成功"]
   [format json]
-  200 response: {};
+  response 200: {};
 
   [name "無効なリクエスト"]
   [format json]
-  400 response: {};
+  response 400: {};
 }

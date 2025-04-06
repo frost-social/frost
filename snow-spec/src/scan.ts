@@ -1,51 +1,3 @@
-export type Token = {
-  kind: TokenKind,
-  value: string | undefined,
-};
-
-export function TOKEN(kind: TokenKind, value?: string): Token {
-  return {
-    kind,
-    value,
-  };
-}
-
-export enum TokenKind {
-  EOF,
-  Word,
-  NumberLiteral,
-
-  /** "(" */
-  OpenParen,
-
-  /** ")" */
-  CloseParen,
-
-  /** "," */
-  Comma,
-
-  /** ":" */
-  Colon,
-
-  /** ";" */
-  SemiColon,
-
-  /** "=" */
-  Eq,
-
-  /** "[" */
-  OpenBracket,
-
-  /** "]" */
-  CloseBracket,
-
-  /** "{" */
-  OpenBrace,
-
-  /** "}" */
-  CloseBrace,
-}
-
 const digit = /^[0-9]$/;
 const wordChar = /^[A-Za-z0-9_]$/;
 
@@ -53,10 +5,9 @@ export class Scanner {
   private input: string | undefined;
   private nextOffset: number = 0;
   private _bufChar: string = '';
-
-  column: number = 1;
-  line: number = 1;
-  token: Token | undefined;
+  private column: number = 1;
+  private line: number = 1;
+  token: Token = TOKEN(TokenKind.EOF);
   error: string | undefined;
 
   initialize(input: string) {
@@ -65,7 +16,7 @@ export class Scanner {
     this._bufChar = '';
     this.column = 1;
     this.line = 1;
-    this.token = undefined;
+    this.token = TOKEN(TokenKind.EOF);
     this.error = undefined;
   }
 
@@ -100,7 +51,6 @@ export class Scanner {
     if (this.input == null) {
       throw new Error("not initialized");
     }
-    this.token = undefined;
     while (true) {
       this.readChar();
       if (this.char() == '') {
@@ -297,4 +247,52 @@ export class Scanner {
       }
     }
   }
+}
+
+export type Token = {
+  kind: TokenKind,
+  value: string | undefined,
+};
+
+export function TOKEN(kind: TokenKind, value?: string): Token {
+  return {
+    kind,
+    value,
+  };
+}
+
+export enum TokenKind {
+  EOF,
+  Word,
+  NumberLiteral,
+
+  /** "(" */
+  OpenParen,
+
+  /** ")" */
+  CloseParen,
+
+  /** "," */
+  Comma,
+
+  /** ":" */
+  Colon,
+
+  /** ";" */
+  SemiColon,
+
+  /** "=" */
+  Eq,
+
+  /** "[" */
+  OpenBracket,
+
+  /** "]" */
+  CloseBracket,
+
+  /** "{" */
+  OpenBrace,
+
+  /** "}" */
+  CloseBrace,
 }
