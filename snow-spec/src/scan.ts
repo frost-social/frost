@@ -1,16 +1,16 @@
-type Token = {
+export type Token = {
   kind: TokenKind,
   value: string | undefined,
 };
 
-function TOKEN(kind: TokenKind, value?: string): Token {
+export function TOKEN(kind: TokenKind, value?: string): Token {
   return {
     kind,
     value,
   };
 }
 
-enum TokenKind {
+export enum TokenKind {
   EOF,
   Word,
   NumberLiteral,
@@ -252,6 +252,7 @@ export class Scanner {
       }
 
       this.error = `Unexpected char: '${this.char()}' ${this.line}:${this.column}`;
+      return;
     }
   }
 
