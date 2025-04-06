@@ -84,6 +84,10 @@ export class Scanner {
           this.line += 1;
           continue;
 
+        case "\"":
+          this.scanStringLiteral();
+          return;
+
         case "(":
           this.column += 1;
           this.token = TOKEN(TokenKind.OpenBrace);
@@ -211,6 +215,27 @@ export class Scanner {
     throw new Error("not implemented yet");
   }
 
+  private scanStringLiteral() {
+    //beginLocation = new TokenLocation(this.column, this.line);
+    let value = "";
+    while (true) {
+      const ch = this.peekChar();
+      if (ch == '') {
+        throw new Error("unexpected EOF");
+      }
+      if (ch == "\"") {
+        this.readChar();
+        break;
+      }
+
+      this.readChar();
+      value += ch;
+      this.column += 1;
+    }
+
+    this.token = TOKEN(TokenKind.StringLiteral, value);
+  }
+
   private skipCommentLine(): void {
     while (true) {
       this.readChar();
@@ -266,6 +291,7 @@ export enum TokenKind {
   EOF,
   Word,
   NumberLiteral,
+  StringLiteral,
 
   /** "(" */
   OpenParen,

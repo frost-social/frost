@@ -3,45 +3,45 @@ type ErrorResponse = {
   message: string
 };
 
-[name]
+[name "テスト用"]
 GET /echo {
-  [name]
+  [name "認証情報"]
   header Authorization: string;
 
   query {
-    [name]
-    [description]
+    [name "メッセージ"]
+    [description "返答するメッセージを設定します。"]
     field message: string;
   }
 
-  [name]
-  [description]
-  [format]
+  [name "OK"]
+  [description "リクエスト成功"]
+  [format "json"]
   response 200: {};
 
-  [name]
-  [format]
+  [name "無効なリクエスト"]
+  [format "json"]
   response 400: ErrorResponse;
 }
 
-[name]
+[name "テスト用"]
 POST /echo {
-  [name]
+  [name "認証情報"]
   header Authorization: string;
 
-  [format]
+  [format "json"]
   body {
-    [name]
-    [description]
+    [name "メッセージ"]
+    [description "返答するメッセージを設定します。"]
     field message: string;
   }
 
-  [name]
-  [description]
-  [format]
+  [name "OK"]
+  [description "リクエスト成功"]
+  [format "json"]
   response 200: {};
 
-  [name]
-  [format]
+  [name "無効なリクエスト"]
+  [format "json"]
   response 400: ErrorResponse;
 }

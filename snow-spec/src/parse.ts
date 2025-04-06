@@ -1,9 +1,10 @@
 import { Scanner, TokenKind } from "./scan";
 
-type N = NFile | NAttr | NRoute | NHeader | NQuery | NBody | NField | NResponse | NRefType | NObjectType | NTypeDecl;
+type N = NFile | NAttr | NRoute | NHeader | NQuery | NBody | NField | NResponse | NRefType | NObjectType | NNumberValue | NBoolValue | NStringValue | NTypeDecl;
 type NFileMember = NRoute | NTypeDecl;
 type NRouteMember = NHeader | NQuery | NBody | NResponse | NTypeDecl;
 type NType = NRefType | NObjectType;
+type NValue = NNumberValue | NBoolValue | NStringValue;
 
 type NFile = {
   kind: 'file',
@@ -13,7 +14,7 @@ type NFile = {
 type NAttr = {
   kind: 'attr',
   key: string,
-  value: N | undefined,
+  value: NValue | undefined,
 };
 
 type NRoute = {
@@ -72,6 +73,21 @@ type NObjectField = {
   value: NType,
 };
 
+type NNumberValue = {
+  kind: "numberValue",
+  value: string,
+};
+
+type NBoolValue = {
+  kind: "boolValue",
+  value: string,
+};
+
+type NStringValue = {
+  kind: "stringValue",
+  value: string,
+};
+
 type NTypeDecl = {
   kind: "typeDecl",
   name: string,
@@ -117,7 +133,10 @@ function parseAttr(p: Parser): NAttr {
   const key = p.getValue();
   p.next();
 
-  // TODO: parseLiteral
+  let value;
+  if (!p.match(TokenKind.CloseBracket)) {
+    value = parseValue(p);
+  }
 
   p.nextWith(TokenKind.CloseBracket);
   p.throwIfExistErrors();
@@ -125,7 +144,7 @@ function parseAttr(p: Parser): NAttr {
   return {
     kind: "attr",
     key: key,
-    value: undefined,
+    value: value,
   };
 }
 
@@ -390,6 +409,34 @@ function parseObjectField(p: Parser): NObjectField {
     name: name,
     value: type,
   };
+}
+
+function parseValue(p: Parser): NValue {
+  if (p.match(TokenKind.StringLiteral)) {
+    const value = p.getValue();
+    p.next();
+    return {
+      kind: "stringValue",
+      value: value,
+    };
+  }
+  if (p.match("true") || p.match("false")) {
+    const value = p.getValue();
+    p.next();
+    return {
+      kind: "boolValue",
+      value: value,
+    };
+  }
+  if (p.match(TokenKind.NumberLiteral)) {
+    const value = p.getValue();
+    p.next();
+    return {
+      kind: "numberValue",
+      value: value,
+    };
+  }
+  throw new Error("unexpected token");
 }
 
 function parseTypeDecl(p: Parser): NTypeDecl {
