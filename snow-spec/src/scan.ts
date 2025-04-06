@@ -49,11 +49,9 @@ enum TokenKind {
 const digit = /^[0-9]$/;
 const wordChar = /^[A-Za-z0-9_]$/;
 
-// NOTE: なんかもうよく分からん
-
 export class Scanner {
   private input: string | undefined;
-  private offset: number;
+  private nextOffset: number;
   private _bufChar: string | undefined;
 
   column: number;
@@ -63,7 +61,7 @@ export class Scanner {
 
   initialize(input: string) {
     this.input = input;
-    this.offset = 0;
+    this.nextOffset = 0;
     this._bufChar = undefined;
     this.column = 1;
     this.line = 1;
@@ -72,22 +70,22 @@ export class Scanner {
   }
 
   /**
-   * 現在offsetが指している文字を退避し、offsetを次の位置へ移動させる。
+   * 次の文字を読み取り、その文字を格納する。
   */
-  private forwardChar() {
-    this._bufChar = this.input!.slice(this.offset, this.offset + 1);
-    this.offset++;
+  private readChar(): void {
+    this._bufChar = this.input!.slice(this.nextOffset, this.nextOffset + 1);
+    this.nextOffset++;
   }
 
   /**
-   * 現在offsetが指している文字を取得する。
+   * 次の文字を先読みし、戻り値として返す。
   */
-  private peekChar() {
-    return this.input!.slice(this.offset, this.offset + 1);
+  private peekChar(): string | undefined {
+    return this.input!.slice(this.nextOffset, this.nextOffset + 1);
   }
 
   /**
-   * 退避させた文字を取得する。
+   * 最後に読み取った文字を取得する。
   */
   private char(): string | undefined {
     return this._bufChar;
@@ -104,13 +102,11 @@ export class Scanner {
     }
     this.token = undefined;
     while (true) {
-      this.forwardChar();
+      this.readChar();
       if (this.char() == null) {
         this.token = TOKEN(TokenKind.EOF);
         return;
       }
-      this.skipCommentLine();
-      this.skipCommentRange();
 
       switch (this.char()) {
         case " ":
@@ -129,11 +125,9 @@ export class Scanner {
 
         // CR
         case "\r":
-          
           // LFが続いていたら一緒に消費する
-          if (this.peekChar() == '\n')
-          {
-              this.forwardChar();
+          if (this.peekChar() == '\n') {
+            this.readChar();
           }
           this.column = 1;
           this.line += 1;
@@ -155,10 +149,15 @@ export class Scanner {
           return;
 
         case "/":
-          this.column += 1;
-          this.forwardChar();
-          if () {
-
+          if (this.peekChar() == '*') {
+            this.column += 2;
+            this.skipCommentRange();
+            continue;
+          }
+          if (this.peekChar() == '/') {
+            this.column += 2;
+            this.skipCommentLine();
+            continue;
           }
           break;
 
@@ -209,12 +208,13 @@ export class Scanner {
           // 後続の文字を読む
           while (true)
           {
-              const ch = this.peekChar();
-              if (ch == null || !(ch >= '0' && ch <= '9')) break;
+            // 先読みして必要に応じて消費する
+            const ch = this.peekChar();
+            if (ch == null || !(ch >= '0' && ch <= '9')) break;
+            this.readChar();
 
-              this.forwardChar();
-              wholeNumber += ch;
-              this.column += 1;
+            wholeNumber += ch;
+            this.column += 1;
           }
 
           const value = wholeNumber;
@@ -242,7 +242,7 @@ export class Scanner {
             break;
           }
 
-          this.forwardChar();
+          this.readChar();
           value += ch;
           this.column += 1;
         }
@@ -261,31 +261,39 @@ export class Scanner {
 
   private skipCommentLine(): void {
     while (true) {
+      this.readChar();
       if (this.char() == null) {
         break;
       }
+      if (this.char() == '\r') {
+        // LFが続いていたら一緒に消費する
+        if (this.peekChar() == '\n') {
+          this.readChar();
+        }
+        this.column = 1;
+        this.line += 1;
+      }
       if (this.char() == '\n') {
-        this.forwardChar();
+        this.column = 1;
+        this.line += 1;
         break;
       }
-      this.forwardChar();
+      this.column += 1;
     }
   }
 
   private skipCommentRange(): void {
     while (true) {
+      this.readChar();
       if (this.char() == null) {
         break;
       }
       if (this.char() == '*') {
-        this.forwardChar();
-        if (this.char() == '/') {
-          this.forwardChar();
+        if (this.peekChar() == '/') {
+          this.readChar();
           break;
         }
-        continue;
       }
-      this.forwardChar();
     }
   }
 }
