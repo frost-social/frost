@@ -12,15 +12,14 @@ type NFile = {
 
 type NAttr = {
   kind: 'attr',
-  key: N,
-  value: N,
+  key: string,
+  value: N | undefined,
 };
 
 type NRoute = {
   kind: 'route',
   method: string,
   path: string,
-  name: string,
   children: NRouteMember[],
   attrs: NAttr[],
 };
@@ -83,14 +82,21 @@ export function parse(input: string): NFile {
   const p = new Parser();
   p.initialize(input);
 
+  let attrs = [];
   const children = [];
   while (true) {
+    if (p.match(TokenKind.OpenBracket)) {
+      attrs.push(parseAttr(p));
+      continue;
+    }
     if (p.match("POST") || p.match("GET") || p.match("PUT") || p.match("PATCH") || p.match("DELETE")) {
-      children.push(parseRoute(p));
+      children.push(parseRoute(p, attrs));
+      attrs = [];
       continue;
     }
     if (p.match("type")) {
       children.push(parseTypeDecl(p));
+      attrs = [];
       continue;
     }
     break;
@@ -103,10 +109,27 @@ export function parse(input: string): NFile {
 }
 
 function parseAttr(p: Parser): NAttr {
-  throw new Error("not implemented yet");
+  p.next();
+
+  p.expect(TokenKind.Word);
+  p.throwIfExistErrors();
+
+  const key = p.getValue();
+  p.next();
+
+  // TODO: parseLiteral
+
+  p.nextWith(TokenKind.CloseBracket);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "attr",
+    key: key,
+    value: undefined,
+  };
 }
 
-function parseRoute(p: Parser): NRoute {
+function parseRoute(p: Parser, routeAttrs: NAttr[]): NRoute {
   const method = p.getValue();
   p.next();
 
@@ -115,27 +138,35 @@ function parseRoute(p: Parser): NRoute {
 
   const path = p.getValue();
   p.next();
-  p.throwIfExistErrors();
 
   p.nextWith(TokenKind.OpenBrace);
   p.throwIfExistErrors();
 
+  let attrs = [];
   const children = [];
   while (true) {
+    if (p.match(TokenKind.OpenBracket)) {
+      attrs.push(parseAttr(p));
+      continue;
+    }
     if (p.match("header")) {
-      children.push(parseHeader(p));
+      children.push(parseHeader(p, attrs));
+      attrs = [];
       continue;
     }
     if (p.match("query")) {
       children.push(parseQuery(p));
+      attrs = [];
       continue;
     }
     if (p.match("body")) {
-      children.push(parseBody(p));
+      children.push(parseBody(p, attrs));
+      attrs = [];
       continue;
     }
     if (p.match("response")) {
-      children.push(parseResponse(p));
+      children.push(parseResponse(p, attrs));
+      attrs = [];
       continue;
     }
     break;
@@ -148,13 +179,12 @@ function parseRoute(p: Parser): NRoute {
     kind: "route",
     method: method,
     path: path,
-    name: "",
     children: children,
-    attrs: [],
+    attrs: routeAttrs,
   };
 }
 
-function parseHeader(p: Parser): NHeader {
+function parseHeader(p: Parser, headerAttrs: NAttr[]): NHeader {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -177,7 +207,7 @@ function parseHeader(p: Parser): NHeader {
     kind: "header",
     name: name,
     type: type,
-    attrs: [],
+    attrs: headerAttrs,
   };
 }
 
@@ -187,10 +217,16 @@ function parseQuery(p: Parser): NQuery {
   p.nextWith(TokenKind.OpenBrace);
   p.throwIfExistErrors();
 
+  let attrs = [];
   const children = [];
   while (true) {
+    if (p.match(TokenKind.OpenBracket)) {
+      attrs.push(parseAttr(p));
+      continue;
+    }
     if (p.match("field")) {
-      children.push(parseField(p));
+      children.push(parseField(p, attrs));
+      attrs = [];
       continue;
     }
     break;
@@ -205,16 +241,22 @@ function parseQuery(p: Parser): NQuery {
   };
 }
 
-function parseBody(p: Parser): NBody {
+function parseBody(p: Parser, bodyAttrs: NAttr[]): NBody {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
   p.throwIfExistErrors();
 
+  let attrs = [];
   const children = [];
   while (true) {
+    if (p.match(TokenKind.OpenBracket)) {
+      attrs.push(parseAttr(p));
+      continue;
+    }
     if (p.match("field")) {
-      children.push(parseField(p));
+      children.push(parseField(p, attrs));
+      attrs = [];
       continue;
     }
     break;
@@ -226,11 +268,11 @@ function parseBody(p: Parser): NBody {
   return {
     kind: "body",
     items: children,
-    attrs: [],
+    attrs: bodyAttrs,
   };
 }
 
-function parseField(p: Parser): NField {
+function parseField(p: Parser, fieldAttrs: NAttr[]): NField {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -253,11 +295,11 @@ function parseField(p: Parser): NField {
     kind: "field",
     name: name,
     type: type,
-    attrs: [],
+    attrs: fieldAttrs,
   };
 }
 
-function parseResponse(p: Parser): NResponse {
+function parseResponse(p: Parser, responseAttrs: NAttr[]): NResponse {
   p.next();
 
   p.expect(TokenKind.NumberLiteral);
@@ -279,7 +321,7 @@ function parseResponse(p: Parser): NResponse {
     kind: "response",
     statusCode: code,
     type: type,
-    attrs: [],
+    attrs: responseAttrs,
   };
 }
 

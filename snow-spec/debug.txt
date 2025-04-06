@@ -3,24 +3,45 @@ type ErrorResponse = {
   message: string
 };
 
+[name]
 GET /echo {
+  [name]
   header Authorization: string;
 
   query {
+    [name]
+    [description]
     field message: string;
   }
 
-  response 200: { };
+  [name]
+  [description]
+  [format]
+  response 200: {};
+
+  [name]
+  [format]
   response 400: ErrorResponse;
 }
 
+[name]
 POST /echo {
+  [name]
   header Authorization: string;
 
+  [format]
   body {
+    [name]
+    [description]
     field message: string;
   }
 
-  response 200: { };
+  [name]
+  [description]
+  [format]
+  response 200: {};
+
+  [name]
+  [format]
   response 400: ErrorResponse;
 }
