@@ -1,3 +1,8 @@
+type ErrorResponse = {
+  code: number,
+  message: string
+};
+
 [name "テスト用"]
 GET /echo {
   [name "認証情報"]
@@ -16,7 +21,7 @@ GET /echo {
 
   [name "無効なリクエスト"]
   [format json]
-  response 400: {};
+  response 400: ErrorResponse;
 }
 
 [name "テスト用"]
@@ -38,5 +43,5 @@ POST /echo {
 
   [name "無効なリクエスト"]
   [format json]
-  response 400: {};
+  response 400: ErrorResponse;
 }

@@ -64,12 +64,19 @@ type NRefType = {
 
 type NObjectType = {
   kind: "objectType",
+  children: NObjectField[],
+};
+
+type NObjectField = {
+  kind: "objectField",
+  name: string,
+  value: NType,
 };
 
 type NTypeDecl = {
   kind: "typeDecl",
   name: string,
-  type: NType,
+  type: NType | undefined,
 };
 
 export function parse(input: string): NFile {
@@ -82,7 +89,10 @@ export function parse(input: string): NFile {
       children.push(parseRoute(p));
       continue;
     }
-    // TODO: TypeDecl
+    if (p.match("type")) {
+      children.push(parseTypeDecl(p));
+      continue;
+    }
     break;
   }
 
@@ -296,13 +306,73 @@ function parseRefType(p: Parser): NRefType {
 function parseObjectType(p: Parser): NObjectType {
   p.next();
 
-  // TODO
+  const children = [];
+  while (true) {
+    if (children.length > 0) {
+      // コンマがあれば消費して継続
+      // コンマがなければフィールド列の終わりと判断
+      if (p.match(TokenKind.Comma)) {
+        p.next();
+      } else {
+        break;
+      }
+    }
+    if (p.match(TokenKind.Word)) {
+      children.push(parseObjectField(p));
+      continue;
+    }
+    // いずれかでもなければフィールド列の終わりと判断
+    break;
+  }
 
   p.nextWith(TokenKind.CloseBrace);
   p.throwIfExistErrors();
 
   return {
     kind: "objectType",
+    children: children,
+  };
+}
+
+function parseObjectField(p: Parser): NObjectField {
+  const name = p.getValue();
+  p.next();
+
+  p.nextWith(TokenKind.Colon);
+  p.throwIfExistErrors();
+
+  const type = parseType(p);
+
+  return {
+    kind: "objectField",
+    name: name,
+    value: type,
+  };
+}
+
+function parseTypeDecl(p: Parser): NTypeDecl {
+  p.next();
+
+  p.expect(TokenKind.Word);
+  p.throwIfExistErrors();
+
+  const name = p.getValue();
+  p.next();
+  p.throwIfExistErrors();
+
+  let type;
+  if (p.match(TokenKind.Eq)) {
+    p.next();
+    type = parseType(p);
+  }
+
+  p.nextWith(TokenKind.SemiColon);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "typeDecl",
+    name: name,
+    type: type,
   };
 }
 
