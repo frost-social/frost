@@ -3,6 +3,3 @@ A language for describing API specs. This language generates OpenAPI specificati
 
 ## 🚧 This project is a work in progress! 🚧
 We are currently working on this project.
-
-## License
-MIT

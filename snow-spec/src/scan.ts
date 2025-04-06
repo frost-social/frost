@@ -51,11 +51,11 @@ const wordChar = /^[A-Za-z0-9_]$/;
 
 export class Scanner {
   private input: string | undefined;
-  private nextOffset: number;
+  private nextOffset: number = 0;
   private _bufChar: string | undefined;
 
-  column: number;
-  line: number;
+  column: number = 1;
+  line: number = 1;
   token: Token | undefined;
   error: string | undefined;
 
