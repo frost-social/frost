@@ -1,15 +1,21 @@
 GET /echo {
-  header Authorization;
+  header Authorization: string;
 
   query {
-    field message;
+    field message: string;
   }
+
+  response 200: { };
+  response 400: { };
 }
 
 POST /echo {
-  header Authorization;
+  header Authorization: string;
 
   body {
-    field message;
+    field message: string;
   }
+
+  response 200: { };
+  response 400: { };
 }

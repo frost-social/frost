@@ -248,7 +248,29 @@ function parseField(p: Parser): NField {
 }
 
 function parseResponse(p: Parser): NResponse {
-  throw new Error("not implemented yet");
+  p.next();
+
+  p.expect(TokenKind.NumberLiteral);
+  p.throwIfExistErrors();
+
+  const code = p.getValue();
+  p.next();
+
+  let type;
+  if (p.match(TokenKind.Colon)) {
+    p.next();
+    type = parseType(p);
+  }
+
+  p.nextWith(TokenKind.SemiColon);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "response",
+    statusCode: code,
+    type: type,
+    attrs: [],
+  };
 }
 
 function parseType(p: Parser): NType {
@@ -262,11 +284,26 @@ function parseType(p: Parser): NType {
 }
 
 function parseRefType(p: Parser): NRefType {
-  throw new Error("not implemented yet");
+  const name = p.getValue();
+  p.next();
+
+  return {
+    kind: "refType",
+    name: name,
+  };
 }
 
 function parseObjectType(p: Parser): NObjectType {
-  throw new Error("not implemented yet");
+  p.next();
+
+  // TODO
+
+  p.nextWith(TokenKind.CloseBrace);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "objectType",
+  };
 }
 
 class Parser {
