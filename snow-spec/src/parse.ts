@@ -72,13 +72,24 @@ type NTypeDecl = {
   type: NType,
 };
 
-export function parse(input: string) {
+export function parse(input: string): NFile {
   const p = new Parser();
   p.initialize(input);
-}
 
-function parseFile(p: Parser): NFile {
-  throw new Error("not implemented yet");
+  const children = [];
+  while (true) {
+    if (p.match("POST") || p.match("GET") || p.match("PUT") || p.match("PATCH") || p.match("DELETE")) {
+      children.push(parseRoute(p));
+      continue;
+    }
+    // TODO: TypeDecl
+    break;
+  }
+
+  return {
+    kind: "file",
+    children: children,
+  };
 }
 
 function parseAttr(p: Parser): NAttr {
@@ -86,27 +97,168 @@ function parseAttr(p: Parser): NAttr {
 }
 
 function parseRoute(p: Parser): NRoute {
-  throw new Error("not implemented yet");
+  const method = p.getValue();
+  p.next();
+
+  p.expect(TokenKind.Word);
+  p.throwIfExistErrors();
+
+  const path = p.getValue();
+  p.next();
+  p.throwIfExistErrors();
+
+  p.nextWith(TokenKind.OpenBrace);
+  p.throwIfExistErrors();
+
+  const children = [];
+  while (true) {
+    if (p.match("header")) {
+      children.push(parseHeader(p));
+      continue;
+    }
+    if (p.match("query")) {
+      children.push(parseQuery(p));
+      continue;
+    }
+    if (p.match("body")) {
+      children.push(parseBody(p));
+      continue;
+    }
+    if (p.match("response")) {
+      children.push(parseResponse(p));
+      continue;
+    }
+    break;
+  }
+
+  p.nextWith(TokenKind.CloseBrace);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "route",
+    method: method,
+    path: path,
+    name: "",
+    children: children,
+    attrs: [],
+  };
 }
 
 function parseHeader(p: Parser): NHeader {
-  throw new Error("not implemented yet");
+  p.next();
+
+  p.expect(TokenKind.Word);
+  p.throwIfExistErrors();
+
+  const name = p.getValue();
+  p.next();
+  p.throwIfExistErrors();
+
+  let type;
+  if (p.match(TokenKind.Colon)) {
+    p.next();
+    type = parseType(p);
+  }
+
+  p.nextWith(TokenKind.SemiColon);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "header",
+    name: name,
+    type: type,
+    attrs: [],
+  };
 }
 
 function parseQuery(p: Parser): NQuery {
-  throw new Error("not implemented yet");
+  p.next();
+
+  p.nextWith(TokenKind.OpenBrace);
+  p.throwIfExistErrors();
+
+  const children = [];
+  while (true) {
+    if (p.match("field")) {
+      children.push(parseField(p));
+      continue;
+    }
+    break;
+  }
+
+  p.nextWith(TokenKind.CloseBrace);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "query",
+    items: children,
+  };
 }
 
 function parseBody(p: Parser): NBody {
-  throw new Error("not implemented yet");
+  p.next();
+
+  p.nextWith(TokenKind.OpenBrace);
+  p.throwIfExistErrors();
+
+  const children = [];
+  while (true) {
+    if (p.match("field")) {
+      children.push(parseField(p));
+      continue;
+    }
+    break;
+  }
+
+  p.nextWith(TokenKind.CloseBrace);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "body",
+    items: children,
+    attrs: [],
+  };
 }
 
 function parseField(p: Parser): NField {
-  throw new Error("not implemented yet");
+  p.next();
+
+  p.expect(TokenKind.Word);
+  p.throwIfExistErrors();
+
+  const name = p.getValue();
+  p.next();
+  p.throwIfExistErrors();
+
+  let type;
+  if (p.match(TokenKind.Colon)) {
+    p.next();
+    type = parseType(p);
+  }
+
+  p.nextWith(TokenKind.SemiColon);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "field",
+    name: name,
+    type: type,
+    attrs: [],
+  };
 }
 
 function parseResponse(p: Parser): NResponse {
   throw new Error("not implemented yet");
+}
+
+function parseType(p: Parser): NType {
+  if (p.match(TokenKind.Word)) {
+    return parseRefType(p);
+  }
+  if (p.match(TokenKind.OpenBrace)) {
+    return parseObjectType(p);
+  }
+  throw new Error("unexpected token");
 }
 
 function parseRefType(p: Parser): NRefType {
@@ -132,11 +284,27 @@ class Parser {
     this.errors.push(message);
   }
 
-  getKind() {
-    return this.scanner.token.kind;
+  throwIfExistErrors() {
+    if (this.errors.length > 0) {
+      throw new Error("Parsing error\n" + this.errors.map(x => "- " + x).join("\n"));
+    }
+  }
+
+  getValue(): string {
+    if (this.scanner.token!.value == null) {
+      throw new Error("invalid operation");
+    }
+    return this.scanner.token!.value;
+  }
+
+  getKind(): TokenKind {
+    return this.scanner.token!.kind;
   }
 
   match(kindOrWord: TokenKind | string): boolean {
+    if (this.scanner.token == null) {
+      return false;
+    }
     if (typeof kindOrWord == "string") {
       return (
         this.scanner.token.kind == TokenKind.Word &&
@@ -148,6 +316,9 @@ class Parser {
   }
 
   expect(kind: TokenKind): boolean {
+    if (this.scanner.token == null) {
+      return false;
+    }
     if (this.scanner.token.kind != kind) {
       this.generateError("unexpected token");
       return false;
@@ -169,14 +340,14 @@ class Parser {
   nextWith(kindOrWord: TokenKind | string): boolean {
     if (typeof kindOrWord == "string") {
       if (
-        this.scanner.token.kind != TokenKind.Word ||
-        this.scanner.token.value != kindOrWord
+        this.scanner.token!.kind != TokenKind.Word ||
+        this.scanner.token!.value != kindOrWord
       ) {
         this.generateError("unexpected token");
         return false;
       }
     } else {
-      if (this.scanner.token.kind != kindOrWord) {
+      if (this.scanner.token!.kind != kindOrWord) {
         this.generateError("unexpected token");
       }
     }

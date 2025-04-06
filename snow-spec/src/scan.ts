@@ -1,5 +1,5 @@
 const digit = /^[0-9]$/;
-const wordChar = /^[A-Za-z0-9_]$/;
+const wordChar = /^[A-Za-z0-9_/]$/;
 
 export class Scanner {
   private input: string | undefined;
@@ -7,7 +7,7 @@ export class Scanner {
   private _bufChar: string = '';
   private column: number = 1;
   private line: number = 1;
-  token: Token = TOKEN(TokenKind.EOF);
+  token: Token | undefined;
   error: string | undefined;
 
   initialize(input: string) {
@@ -16,7 +16,7 @@ export class Scanner {
     this._bufChar = '';
     this.column = 1;
     this.line = 1;
-    this.token = TOKEN(TokenKind.EOF);
+    this.token = undefined;
     this.error = undefined;
   }
 
@@ -51,6 +51,7 @@ export class Scanner {
     if (this.input == null) {
       throw new Error("not initialized");
     }
+    this.token = undefined;
     while (true) {
       this.readChar();
       if (this.char() == '') {

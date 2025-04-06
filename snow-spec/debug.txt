@@ -1,2 +1,15 @@
-[abc = xyz]
-field abc: string;
+GET /echo {
+  header Authorization;
+
+  query {
+    field message;
+  }
+}
+
+POST /echo {
+  header Authorization;
+
+  body {
+    field message;
+  }
+}
