@@ -52,7 +52,7 @@ const wordChar = /^[A-Za-z0-9_]$/;
 export class Scanner {
   private input: string | undefined;
   private nextOffset: number = 0;
-  private _bufChar: string | undefined;
+  private _bufChar: string = '';
 
   column: number = 1;
   line: number = 1;
@@ -62,7 +62,7 @@ export class Scanner {
   initialize(input: string) {
     this.input = input;
     this.nextOffset = 0;
-    this._bufChar = undefined;
+    this._bufChar = '';
     this.column = 1;
     this.line = 1;
     this.token = undefined;
@@ -80,14 +80,14 @@ export class Scanner {
   /**
    * 次の文字を先読みし、戻り値として返す。
   */
-  private peekChar(): string | undefined {
+  private peekChar(): string {
     return this.input!.slice(this.nextOffset, this.nextOffset + 1);
   }
 
   /**
    * 最後に読み取った文字を取得する。
   */
-  private char(): string | undefined {
+  private char(): string {
     return this._bufChar;
   }
 
@@ -103,7 +103,7 @@ export class Scanner {
     this.token = undefined;
     while (true) {
       this.readChar();
-      if (this.char() == null) {
+      if (this.char() == '') {
         this.token = TOKEN(TokenKind.EOF);
         return;
       }
@@ -198,7 +198,7 @@ export class Scanner {
       }
 
       // 数字
-      if (this.char() != null && digit.test(this.char()!)) {
+      if (this.char() != '' && digit.test(this.char())) {
           //beginLocation = new TokenLocation(this.column, this.line);
           let wholeNumber = "";
 
@@ -210,7 +210,7 @@ export class Scanner {
           {
             // 先読みして必要に応じて消費する
             const ch = this.peekChar();
-            if (ch == null || !(ch >= '0' && ch <= '9')) break;
+            if (ch == '' || !(ch >= '0' && ch <= '9')) break;
             this.readChar();
 
             wholeNumber += ch;
@@ -223,7 +223,7 @@ export class Scanner {
       }
 
       // 識別子またはキーワード
-      if (this.char() != null && wordChar.test(this.char()!)) {
+      if (this.char() != '' && wordChar.test(this.char())) {
         //beginLocation = new TokenLocation(this.column, this.line);
         let value = "";
 
@@ -233,7 +233,7 @@ export class Scanner {
         // 後続の文字を読む
         while (true) {
           const ch = this.peekChar();
-          if (ch == null || !(
+          if (ch == '' || !(
               ch >= '0' && ch <= '9' ||
               ch >= 'A' && ch <= 'Z' ||
               ch >= 'a' && ch <= 'z' ||
@@ -263,7 +263,7 @@ export class Scanner {
   private skipCommentLine(): void {
     while (true) {
       this.readChar();
-      if (this.char() == null) {
+      if (this.char() == '') {
         break;
       }
       if (this.char() == '\r') {
@@ -286,7 +286,7 @@ export class Scanner {
   private skipCommentRange(): void {
     while (true) {
       this.readChar();
-      if (this.char() == null) {
+      if (this.char() == '') {
         break;
       }
       if (this.char() == '*') {
