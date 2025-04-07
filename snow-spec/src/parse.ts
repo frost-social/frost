@@ -1,100 +1,7 @@
 import { Scanner, TokenKind } from "./scan";
+import * as S from "./snowTree";
 
-type N = NFile | NAttr | NRoute | NHeader | NQuery | NBody | NField | NResponse | NRefType | NObjectType | NNumberValue | NBoolValue | NStringValue | NTypeDecl;
-type NFileMember = NRoute | NTypeDecl;
-type NRouteMember = NHeader | NQuery | NBody | NResponse | NTypeDecl;
-type NType = NRefType | NObjectType;
-type NValue = NNumberValue | NBoolValue | NStringValue;
-
-type NFile = {
-  kind: 'file',
-  children: NFileMember[];
-};
-
-type NAttr = {
-  kind: 'attr',
-  key: string,
-  value: NValue | undefined,
-};
-
-type NRoute = {
-  kind: 'route',
-  method: string,
-  path: string,
-  children: NRouteMember[],
-  attrs: NAttr[],
-};
-
-type NHeader = {
-  kind: "header",
-  name: string,
-  type: NType | undefined,
-  attrs: NAttr[],
-};
-
-type NQuery = {
-  kind: "query",
-  items: NField[],
-};
-
-type NBody = {
-  kind: "body",
-  items: N[],
-  attrs: NAttr[],
-};
-
-type NField = {
-  kind: "field",
-  name: string,
-  type: NType | undefined,
-  attrs: NAttr[],
-};
-
-type NResponse = {
-  kind: "response",
-  statusCode: string,
-  type: NType | undefined,
-  attrs: NAttr[],
-};
-
-type NRefType = {
-  kind: "refType",
-  name: string,
-};
-
-type NObjectType = {
-  kind: "objectType",
-  children: NObjectField[],
-};
-
-type NObjectField = {
-  kind: "objectField",
-  name: string,
-  value: NType,
-};
-
-type NNumberValue = {
-  kind: "numberValue",
-  value: string,
-};
-
-type NBoolValue = {
-  kind: "boolValue",
-  value: string,
-};
-
-type NStringValue = {
-  kind: "stringValue",
-  value: string,
-};
-
-type NTypeDecl = {
-  kind: "typeDecl",
-  name: string,
-  type: NType | undefined,
-};
-
-export function parse(input: string): NFile {
+export function parse(input: string): S.NFile {
   const p = new Parser();
   p.initialize(input);
 
@@ -124,7 +31,7 @@ export function parse(input: string): NFile {
   };
 }
 
-function parseAttr(p: Parser): NAttr {
+function parseAttr(p: Parser): S.NAttr {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -148,7 +55,7 @@ function parseAttr(p: Parser): NAttr {
   };
 }
 
-function parseRoute(p: Parser, routeAttrs: NAttr[]): NRoute {
+function parseRoute(p: Parser, routeAttrs: S.NAttr[]): S.NRoute {
   const method = p.getValue();
   p.next();
 
@@ -203,7 +110,7 @@ function parseRoute(p: Parser, routeAttrs: NAttr[]): NRoute {
   };
 }
 
-function parseHeader(p: Parser, headerAttrs: NAttr[]): NHeader {
+function parseHeader(p: Parser, headerAttrs: S.NAttr[]): S.NHeader {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -230,7 +137,7 @@ function parseHeader(p: Parser, headerAttrs: NAttr[]): NHeader {
   };
 }
 
-function parseQuery(p: Parser): NQuery {
+function parseQuery(p: Parser): S.NQuery {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
@@ -260,7 +167,7 @@ function parseQuery(p: Parser): NQuery {
   };
 }
 
-function parseBody(p: Parser, bodyAttrs: NAttr[]): NBody {
+function parseBody(p: Parser, bodyAttrs: S.NAttr[]): S.NBody {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
@@ -291,7 +198,7 @@ function parseBody(p: Parser, bodyAttrs: NAttr[]): NBody {
   };
 }
 
-function parseField(p: Parser, fieldAttrs: NAttr[]): NField {
+function parseField(p: Parser, fieldAttrs: S.NAttr[]): S.NField {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -318,7 +225,7 @@ function parseField(p: Parser, fieldAttrs: NAttr[]): NField {
   };
 }
 
-function parseResponse(p: Parser, responseAttrs: NAttr[]): NResponse {
+function parseResponse(p: Parser, responseAttrs: S.NAttr[]): S.NResponse {
   p.next();
 
   p.expect(TokenKind.NumberLiteral);
@@ -344,7 +251,7 @@ function parseResponse(p: Parser, responseAttrs: NAttr[]): NResponse {
   };
 }
 
-function parseType(p: Parser): NType {
+function parseType(p: Parser): S.NType {
   if (p.match(TokenKind.Word)) {
     return parseRefType(p);
   }
@@ -354,7 +261,7 @@ function parseType(p: Parser): NType {
   throw new Error("unexpected token");
 }
 
-function parseRefType(p: Parser): NRefType {
+function parseRefType(p: Parser): S.NRefType {
   const name = p.getValue();
   p.next();
 
@@ -364,7 +271,7 @@ function parseRefType(p: Parser): NRefType {
   };
 }
 
-function parseObjectType(p: Parser): NObjectType {
+function parseObjectType(p: Parser): S.NObjectType {
   p.next();
 
   const children = [];
@@ -395,7 +302,7 @@ function parseObjectType(p: Parser): NObjectType {
   };
 }
 
-function parseObjectField(p: Parser): NObjectField {
+function parseObjectField(p: Parser): S.NObjectField {
   const name = p.getValue();
   p.next();
 
@@ -411,7 +318,7 @@ function parseObjectField(p: Parser): NObjectField {
   };
 }
 
-function parseValue(p: Parser): NValue {
+function parseValue(p: Parser): S.NValue {
   if (p.match(TokenKind.StringLiteral)) {
     const value = p.getValue();
     p.next();
@@ -439,7 +346,7 @@ function parseValue(p: Parser): NValue {
   throw new Error("unexpected token");
 }
 
-function parseTypeDecl(p: Parser): NTypeDecl {
+function parseTypeDecl(p: Parser): S.NTypeDecl {
   p.next();
 
   p.expect(TokenKind.Word);

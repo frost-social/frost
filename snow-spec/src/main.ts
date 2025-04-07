@@ -2,13 +2,17 @@ import fs from "node:fs/promises";
 import Path from "node:path";
 import { parse } from "./parse";
 import util from "node:util";
+//import { transform } from "./transform";
+//import { generate } from "./generate";
 
 async function main() {
   const input = await fs.readFile(Path.resolve("debug.txt"), { encoding: "utf-8" });
-
-  const file = parse(input);
-
-  console.log(util.inspect(file, { depth: 10 }));
+  const snowTree = parse(input);
+  console.log(util.inspect(snowTree, { depth: 10 }));
+  //const middleTree = transform(snowTree);
+  //console.log(util.inspect(middleTree, { depth: 10 }));
+  //const openApiText = generate(middleTree);
+  //console.log(openApiText);
 }
 main()
 .catch(err => { console.error(err); });
