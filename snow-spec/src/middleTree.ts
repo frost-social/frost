@@ -1,5 +1,5 @@
-export type N = NFile;
+export type MNode = MFile;
 
-export type NFile = {
+export type MFile = {
   kind: 'file',
 };

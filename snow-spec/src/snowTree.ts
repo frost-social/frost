@@ -1,93 +1,93 @@
-export type N = NFile | NAttr | NRoute | NHeader | NQuery | NBody | NField | NResponse | NRefType | NObjectType | NNumberValue | NBoolValue | NStringValue | NTypeDecl;
-export type NFileMember = NRoute | NTypeDecl;
-export type NRouteMember = NHeader | NQuery | NBody | NResponse | NTypeDecl;
-export type NType = NRefType | NObjectType;
-export type NValue = NNumberValue | NBoolValue | NStringValue;
+export type SNode = SFile | SAttr | SRoute | SHeader | SQuery | SBody | SField | SResponse | SRefType | SObjectType | SNumberValue | SBoolValue | SStringValue | STypeDecl;
+export type SFileMember = SRoute | STypeDecl;
+export type SRouteMember = SHeader | SQuery | SBody | SResponse | STypeDecl;
+export type SType = SRefType | SObjectType;
+export type SValue = SNumberValue | SBoolValue | SStringValue;
 
-export type NFile = {
+export type SFile = {
   kind: 'file',
-  children: NFileMember[];
+  children: SFileMember[];
 };
 
-export type NAttr = {
+export type SAttr = {
   kind: 'attr',
   key: string,
-  value: NValue | undefined,
+  value: SValue | undefined,
 };
 
-export type NRoute = {
+export type SRoute = {
   kind: 'route',
   method: string,
   path: string,
-  children: NRouteMember[],
-  attrs: NAttr[],
+  children: SRouteMember[],
+  attrs: SAttr[],
 };
 
-export type NHeader = {
+export type SHeader = {
   kind: "header",
   name: string,
-  type: NType | undefined,
-  attrs: NAttr[],
+  type: SType | undefined,
+  attrs: SAttr[],
 };
 
-export type NQuery = {
+export type SQuery = {
   kind: "query",
-  items: NField[],
+  items: SField[],
 };
 
-export type NBody = {
+export type SBody = {
   kind: "body",
-  items: N[],
-  attrs: NAttr[],
+  items: SNode[],
+  attrs: SAttr[],
 };
 
-export type NField = {
+export type SField = {
   kind: "field",
   name: string,
-  type: NType | undefined,
-  attrs: NAttr[],
+  type: SType | undefined,
+  attrs: SAttr[],
 };
 
-export type NResponse = {
+export type SResponse = {
   kind: "response",
   statusCode: string,
-  type: NType | undefined,
-  attrs: NAttr[],
+  type: SType | undefined,
+  attrs: SAttr[],
 };
 
-export type NRefType = {
+export type SRefType = {
   kind: "refType",
   name: string,
 };
 
-export type NObjectType = {
+export type SObjectType = {
   kind: "objectType",
-  children: NObjectField[],
+  children: SObjectField[],
 };
 
-export type NObjectField = {
+export type SObjectField = {
   kind: "objectField",
   name: string,
-  value: NType,
+  value: SType,
 };
 
-export type NNumberValue = {
+export type SNumberValue = {
   kind: "numberValue",
   value: string,
 };
 
-export type NBoolValue = {
+export type SBoolValue = {
   kind: "boolValue",
   value: string,
 };
 
-export type NStringValue = {
+export type SStringValue = {
   kind: "stringValue",
   value: string,
 };
 
-export type NTypeDecl = {
+export type STypeDecl = {
   kind: "typeDecl",
   name: string,
-  type: NType | undefined,
+  type: SType | undefined,
 };

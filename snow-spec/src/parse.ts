@@ -1,7 +1,7 @@
 import { Scanner, TokenKind } from "./scan";
 import * as S from "./snowTree";
 
-export function parse(input: string): S.NFile {
+export function parse(input: string): S.SFile {
   const p = new Parser();
   p.initialize(input);
 
@@ -31,7 +31,7 @@ export function parse(input: string): S.NFile {
   };
 }
 
-function parseAttr(p: Parser): S.NAttr {
+function parseAttr(p: Parser): S.SAttr {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -55,7 +55,7 @@ function parseAttr(p: Parser): S.NAttr {
   };
 }
 
-function parseRoute(p: Parser, routeAttrs: S.NAttr[]): S.NRoute {
+function parseRoute(p: Parser, routeAttrs: S.SAttr[]): S.SRoute {
   const method = p.getValue();
   p.next();
 
@@ -110,7 +110,7 @@ function parseRoute(p: Parser, routeAttrs: S.NAttr[]): S.NRoute {
   };
 }
 
-function parseHeader(p: Parser, headerAttrs: S.NAttr[]): S.NHeader {
+function parseHeader(p: Parser, headerAttrs: S.SAttr[]): S.SHeader {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -137,7 +137,7 @@ function parseHeader(p: Parser, headerAttrs: S.NAttr[]): S.NHeader {
   };
 }
 
-function parseQuery(p: Parser): S.NQuery {
+function parseQuery(p: Parser): S.SQuery {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
@@ -167,7 +167,7 @@ function parseQuery(p: Parser): S.NQuery {
   };
 }
 
-function parseBody(p: Parser, bodyAttrs: S.NAttr[]): S.NBody {
+function parseBody(p: Parser, bodyAttrs: S.SAttr[]): S.SBody {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
@@ -198,7 +198,7 @@ function parseBody(p: Parser, bodyAttrs: S.NAttr[]): S.NBody {
   };
 }
 
-function parseField(p: Parser, fieldAttrs: S.NAttr[]): S.NField {
+function parseField(p: Parser, fieldAttrs: S.SAttr[]): S.SField {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -225,7 +225,7 @@ function parseField(p: Parser, fieldAttrs: S.NAttr[]): S.NField {
   };
 }
 
-function parseResponse(p: Parser, responseAttrs: S.NAttr[]): S.NResponse {
+function parseResponse(p: Parser, responseAttrs: S.SAttr[]): S.SResponse {
   p.next();
 
   p.expect(TokenKind.NumberLiteral);
@@ -251,7 +251,7 @@ function parseResponse(p: Parser, responseAttrs: S.NAttr[]): S.NResponse {
   };
 }
 
-function parseType(p: Parser): S.NType {
+function parseType(p: Parser): S.SType {
   if (p.match(TokenKind.Word)) {
     return parseRefType(p);
   }
@@ -261,7 +261,7 @@ function parseType(p: Parser): S.NType {
   throw new Error("unexpected token");
 }
 
-function parseRefType(p: Parser): S.NRefType {
+function parseRefType(p: Parser): S.SRefType {
   const name = p.getValue();
   p.next();
 
@@ -271,7 +271,7 @@ function parseRefType(p: Parser): S.NRefType {
   };
 }
 
-function parseObjectType(p: Parser): S.NObjectType {
+function parseObjectType(p: Parser): S.SObjectType {
   p.next();
 
   const children = [];
@@ -302,7 +302,7 @@ function parseObjectType(p: Parser): S.NObjectType {
   };
 }
 
-function parseObjectField(p: Parser): S.NObjectField {
+function parseObjectField(p: Parser): S.SObjectField {
   const name = p.getValue();
   p.next();
 
@@ -318,7 +318,7 @@ function parseObjectField(p: Parser): S.NObjectField {
   };
 }
 
-function parseValue(p: Parser): S.NValue {
+function parseValue(p: Parser): S.SValue {
   if (p.match(TokenKind.StringLiteral)) {
     const value = p.getValue();
     p.next();
@@ -346,7 +346,7 @@ function parseValue(p: Parser): S.NValue {
   throw new Error("unexpected token");
 }
 
-function parseTypeDecl(p: Parser): S.NTypeDecl {
+function parseTypeDecl(p: Parser): S.STypeDecl {
   p.next();
 
   p.expect(TokenKind.Word);
