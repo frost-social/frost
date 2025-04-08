@@ -1,45 +1,39 @@
 component ErrorResponse = {
-  [name "エラー内容"]
+  [description "エラー内容"]
   error: {
-    [name "エラーコード"]
-    [description "エラーの内容を識別できる値。"]
+    [description "エラーコード。エラーの内容を識別できる値。"]
     code: number,
 
-    [name "エラーメッセージ"]
     [description "エラーの説明文。"]
     message: string,
   },
 };
 
-[name "テスト用"]
+[description "テスト用"]
 GET /echo {
   request {
     headers: {
-      [name "認証情報"]
+      [description "認証情報"]
       Authorization: string,
     };
 
     query: {
-      [name "メッセージ"]
       [description "返答するメッセージを設定。"]
       message: string,
     };
   }
 
-  [name "OK"]
   [description "リクエスト成功"]
   response 200 {
     headers: {};
 
     [format "json"]
     body: {
-      [name "返答メッセージ"]
-      [description "リクエストで設定したメッセージが返されます。"]
+      [description "返答メッセージ。リクエストで設定したメッセージが返されます。"]
       message: string,
     };
   }
 
-  [name "Bad Request"]
   [description "無効なリクエスト"]
   response 400 {
     headers: {};
@@ -49,36 +43,32 @@ GET /echo {
   }
 }
 
-[name "テスト用"]
+[description "テスト用"]
 POST /echo {
   request {
     headers: {
-      [name "認証情報"]
+      [description "認証情報"]
       Authorization: string,
     };
 
     [format "json"]
     body: {
-      [name "メッセージ"]
       [description "返答するメッセージを設定。"]
       message: string,
     };
   }
 
-  [name "OK"]
   [description "リクエスト成功"]
   response 200 {
     headers: {};
 
     [format "json"]
     body: {
-      [name "返答メッセージ"]
-      [description "リクエストで設定したメッセージが返されます。"]
+      [description "返答メッセージ。リクエストで設定したメッセージが返されます。"]
       message: string,
     };
   }
 
-  [name "Bad Request"]
   [description "無効なリクエスト"]
   response 400 {
     headers: {};
