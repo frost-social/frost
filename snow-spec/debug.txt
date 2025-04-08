@@ -1,47 +1,55 @@
-type ErrorResponse = {
-  code: number,
-  message: string
-};
+component ErrorResponse = {};
 
 [name "テスト用"]
 GET /echo {
-  [name "認証情報"]
-  header Authorization: string;
-
-  query {
-    [name "メッセージ"]
-    [description "返答するメッセージを設定します。"]
-    field message: string;
+  request {
+    headers: {};
+    query: {};
   }
 
   [name "OK"]
   [description "リクエスト成功"]
-  [format "json"]
-  response 200: {};
+  response 200 {
+    headers: {};
 
-  [name "無効なリクエスト"]
-  [format "json"]
-  response 400: ErrorResponse;
+    [format "json"]
+    body: {};
+  }
+
+  [name "Bad Request"]
+  [description "無効なリクエスト"]
+  response 400 {
+    headers: {};
+
+    [format "json"]
+    body: ErrorResponse;
+  }
 }
 
 [name "テスト用"]
 POST /echo {
-  [name "認証情報"]
-  header Authorization: string;
+  request {
+    headers: {};
 
-  [format "json"]
-  body {
-    [name "メッセージ"]
-    [description "返答するメッセージを設定します。"]
-    field message: string;
+    [format "json"]
+    body: {};
   }
 
   [name "OK"]
   [description "リクエスト成功"]
-  [format "json"]
-  response 200: {};
+  response 200 {
+    headers: {};
 
-  [name "無効なリクエスト"]
-  [format "json"]
-  response 400: ErrorResponse;
+    [format "json"]
+    body: {};
+  }
+
+  [name "Bad Request"]
+  [description "無効なリクエスト"]
+  response 400 {
+    headers: {};
+
+    [format "json"]
+    body: ErrorResponse;
+  }
 }

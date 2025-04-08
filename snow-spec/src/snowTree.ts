@@ -1,7 +1,7 @@
-export type SNode = SFile | SAttr | SRoute | SHeader | SQuery | SBody | SField | SResponse | SRefType | SObjectType | SNumberValue | SBoolValue | SStringValue | STypeDecl;
-export type SFileMember = SRoute | STypeDecl;
-export type SRouteMember = SHeader | SQuery | SBody | SResponse | STypeDecl;
-export type SType = SRefType | SObjectType;
+export type SNode = SFile | SAttr | SRoute | SHeader | SQuery | SBody | SField | SResponse | SComponentRef | SObjectType | SNumberValue | SBoolValue | SStringValue | SComponentDecl;
+export type SFileMember = SRoute | SComponentDecl;
+export type SRouteMember = SRequest | SResponse;
+export type SComponent = SComponentRef | SObjectType;
 export type SValue = SNumberValue | SBoolValue | SStringValue;
 
 export type SFile = {
@@ -26,13 +26,14 @@ export type SRoute = {
 export type SHeader = {
   kind: "header",
   name: string,
-  type: SType | undefined,
+  component: SComponent | undefined,
   attrs: SAttr[],
 };
 
 export type SQuery = {
   kind: "query",
   items: SField[],
+  attrs: SAttr[],
 };
 
 export type SBody = {
@@ -44,19 +45,32 @@ export type SBody = {
 export type SField = {
   kind: "field",
   name: string,
-  type: SType | undefined,
+  component: SComponent | undefined,
+  attrs: SAttr[],
+};
+
+export type SRequest = {
+  kind: "request",
+  blocks: SComponentBlock[],
   attrs: SAttr[],
 };
 
 export type SResponse = {
   kind: "response",
   statusCode: string,
-  type: SType | undefined,
+  blocks: SComponentBlock[],
   attrs: SAttr[],
 };
 
-export type SRefType = {
-  kind: "refType",
+export type SComponentBlock = {
+  kind: "componentBlock",
+  blockKind: string,
+  component: SComponent,
+  attrs: SAttr[],
+};
+
+export type SComponentRef = {
+  kind: "componentRef",
   name: string,
 };
 
@@ -68,7 +82,7 @@ export type SObjectType = {
 export type SObjectField = {
   kind: "objectField",
   name: string,
-  value: SType,
+  value: SComponent,
 };
 
 export type SNumberValue = {
@@ -86,8 +100,8 @@ export type SStringValue = {
   value: string,
 };
 
-export type STypeDecl = {
-  kind: "typeDecl",
+export type SComponentDecl = {
+  kind: "componentDecl",
   name: string,
-  type: SType | undefined,
+  component: SComponent | undefined,
 };

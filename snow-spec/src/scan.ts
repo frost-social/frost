@@ -88,15 +88,15 @@ export class Scanner {
           this.scanStringLiteral();
           return;
 
-        case "(":
-          this.column += 1;
-          this.token = TOKEN(TokenKind.OpenBrace);
-          return;
+        // case "(":
+        //   this.column += 1;
+        //   this.token = TOKEN(TokenKind.OpenParen);
+        //   return;
 
-        case ")":
-          this.column += 1;
-          this.token = TOKEN(TokenKind.CloseBrace);
-          return;
+        // case ")":
+        //   this.column += 1;
+        //   this.token = TOKEN(TokenKind.CloseParen);
+        //   return;
 
         case ",":
           this.column += 1;

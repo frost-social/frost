@@ -17,8 +17,8 @@ export function parse(input: string): S.SFile {
       attrs = [];
       continue;
     }
-    if (p.match("type")) {
-      children.push(parseTypeDecl(p));
+    if (p.match("component")) {
+      children.push(parseComponentDecl(p));
       attrs = [];
       continue;
     }
@@ -31,37 +31,12 @@ export function parse(input: string): S.SFile {
   };
 }
 
-function parseAttr(p: Parser): S.SAttr {
-  p.next();
-
-  p.expect(TokenKind.Word);
-  p.throwIfExistErrors();
-
-  const key = p.getValue();
-  p.next();
-
-  let value;
-  if (!p.match(TokenKind.CloseBracket)) {
-    value = parseValue(p);
-  }
-
-  p.nextWith(TokenKind.CloseBracket);
-  p.throwIfExistErrors();
-
-  return {
-    kind: "attr",
-    key: key,
-    value: value,
-  };
-}
-
-function parseRoute(p: Parser, routeAttrs: S.SAttr[]): S.SRoute {
+function parseRoute(p: Parser, parentAttrs: S.SAttr[]): S.SRoute {
   const method = p.getValue();
   p.next();
 
   p.expect(TokenKind.Word);
   p.throwIfExistErrors();
-
   const path = p.getValue();
   p.next();
 
@@ -75,18 +50,8 @@ function parseRoute(p: Parser, routeAttrs: S.SAttr[]): S.SRoute {
       attrs.push(parseAttr(p));
       continue;
     }
-    if (p.match("header")) {
-      children.push(parseHeader(p, attrs));
-      attrs = [];
-      continue;
-    }
-    if (p.match("query")) {
-      children.push(parseQuery(p));
-      attrs = [];
-      continue;
-    }
-    if (p.match("body")) {
-      children.push(parseBody(p, attrs));
+    if (p.match("request")) {
+      children.push(parseRequest(p, attrs));
       attrs = [];
       continue;
     }
@@ -106,38 +71,11 @@ function parseRoute(p: Parser, routeAttrs: S.SAttr[]): S.SRoute {
     method: method,
     path: path,
     children: children,
-    attrs: routeAttrs,
+    attrs: parentAttrs,
   };
 }
 
-function parseHeader(p: Parser, headerAttrs: S.SAttr[]): S.SHeader {
-  p.next();
-
-  p.expect(TokenKind.Word);
-  p.throwIfExistErrors();
-
-  const name = p.getValue();
-  p.next();
-  p.throwIfExistErrors();
-
-  let type;
-  if (p.match(TokenKind.Colon)) {
-    p.next();
-    type = parseType(p);
-  }
-
-  p.nextWith(TokenKind.SemiColon);
-  p.throwIfExistErrors();
-
-  return {
-    kind: "header",
-    name: name,
-    type: type,
-    attrs: headerAttrs,
-  };
-}
-
-function parseQuery(p: Parser): S.SQuery {
+function parseRequest(p: Parser, parentAttrs: S.SAttr[]): S.SRequest {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
@@ -150,8 +88,8 @@ function parseQuery(p: Parser): S.SQuery {
       attrs.push(parseAttr(p));
       continue;
     }
-    if (p.match("field")) {
-      children.push(parseField(p, attrs));
+    if (p.match("headers") || p.match("query") || p.match("body")) {
+      children.push(parseComponentBlock(p, attrs));
       attrs = [];
       continue;
     }
@@ -162,98 +100,72 @@ function parseQuery(p: Parser): S.SQuery {
   p.throwIfExistErrors();
 
   return {
-    kind: "query",
-    items: children,
+    kind: "request",
+    blocks: children,
+    attrs: parentAttrs,
   };
 }
 
-function parseBody(p: Parser, bodyAttrs: S.SAttr[]): S.SBody {
-  p.next();
-
-  p.nextWith(TokenKind.OpenBrace);
-  p.throwIfExistErrors();
-
-  let attrs = [];
-  const children = [];
-  while (true) {
-    if (p.match(TokenKind.OpenBracket)) {
-      attrs.push(parseAttr(p));
-      continue;
-    }
-    if (p.match("field")) {
-      children.push(parseField(p, attrs));
-      attrs = [];
-      continue;
-    }
-    break;
-  }
-
-  p.nextWith(TokenKind.CloseBrace);
-  p.throwIfExistErrors();
-
-  return {
-    kind: "body",
-    items: children,
-    attrs: bodyAttrs,
-  };
-}
-
-function parseField(p: Parser, fieldAttrs: S.SAttr[]): S.SField {
-  p.next();
-
-  p.expect(TokenKind.Word);
-  p.throwIfExistErrors();
-
-  const name = p.getValue();
-  p.next();
-  p.throwIfExistErrors();
-
-  let type;
-  if (p.match(TokenKind.Colon)) {
-    p.next();
-    type = parseType(p);
-  }
-
-  p.nextWith(TokenKind.SemiColon);
-  p.throwIfExistErrors();
-
-  return {
-    kind: "field",
-    name: name,
-    type: type,
-    attrs: fieldAttrs,
-  };
-}
-
-function parseResponse(p: Parser, responseAttrs: S.SAttr[]): S.SResponse {
+function parseResponse(p: Parser, parentAttrs: S.SAttr[]): S.SResponse {
   p.next();
 
   p.expect(TokenKind.NumberLiteral);
   p.throwIfExistErrors();
-
   const code = p.getValue();
   p.next();
 
-  let type;
-  if (p.match(TokenKind.Colon)) {
-    p.next();
-    type = parseType(p);
+  p.nextWith(TokenKind.OpenBrace);
+  p.throwIfExistErrors();
+
+  let attrs = [];
+  const children = [];
+  while (true) {
+    if (p.match(TokenKind.OpenBracket)) {
+      attrs.push(parseAttr(p));
+      continue;
+    }
+    if (p.match("headers") || p.match("body")) {
+      children.push(parseComponentBlock(p, attrs));
+      attrs = [];
+      continue;
+    }
+    break;
   }
 
-  p.nextWith(TokenKind.SemiColon);
+  p.nextWith(TokenKind.CloseBrace);
   p.throwIfExistErrors();
 
   return {
     kind: "response",
     statusCode: code,
-    type: type,
-    attrs: responseAttrs,
+    blocks: children,
+    attrs: parentAttrs,
   };
 }
 
-function parseType(p: Parser): S.SType {
+function parseComponentBlock(p: Parser, parentAttrs: S.SAttr[]): S.SComponentBlock {
+  const blockKind = p.getValue();
+  p.next();
+
+  p.nextWith(TokenKind.Colon);
+  p.throwIfExistErrors();
+
+  const component = parseComponent(p);
+
+  p.nextWith(TokenKind.SemiColon);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "componentBlock",
+    blockKind: blockKind,
+    component: component,
+    attrs: parentAttrs,
+  };
+}
+
+function parseComponent(p: Parser): S.SComponent {
   if (p.match(TokenKind.Word)) {
-    return parseRefType(p);
+    return parseComponentRef(p);
   }
   if (p.match(TokenKind.OpenBrace)) {
     return parseObjectType(p);
@@ -261,12 +173,12 @@ function parseType(p: Parser): S.SType {
   throw new Error("unexpected token");
 }
 
-function parseRefType(p: Parser): S.SRefType {
+function parseComponentRef(p: Parser): S.SComponentRef {
   const name = p.getValue();
   p.next();
 
   return {
-    kind: "refType",
+    kind: "componentRef",
     name: name,
   };
 }
@@ -309,12 +221,59 @@ function parseObjectField(p: Parser): S.SObjectField {
   p.nextWith(TokenKind.Colon);
   p.throwIfExistErrors();
 
-  const type = parseType(p);
+  const type = parseComponent(p);
 
   return {
     kind: "objectField",
     name: name,
     value: type,
+  };
+}
+
+function parseComponentDecl(p: Parser): S.SComponentDecl {
+  p.next();
+
+  p.expect(TokenKind.Word);
+  p.throwIfExistErrors();
+  const name = p.getValue();
+  p.next();
+
+  let component;
+  if (p.match(TokenKind.Eq)) {
+    p.next();
+    component = parseComponent(p);
+  }
+
+  p.nextWith(TokenKind.SemiColon);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "componentDecl",
+    name: name,
+    component: component,
+  };
+}
+
+function parseAttr(p: Parser): S.SAttr {
+  p.next();
+
+  p.expect(TokenKind.Word);
+  p.throwIfExistErrors();
+  const key = p.getValue();
+  p.next();
+
+  let value;
+  if (!p.match(TokenKind.CloseBracket)) {
+    value = parseValue(p);
+  }
+
+  p.nextWith(TokenKind.CloseBracket);
+  p.throwIfExistErrors();
+
+  return {
+    kind: "attr",
+    key: key,
+    value: value,
   };
 }
 
@@ -344,32 +303,6 @@ function parseValue(p: Parser): S.SValue {
     };
   }
   throw new Error("unexpected token");
-}
-
-function parseTypeDecl(p: Parser): S.STypeDecl {
-  p.next();
-
-  p.expect(TokenKind.Word);
-  p.throwIfExistErrors();
-
-  const name = p.getValue();
-  p.next();
-  p.throwIfExistErrors();
-
-  let type;
-  if (p.match(TokenKind.Eq)) {
-    p.next();
-    type = parseType(p);
-  }
-
-  p.nextWith(TokenKind.SemiColon);
-  p.throwIfExistErrors();
-
-  return {
-    kind: "typeDecl",
-    name: name,
-    type: type,
-  };
 }
 
 class Parser {
