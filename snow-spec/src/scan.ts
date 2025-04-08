@@ -88,16 +88,6 @@ export class Scanner {
           this.scanStringLiteral();
           return;
 
-        // case "(":
-        //   this.column += 1;
-        //   this.token = TOKEN(TokenKind.OpenParen);
-        //   return;
-
-        // case ")":
-        //   this.column += 1;
-        //   this.token = TOKEN(TokenKind.CloseParen);
-        //   return;
-
         case ",":
           this.column += 1;
           this.token = TOKEN(TokenKind.Comma);
@@ -292,12 +282,6 @@ export enum TokenKind {
   Word,
   NumberLiteral,
   StringLiteral,
-
-  /** "(" */
-  OpenParen,
-
-  /** ")" */
-  CloseParen,
 
   /** "," */
   Comma,
