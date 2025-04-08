@@ -8,9 +8,9 @@ import util from "node:util";
 async function main() {
   const input = await fs.readFile(Path.resolve("debug.txt"), { encoding: "utf-8" });
   const snowTree = parse(input);
-  console.log(util.inspect(snowTree, { depth: 10 }));
+  console.log(util.inspect(snowTree, { depth: 30 }));
   //const middleTree = convertTree(snowTree);
-  //console.log(util.inspect(middleTree, { depth: 10 }));
+  //console.log(util.inspect(middleTree, { depth: 30 }));
   //const openApiText = generate(middleTree);
   //console.log(openApiText);
 }

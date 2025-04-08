@@ -33,6 +33,8 @@ GET /echo {
 
     [format "json"]
     body: {
+      [name "返答メッセージ"]
+      [description "リクエストで設定したメッセージが返されます。"]
       message: string,
     };
   }
@@ -70,6 +72,8 @@ POST /echo {
 
     [format "json"]
     body: {
+      [name "返答メッセージ"]
+      [description "リクエストで設定したメッセージが返されます。"]
       message: string,
     };
   }

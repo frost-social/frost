@@ -1,10 +1,29 @@
-component ErrorResponse = {};
+component ErrorResponse = {
+  [name "エラー内容"]
+  error: {
+    [name "エラーコード"]
+    [description "エラーの内容を識別できる値。"]
+    code: number,
+
+    [name "エラーメッセージ"]
+    [description "エラーの説明文。"]
+    message: string,
+  },
+};
 
 [name "テスト用"]
 GET /echo {
   request {
-    headers: {};
-    query: {};
+    headers: {
+      [name "認証情報"]
+      Authorization: string,
+    };
+
+    query: {
+      [name "メッセージ"]
+      [description "返答するメッセージを設定。"]
+      message: string,
+    };
   }
 
   [name "OK"]
@@ -13,7 +32,11 @@ GET /echo {
     headers: {};
 
     [format "json"]
-    body: {};
+    body: {
+      [name "返答メッセージ"]
+      [description "リクエストで設定したメッセージが返されます。"]
+      message: string,
+    };
   }
 
   [name "Bad Request"]
@@ -29,10 +52,17 @@ GET /echo {
 [name "テスト用"]
 POST /echo {
   request {
-    headers: {};
+    headers: {
+      [name "認証情報"]
+      Authorization: string,
+    };
 
     [format "json"]
-    body: {};
+    body: {
+      [name "メッセージ"]
+      [description "返答するメッセージを設定。"]
+      message: string,
+    };
   }
 
   [name "OK"]
@@ -41,7 +71,11 @@ POST /echo {
     headers: {};
 
     [format "json"]
-    body: {};
+    body: {
+      [name "返答メッセージ"]
+      [description "リクエストで設定したメッセージが返されます。"]
+      message: string,
+    };
   }
 
   [name "Bad Request"]

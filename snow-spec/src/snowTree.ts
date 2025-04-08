@@ -83,6 +83,7 @@ export type SObjectField = {
   kind: "objectField",
   name: string,
   value: SComponent,
+  attrs: SAttr[],
 };
 
 export type SNumberValue = {

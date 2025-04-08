@@ -186,23 +186,25 @@ function parseComponentRef(p: Parser): S.SComponentRef {
 function parseObjectType(p: Parser): S.SObjectType {
   p.next();
 
+  let attrs = [];
   const children = [];
   while (true) {
-    if (children.length > 0) {
-      // コンマがあれば消費して継続
-      // コンマがなければフィールド列の終わりと判断
-      if (p.match(TokenKind.Comma)) {
-        p.next();
-      } else {
-        break;
-      }
-    }
-    if (p.match(TokenKind.Word)) {
-      children.push(parseObjectField(p));
+    if (p.match(TokenKind.OpenBracket)) {
+      attrs.push(parseAttr(p));
       continue;
     }
-    // いずれかでもなければフィールド列の終わりと判断
-    break;
+    if (p.match(TokenKind.Word)) {
+      children.push(parseObjectField(p, attrs));
+      attrs = [];
+      continue;
+    }
+    // コンマがあれば消費して継続
+    // コンマがなければフィールド列の終わりと判断
+    if (p.match(TokenKind.Comma)) {
+      p.next();
+    } else {
+      break;
+    }
   }
 
   p.nextWith(TokenKind.CloseBrace);
@@ -214,7 +216,7 @@ function parseObjectType(p: Parser): S.SObjectType {
   };
 }
 
-function parseObjectField(p: Parser): S.SObjectField {
+function parseObjectField(p: Parser, parentAttrs: S.SAttr[]): S.SObjectField {
   const name = p.getValue();
   p.next();
 
@@ -227,6 +229,7 @@ function parseObjectField(p: Parser): S.SObjectField {
     kind: "objectField",
     name: name,
     value: type,
+    attrs: parentAttrs,
   };
 }
 
