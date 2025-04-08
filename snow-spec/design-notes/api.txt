@@ -28,32 +28,34 @@ GET /echo {
 
   [name "OK"]
   [description "リクエスト成功"]
-  [format json]
   response 200 {
     headers: {};
+
+    [format "json"]
     body: {
       message: string,
     };
   }
 
-  [name: "Bad Request"]
-  [description: "無効なリクエスト"]
-  [format: "json"]
+  [name "Bad Request"]
+  [description "無効なリクエスト"]
   response 400 {
     headers: {};
+
+    [format "json"]
     body: ErrorResponse;
   }
 }
 
 [name "テスト用"]
 POST /echo {
-  [format json]
   request {
     headers: {
       [name "認証情報"]
       Authorization: string,
     };
 
+    [format "json"]
     body: {
       [name "メッセージ"]
       [description "返答するメッセージを設定。"]
@@ -61,21 +63,23 @@ POST /echo {
     };
   }
 
-  [name: "OK"]
-  [description: "リクエスト成功"]
-  [format: "json"]
+  [name "OK"]
+  [description "リクエスト成功"]
   response 200 {
     headers: {};
+
+    [format "json"]
     body: {
       message: string,
     };
   }
 
-  [name: "Bad Request"]
-  [description: "無効なリクエスト"]
-  [format: "json"]
+  [name "Bad Request"]
+  [description "無効なリクエスト"]
   response 400 {
     headers: {};
+
+    [format "json"]
     body: ErrorResponse;
   }
 }
