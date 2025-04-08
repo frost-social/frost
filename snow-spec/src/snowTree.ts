@@ -1,4 +1,4 @@
-export type SNode = SFile | SAttr | SRoute | SHeader | SQuery | SBody | SField | SResponse | SComponentRef | SObjectType | SNumberValue | SBoolValue | SStringValue | SComponentDecl;
+export type SNode = SFile | SAttr | SRoute | SResponse | SComponentRef | SObjectType | SNumberValue | SBoolValue | SStringValue | SComponentDecl;
 export type SFileMember = SRoute | SComponentDecl;
 export type SRouteMember = SRequest | SResponse;
 export type SComponent = SComponentRef | SObjectType;
@@ -6,7 +6,7 @@ export type SValue = SNumberValue | SBoolValue | SStringValue;
 
 export type SFile = {
   kind: 'file',
-  children: SFileMember[];
+  children: SFileMember[],
 };
 
 export type SAttr = {
@@ -20,32 +20,6 @@ export type SRoute = {
   method: string,
   path: string,
   children: SRouteMember[],
-  attrs: SAttr[],
-};
-
-export type SHeader = {
-  kind: "header",
-  name: string,
-  component: SComponent | undefined,
-  attrs: SAttr[],
-};
-
-export type SQuery = {
-  kind: "query",
-  items: SField[],
-  attrs: SAttr[],
-};
-
-export type SBody = {
-  kind: "body",
-  items: SNode[],
-  attrs: SAttr[],
-};
-
-export type SField = {
-  kind: "field",
-  name: string,
-  component: SComponent | undefined,
   attrs: SAttr[],
 };
 
