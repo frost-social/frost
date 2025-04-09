@@ -1,10 +1,11 @@
 import util from "node:util";
 import * as S from "./snowTree";
 import * as O from "./openapiSchema";
+import { SnowSymbol } from "./resolve";
 
-export function generate(file: S.SFile): string {
+export function generate(file: S.SFile, symbolTable: Map<S.SNode, SnowSymbol>): string {
   const outFile: O.OpenAPI = {
-    openapi: "3.1.0",
+    openapi: "3.1.1",
     info: {
       title: "",
       version: ""
@@ -18,12 +19,14 @@ export function generate(file: S.SFile): string {
         outFile.paths![fileMember.path] = {};
       }
     }
+    if (fileMember.kind == "componentDecl" && fileMember.component != null) {
+
+    }
   }
 
-  console.log(util.inspect(outFile, { depth: 30 }));
+  //console.log(util.inspect(outFile, { depth: 30 }));
 
   const json = JSON.stringify(outFile);
-  //console.log(json);
 
   return json;
 }
