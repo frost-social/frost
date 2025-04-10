@@ -1,8 +1,8 @@
-import * as Target from "./openapiNode";
+import * as Nodes from "./openapiNode";
 import * as Symbols from "./symbolNode";
 
 export function generate(file: Symbols.FileSymbol): string {
-  const outFile: Target.OpenAPI = {
+  const outFile: Nodes.OpenAPI = {
     openapi: "3.1.1",
     info: {
       title: "",

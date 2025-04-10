@@ -1,7 +1,7 @@
 import { Scanner, TokenKind } from "./scan";
-import * as Syntax from "./syntaxNode";
+import * as Nodes from "./syntaxNode";
 
-export function parse(input: string): Syntax.FileNode {
+export function parse(input: string): Nodes.FileNode {
   const p = new Parser();
   p.initialize(input);
 
@@ -31,7 +31,7 @@ export function parse(input: string): Syntax.FileNode {
   };
 }
 
-function parseEndpoint(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.EndpointDeclNode {
+function parseEndpoint(p: Parser, parentAttrs: Nodes.AttrNode[]): Nodes.EndpointDeclNode {
   const method = p.getValue();
   p.next();
 
@@ -75,7 +75,7 @@ function parseEndpoint(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.Endpoi
   };
 }
 
-function parseRequest(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.RequestNode {
+function parseRequest(p: Parser, parentAttrs: Nodes.AttrNode[]): Nodes.RequestNode {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
@@ -106,7 +106,7 @@ function parseRequest(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.Request
   };
 }
 
-function parseResponse(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.ResponseNode {
+function parseResponse(p: Parser, parentAttrs: Nodes.AttrNode[]): Nodes.ResponseNode {
   p.next();
 
   p.expect(TokenKind.NumberLiteral);
@@ -143,7 +143,7 @@ function parseResponse(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.Respon
   };
 }
 
-function parseComponentBlock(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.ComponentBlockNode {
+function parseComponentBlock(p: Parser, parentAttrs: Nodes.AttrNode[]): Nodes.ComponentBlockNode {
   const blockKind = p.getValue();
   p.next();
 
@@ -163,7 +163,7 @@ function parseComponentBlock(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.
   };
 }
 
-function parseComponent(p: Parser): Syntax.ComponentNode {
+function parseComponent(p: Parser): Nodes.ComponentNode {
   if (p.match(TokenKind.Word)) {
     return parseComponentRef(p);
   }
@@ -173,7 +173,7 @@ function parseComponent(p: Parser): Syntax.ComponentNode {
   throw new Error("unexpected token");
 }
 
-function parseComponentRef(p: Parser): Syntax.ComponentRefNode {
+function parseComponentRef(p: Parser): Nodes.ComponentRefNode {
   const name = p.getValue();
   p.next();
 
@@ -183,7 +183,7 @@ function parseComponentRef(p: Parser): Syntax.ComponentRefNode {
   };
 }
 
-function parseObject(p: Parser): Syntax.ObjectNode {
+function parseObject(p: Parser): Nodes.ObjectNode {
   p.next();
 
   let attrs = [];
@@ -216,7 +216,7 @@ function parseObject(p: Parser): Syntax.ObjectNode {
   };
 }
 
-function parseObjectField(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.ObjectFieldNode {
+function parseObjectField(p: Parser, parentAttrs: Nodes.AttrNode[]): Nodes.ObjectFieldNode {
   const name = p.getValue();
   p.next();
 
@@ -233,7 +233,7 @@ function parseObjectField(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.Obj
   };
 }
 
-function parseComponentDecl(p: Parser): Syntax.ComponentDeclNode {
+function parseComponentDecl(p: Parser): Nodes.ComponentDeclNode {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -257,7 +257,7 @@ function parseComponentDecl(p: Parser): Syntax.ComponentDeclNode {
   };
 }
 
-function parseAttr(p: Parser): Syntax.AttrNode {
+function parseAttr(p: Parser): Nodes.AttrNode {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -280,7 +280,7 @@ function parseAttr(p: Parser): Syntax.AttrNode {
   };
 }
 
-function parseValue(p: Parser): Syntax.ValueNode {
+function parseValue(p: Parser): Nodes.ValueNode {
   if (p.match(TokenKind.StringLiteral)) {
     const value = p.getValue();
     p.next();

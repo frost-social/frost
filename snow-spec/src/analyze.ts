@@ -1,4 +1,4 @@
-import * as Syntax from "./syntaxNode";
+import * as Nodes from "./syntaxNode";
 import * as Symbols from "./symbolNode";
 
 // このモジュールでは構文ツリーからシンボルグラフを構築します。
@@ -6,6 +6,6 @@ import * as Symbols from "./symbolNode";
 // NOTE:
 // OpenAPIにおけるコンポーネントの種類を決定する必要がある(参照が複数ある場合はそれぞれ別の種類に分類される可能性あり)。
 
-export function analyze(input: Syntax.FileNode): Symbols.FileSymbol {
+export function analyze(input: Nodes.FileNode): Symbols.FileSymbol {
   throw new Error("not implemented yet");
 }
