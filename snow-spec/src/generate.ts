@@ -1,10 +1,9 @@
-import util from "node:util";
+import * as Target from "./openapiSchema";
+import * as Symbols from "./symbolNode";
 import * as Syntax from "./syntaxNode";
-import * as O from "./openapiSchema";
-import { SnowSymbol } from "./resolve";
 
-export function generate(file: Syntax.FileNode, symbolTable: Map<Syntax.SyntaxNode, SnowSymbol>): string {
-  const outFile: O.OpenAPI = {
+export function generate(file: Syntax.FileNode, symbolTable: Map<Syntax.SyntaxNode, Symbols.SymbolNode>): string {
+  const outFile: Target.OpenAPI = {
     openapi: "3.1.1",
     info: {
       title: "",
