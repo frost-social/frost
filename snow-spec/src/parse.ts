@@ -13,7 +13,7 @@ export function parse(input: string): Syntax.FileNode {
       continue;
     }
     if (p.match("POST") || p.match("GET") || p.match("PUT") || p.match("PATCH") || p.match("DELETE")) {
-      children.push(parseRoute(p, attrs));
+      children.push(parseEndpoint(p, attrs));
       attrs = [];
       continue;
     }
@@ -31,7 +31,7 @@ export function parse(input: string): Syntax.FileNode {
   };
 }
 
-function parseRoute(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.RouteNode {
+function parseEndpoint(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.EndpointDeclNode {
   const method = p.getValue();
   p.next();
 
@@ -67,7 +67,7 @@ function parseRoute(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.RouteNode
   p.throwIfExistErrors();
 
   return {
-    kind: "route",
+    kind: "endpointDecl",
     method: method,
     path: path,
     children: children,

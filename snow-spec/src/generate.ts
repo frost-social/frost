@@ -1,8 +1,7 @@
 import * as Target from "./openapiNode";
 import * as Symbols from "./symbolNode";
-import * as Syntax from "./syntaxNode";
 
-export function generate(file: Syntax.FileNode, symbolTable: Map<Syntax.SyntaxNode, Symbols.SymbolNode>): string {
+export function generate(file: Symbols.FileSymbol): string {
   const outFile: Target.OpenAPI = {
     openapi: "3.1.1",
     info: {
@@ -14,11 +13,13 @@ export function generate(file: Syntax.FileNode, symbolTable: Map<Syntax.SyntaxNo
 
   for (const fileMember of file.children) {
     if (fileMember.kind == "route") {
-      if (outFile.paths![fileMember.path] == null) {
-        outFile.paths![fileMember.path] = {};
+      for (const endpoint of fileMember.children) {
+        if (outFile.paths![endpoint.syntaxNode.path] == null) {
+          outFile.paths![endpoint.syntaxNode.path] = {};
+        }
       }
     }
-    if (fileMember.kind == "componentDecl" && fileMember.component != null) {
+    if (fileMember.kind == "component" && fileMember.syntaxNode.component != null) {
 
     }
   }

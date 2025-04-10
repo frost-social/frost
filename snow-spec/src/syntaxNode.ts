@@ -1,5 +1,5 @@
-export type SyntaxNode = FileNode | AttrNode | RouteNode | ResponseNode | ComponentRefNode | ObjectNode | NumberValueNode | BoolValueNode | StringValueNode | ComponentDeclNode;
-export type FileMemberNode = RouteNode | ComponentDeclNode;
+export type SyntaxNode = FileNode | AttrNode | EndpointDeclNode | ResponseNode | ComponentRefNode | ObjectNode | NumberValueNode | BoolValueNode | StringValueNode | ComponentDeclNode;
+export type FileMemberNode = EndpointDeclNode | ComponentDeclNode;
 export type RouteMemberNode = RequestNode | ResponseNode;
 export type ComponentNode = ComponentRefNode | ObjectNode;
 export type ValueNode = NumberValueNode | BoolValueNode | StringValueNode;
@@ -17,8 +17,8 @@ export interface AttrNode {
   value?: ValueNode;
 }
 
-export interface RouteNode {
-  kind: 'route';
+export interface EndpointDeclNode {
+  kind: 'endpointDecl';
   method: string;
   path: string;
   children: RouteMemberNode[];

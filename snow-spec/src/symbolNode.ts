@@ -1,15 +1,26 @@
 import * as Syntax from "./syntaxNode";
 
 export type SymbolNode = RouteSymbol | RequestSymbol | ResponseSymbol | ComponentSymbol;
+export type FileMemberSymbol = RouteSymbol | ComponentSymbol;
+export type EndpointMemberSymbol = RequestSymbol | ResponseSymbol;
 
-export type RouteMemberSymbol = RequestSymbol | ResponseSymbol;
+// シンボルグラフを構成するノードを定義します。
 
-// シンボルテーブルを構成するノードを定義します。
+export interface FileSymbol {
+  kind: "file";
+  children: FileMemberSymbol[];
+  syntaxNode: Syntax.FileNode;
+}
 
 export interface RouteSymbol {
   kind: "route";
-  children: RouteMemberSymbol[];
-  declNode: Syntax.RouteNode;
+  children: EndpointSymbol[];
+}
+
+export interface EndpointSymbol {
+  kind: "endpoint";
+  children: EndpointMemberSymbol[];
+  syntaxNode: Syntax.EndpointDeclNode;
 }
 
 export interface RequestSymbol {
@@ -25,5 +36,5 @@ export interface ResponseSymbol {
 export interface ComponentSymbol {
   kind: "component";
   children: SymbolNode[];
-  declNode: Syntax.ComponentDeclNode;
+  syntaxNode: Syntax.ComponentDeclNode;
 }

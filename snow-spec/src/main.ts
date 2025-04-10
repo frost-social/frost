@@ -2,17 +2,14 @@ import fs from "node:fs/promises";
 import Path from "node:path";
 import { generate } from "./generate";
 import { parse } from "./parse";
-import { resolve } from "./resolve";
-import * as Symbols from "./symbolNode";
-import * as Syntax from "./syntaxNode";
+import { analyze } from "./analyze";
 
 async function main() {
   const input = await fs.readFile(Path.resolve("debug.txt"), { encoding: "utf-8" });
-  const snowTree = parse(input);
+  const syntaxNode = parse(input);
   //console.log(util.inspect(snowTree, { depth: 30 }));
-  const symbolTable = new Map<Syntax.SyntaxNode, Symbols.SymbolNode>();
-  resolve(snowTree, symbolTable);
-  const json = generate(snowTree, symbolTable);
+  const symbolNode = analyze(syntaxNode);
+  const json = generate(symbolNode);
   //console.log(json);
 }
 main()
