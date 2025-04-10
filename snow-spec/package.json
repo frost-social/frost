@@ -1,0 +1,16 @@
+{
+  "name": "snow-spec",
+  "version": "0.1.0",
+  "type": "commonjs",
+  "description": "A language for describing API specs. This language generates OpenAPI specification files.",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "tsc",
+    "rebuild": "rm -rf dist && tsc",
+    "start": "node dist/src/main.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "^5.8.3"
+  }
+}

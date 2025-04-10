@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig to read more about this file */
+    "module": "Node16",
+    "target": "ES2022",
+    "outDir": "./dist/src",
+    "moduleResolution": "Node16",
+    "declaration": true,
+    "sourceMap": true,
+    "incremental": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}
