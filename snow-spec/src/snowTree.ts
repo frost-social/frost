@@ -1,82 +1,82 @@
-export type SNode = SFile | SAttr | SRoute | SResponse | SComponentRef | SObjectType | SNumberValue | SBoolValue | SStringValue | SComponentDecl;
+export type SyntaxNode = SFile | SAttr | SRoute | SResponse | SComponentRef | SObject | SNumberValue | SBoolValue | SStringValue | SComponentDecl;
 export type SFileMember = SRoute | SComponentDecl;
 export type SRouteMember = SRequest | SResponse;
-export type SComponent = SComponentRef | SObjectType;
+export type SComponent = SComponentRef | SObject;
 export type SValue = SNumberValue | SBoolValue | SStringValue;
 
-export type SFile = {
-  kind: 'file',
-  children: SFileMember[],
+export interface SFile {
+  kind: 'file';
+  children: SFileMember[];
+}
+
+export interface SAttr {
+  kind: 'attr';
+  key: string;
+  value?: SValue;
 };
 
-export type SAttr = {
-  kind: 'attr',
-  key: string,
-  value: SValue | undefined,
+export interface SRoute {
+  kind: 'route';
+  method: string;
+  path: string;
+  children: SRouteMember[];
+  attrs: SAttr[];
 };
 
-export type SRoute = {
-  kind: 'route',
-  method: string,
-  path: string,
-  children: SRouteMember[],
-  attrs: SAttr[],
+export interface SRequest {
+  kind: "request";
+  blocks: SComponentBlock[];
+  attrs: SAttr[];
 };
 
-export type SRequest = {
-  kind: "request",
-  blocks: SComponentBlock[],
-  attrs: SAttr[],
+export interface SResponse {
+  kind: "response";
+  statusCode: string;
+  blocks: SComponentBlock[];
+  attrs: SAttr[];
 };
 
-export type SResponse = {
-  kind: "response",
-  statusCode: string,
-  blocks: SComponentBlock[],
-  attrs: SAttr[],
+export interface SComponentBlock {
+  kind: "componentBlock";
+  blockKind: string;
+  component: SComponent;
+  attrs: SAttr[];
 };
 
-export type SComponentBlock = {
-  kind: "componentBlock",
-  blockKind: string,
-  component: SComponent,
-  attrs: SAttr[],
+export interface SComponentRef {
+  kind: "componentRef";
+  name: string;
 };
 
-export type SComponentRef = {
-  kind: "componentRef",
-  name: string,
+export interface SObject {
+  kind: "object";
+  children: SObjectField[];
 };
 
-export type SObjectType = {
-  kind: "objectType",
-  children: SObjectField[],
+export interface SObjectField {
+  kind: "objectField";
+  name: string;
+  value: SComponent;
+  attrs: SAttr[];
 };
 
-export type SObjectField = {
-  kind: "objectField",
-  name: string,
-  value: SComponent,
-  attrs: SAttr[],
+export interface SNumberValue {
+  kind: "numberValue";
+  value: string;
 };
 
-export type SNumberValue = {
-  kind: "numberValue",
-  value: string,
+export interface SBoolValue {
+  kind: "boolValue";
+  value: string;
 };
 
-export type SBoolValue = {
-  kind: "boolValue",
-  value: string,
+export interface SStringValue {
+  kind: "stringValue";
+  value: string;
 };
 
-export type SStringValue = {
-  kind: "stringValue",
-  value: string,
-};
-
-export type SComponentDecl = {
-  kind: "componentDecl",
-  name: string,
-  component: SComponent | undefined,
+export interface SComponentDecl {
+  kind: "componentDecl";
+  name: string;
+  component?: SComponent;
 };

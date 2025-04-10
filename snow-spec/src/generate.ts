@@ -3,7 +3,7 @@ import * as S from "./snowTree";
 import * as O from "./openapiSchema";
 import { SnowSymbol } from "./resolve";
 
-export function generate(file: S.SFile, symbolTable: Map<S.SNode, SnowSymbol>): string {
+export function generate(file: S.SFile, symbolTable: Map<S.SyntaxNode, SnowSymbol>): string {
   const outFile: O.OpenAPI = {
     openapi: "3.1.1",
     info: {

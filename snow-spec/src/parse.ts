@@ -168,7 +168,7 @@ function parseComponent(p: Parser): S.SComponent {
     return parseComponentRef(p);
   }
   if (p.match(TokenKind.OpenBrace)) {
-    return parseObjectType(p);
+    return parseObject(p);
   }
   throw new Error("unexpected token");
 }
@@ -183,7 +183,7 @@ function parseComponentRef(p: Parser): S.SComponentRef {
   };
 }
 
-function parseObjectType(p: Parser): S.SObjectType {
+function parseObject(p: Parser): S.SObject {
   p.next();
 
   let attrs = [];
@@ -211,7 +211,7 @@ function parseObjectType(p: Parser): S.SObjectType {
   p.throwIfExistErrors();
 
   return {
-    kind: "objectType",
+    kind: "object",
     children: children,
   };
 }
