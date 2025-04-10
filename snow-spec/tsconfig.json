@@ -5,7 +5,7 @@
     "target": "ES2022",
     "outDir": "./dist/src",
     "moduleResolution": "Node16",
-    "declaration": false,
+    "declaration": true,
     "sourceMap": true,
     "incremental": true,
     "strict": true,
