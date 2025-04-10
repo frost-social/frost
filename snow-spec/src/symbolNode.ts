@@ -1,8 +1,9 @@
 import * as Syntax from "./syntaxNode";
 
-export type SymbolNode = RouteSymbol | RequestSymbol | ResponseSymbol | ComponentSymbol;
-export type FileMemberSymbol = RouteSymbol | ComponentSymbol;
+export type SymbolNode = RouteSymbol | RequestSymbol | ResponseSymbol | ComponentBaseSymbol | ComponentSymbol;
+export type FileMemberSymbol = RouteSymbol | ComponentBaseSymbol;
 export type EndpointMemberSymbol = RequestSymbol | ResponseSymbol;
+export type ComponentSymbol = SchemaComponentSymbol | ResponseComponentSymbol | ParameterComponentSymbol | RequestBodyComponentSymbol | HeaderComponentSymbol | PathItemComponentSymbol;
 
 // シンボルグラフを構成するノードを定義します。
 
@@ -33,8 +34,40 @@ export interface ResponseSymbol {
   children: SymbolNode[];
 }
 
-export interface ComponentSymbol {
-  kind: "component";
-  children: SymbolNode[];
+export interface ComponentBaseSymbol {
+  kind: "componentBase";
+  children: ComponentSymbol[];
   syntaxNode: Syntax.ComponentDeclNode;
+}
+
+export interface SchemaComponentSymbol {
+  kind: "schemaComponent";
+  parent: ComponentBaseSymbol;
+  children: SymbolNode[];
+}
+
+export interface ResponseComponentSymbol {
+  kind: "responseComponent";
+  parent: ComponentBaseSymbol;
+  children: SymbolNode[];
+}
+
+export interface ParameterComponentSymbol {
+  kind: "parameterComponent";
+  children: SymbolNode[];
+}
+
+export interface RequestBodyComponentSymbol {
+  kind: "requestBodyComponent";
+  children: SymbolNode[];
+}
+
+export interface HeaderComponentSymbol {
+  kind: "headerComponent";
+  children: SymbolNode[];
+}
+
+export interface PathItemComponentSymbol {
+  kind: "pathItemComponent";
+  children: SymbolNode[];
 }

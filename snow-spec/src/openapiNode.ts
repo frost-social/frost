@@ -71,12 +71,12 @@ export interface MediaTypeObject {
 
 // https://spec.openapis.org/oas/v3.1.1.html#components-object
 export interface ComponentsObject {
-  schemas: Record<string, SchemaObject>;
-  responses: Record<string, SchemaObject>;
-  parameters: Record<string, SchemaObject>;
-  requestBodies: Record<string, SchemaObject>;
-  headers: Record<string, SchemaObject>;
-  pathItems: Record<string, SchemaObject>;
+  schemas?: Record<string, SchemaObject>;
+  responses?: Record<string, SchemaObject>;
+  parameters?: Record<string, SchemaObject>;
+  requestBodies?: Record<string, SchemaObject>;
+  headers?: Record<string, SchemaObject>;
+  pathItems?: Record<string, SchemaObject>;
 }
 
 // https://spec.openapis.org/oas/v3.1.1.html#schema-object

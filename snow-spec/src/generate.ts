@@ -9,18 +9,17 @@ export function generate(file: Symbols.FileSymbol): string {
       version: ""
     },
     paths: {},
+    components: {
+      requestBodies: {},
+    },
   };
 
   for (const fileMember of file.children) {
     if (fileMember.kind == "route") {
-      for (const endpoint of fileMember.children) {
-        if (outFile.paths![endpoint.syntaxNode.path] == null) {
-          outFile.paths![endpoint.syntaxNode.path] = {};
-        }
-      }
+      emitRoute(fileMember, outFile);
     }
-    if (fileMember.kind == "component" && fileMember.syntaxNode.component != null) {
-
+    if (fileMember.kind == "componentBase") {
+      emitComponentBase(fileMember, outFile);
     }
   }
 
@@ -29,4 +28,20 @@ export function generate(file: Symbols.FileSymbol): string {
   const json = JSON.stringify(outFile);
 
   return json;
+}
+
+function emitRoute(symbol: Symbols.RouteSymbol, root: Nodes.OpenAPI): void {
+  for (const endpoint of symbol.children) {
+    if (root.paths![endpoint.syntaxNode.path] == null) {
+      root.paths![endpoint.syntaxNode.path] = {};
+    }
+  }
+}
+
+function emitComponentBase(symbol: Symbols.ComponentBaseSymbol, root: Nodes.OpenAPI): void {
+  for (const component of symbol.children) {
+    if (component.kind == "requestBodyComponent") {
+      root.components!.requestBodies![symbol.syntaxNode.name] = {};
+    }
+  }
 }
