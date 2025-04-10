@@ -1,9 +1,9 @@
 import util from "node:util";
-import * as S from "./snowTree";
+import * as Syntax from "./syntaxNode";
 import * as O from "./openapiSchema";
 import { SnowSymbol } from "./resolve";
 
-export function generate(file: S.SFile, symbolTable: Map<S.SyntaxNode, SnowSymbol>): string {
+export function generate(file: Syntax.FileNode, symbolTable: Map<Syntax.SyntaxNode, SnowSymbol>): string {
   const outFile: O.OpenAPI = {
     openapi: "3.1.1",
     info: {

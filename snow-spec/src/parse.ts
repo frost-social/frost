@@ -1,7 +1,7 @@
 import { Scanner, TokenKind } from "./scan";
-import * as S from "./snowTree";
+import * as Syntax from "./syntaxNode";
 
-export function parse(input: string): S.SFile {
+export function parse(input: string): Syntax.FileNode {
   const p = new Parser();
   p.initialize(input);
 
@@ -31,7 +31,7 @@ export function parse(input: string): S.SFile {
   };
 }
 
-function parseRoute(p: Parser, parentAttrs: S.SAttr[]): S.SRoute {
+function parseRoute(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.RouteNode {
   const method = p.getValue();
   p.next();
 
@@ -75,7 +75,7 @@ function parseRoute(p: Parser, parentAttrs: S.SAttr[]): S.SRoute {
   };
 }
 
-function parseRequest(p: Parser, parentAttrs: S.SAttr[]): S.SRequest {
+function parseRequest(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.RequestNode {
   p.next();
 
   p.nextWith(TokenKind.OpenBrace);
@@ -106,7 +106,7 @@ function parseRequest(p: Parser, parentAttrs: S.SAttr[]): S.SRequest {
   };
 }
 
-function parseResponse(p: Parser, parentAttrs: S.SAttr[]): S.SResponse {
+function parseResponse(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.ResponseNode {
   p.next();
 
   p.expect(TokenKind.NumberLiteral);
@@ -143,7 +143,7 @@ function parseResponse(p: Parser, parentAttrs: S.SAttr[]): S.SResponse {
   };
 }
 
-function parseComponentBlock(p: Parser, parentAttrs: S.SAttr[]): S.SComponentBlock {
+function parseComponentBlock(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.ComponentBlockNode {
   const blockKind = p.getValue();
   p.next();
 
@@ -163,7 +163,7 @@ function parseComponentBlock(p: Parser, parentAttrs: S.SAttr[]): S.SComponentBlo
   };
 }
 
-function parseComponent(p: Parser): S.SComponent {
+function parseComponent(p: Parser): Syntax.ComponentNode {
   if (p.match(TokenKind.Word)) {
     return parseComponentRef(p);
   }
@@ -173,7 +173,7 @@ function parseComponent(p: Parser): S.SComponent {
   throw new Error("unexpected token");
 }
 
-function parseComponentRef(p: Parser): S.SComponentRef {
+function parseComponentRef(p: Parser): Syntax.ComponentRefNode {
   const name = p.getValue();
   p.next();
 
@@ -183,7 +183,7 @@ function parseComponentRef(p: Parser): S.SComponentRef {
   };
 }
 
-function parseObject(p: Parser): S.SObject {
+function parseObject(p: Parser): Syntax.ObjectNode {
   p.next();
 
   let attrs = [];
@@ -216,7 +216,7 @@ function parseObject(p: Parser): S.SObject {
   };
 }
 
-function parseObjectField(p: Parser, parentAttrs: S.SAttr[]): S.SObjectField {
+function parseObjectField(p: Parser, parentAttrs: Syntax.AttrNode[]): Syntax.ObjectFieldNode {
   const name = p.getValue();
   p.next();
 
@@ -233,7 +233,7 @@ function parseObjectField(p: Parser, parentAttrs: S.SAttr[]): S.SObjectField {
   };
 }
 
-function parseComponentDecl(p: Parser): S.SComponentDecl {
+function parseComponentDecl(p: Parser): Syntax.ComponentDeclNode {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -257,7 +257,7 @@ function parseComponentDecl(p: Parser): S.SComponentDecl {
   };
 }
 
-function parseAttr(p: Parser): S.SAttr {
+function parseAttr(p: Parser): Syntax.AttrNode {
   p.next();
 
   p.expect(TokenKind.Word);
@@ -280,7 +280,7 @@ function parseAttr(p: Parser): S.SAttr {
   };
 }
 
-function parseValue(p: Parser): S.SValue {
+function parseValue(p: Parser): Syntax.ValueNode {
   if (p.match(TokenKind.StringLiteral)) {
     const value = p.getValue();
     p.next();
