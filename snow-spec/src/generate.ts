@@ -1,4 +1,4 @@
-import * as Target from "./openapiSchema";
+import * as Target from "./openapiNode";
 import * as Symbols from "./symbolNode";
 import * as Syntax from "./syntaxNode";
 
