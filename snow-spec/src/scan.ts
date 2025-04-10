@@ -155,9 +155,11 @@ export class Scanner {
           {
             // 先読みして必要に応じて消費する
             const ch = this.peekChar();
-            if (ch == '' || !(ch >= '0' && ch <= '9')) break;
-            this.readChar();
+            if (ch == '' || !digit.test(ch)) {
+              break;
+            }
 
+            this.readChar();
             wholeNumber += ch;
             this.column += 1;
           }
@@ -177,13 +179,9 @@ export class Scanner {
 
         // 後続の文字を読む
         while (true) {
+          // 先読みして必要に応じて消費する
           const ch = this.peekChar();
-          if (ch == '' || !(
-              ch >= '0' && ch <= '9' ||
-              ch >= 'A' && ch <= 'Z' ||
-              ch >= 'a' && ch <= 'z' ||
-              ch == '_')
-          ) {
+          if (ch == '' || !wordChar.test(ch)) {
             break;
           }
 
