@@ -28,6 +28,7 @@ function analyzeEndpoint(node: Nodes.EndpointDeclNode, parentSymbol: Symbols.Fil
   for (const member of parentSymbol.children) {
     if (member.kind == "route" && member.path == node.path) {
       routeSymbol = member;
+      break;
     }
   }
 
