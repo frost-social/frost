@@ -15,6 +15,7 @@ export interface FileSymbol {
 
 export interface RouteSymbol {
   kind: "route";
+  path: string;
   children: EndpointSymbol[];
 }
 
