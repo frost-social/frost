@@ -14,12 +14,19 @@ export function analyze(input: Nodes.FileNode): Symbols.FileSymbol {
   };
 
   for (const member of input.children) {
+    if (member.kind == "componentDecl") {
+      analyzeComponent(member, symbol);
+    }
     if (member.kind == "endpointDecl") {
       analyzeEndpoint(member, symbol);
     }
   }
 
   return symbol;
+}
+
+function analyzeComponent(node: Nodes.ComponentDeclNode, parentSymbol: Symbols.FileSymbol): void {
+  // TODO
 }
 
 function analyzeEndpoint(node: Nodes.EndpointDeclNode, parentSymbol: Symbols.FileSymbol): void {
@@ -49,4 +56,21 @@ function analyzeEndpoint(node: Nodes.EndpointDeclNode, parentSymbol: Symbols.Fil
     syntaxNode: node,
   };
   routeSymbol.children.push(symbol);
+
+  for (const member of node.children) {
+    if (member.kind == "request") {
+      analyzeRequest(member, symbol);
+    }
+    if (member.kind == "response") {
+      analyzeResponse(member, symbol);
+    }
+  }
+}
+
+function analyzeRequest(node: Nodes.RequestNode, parentSymbol: Symbols.EndpointSymbol): void {
+  // TODO
+}
+
+function analyzeResponse(node: Nodes.ResponseNode, parentSymbol: Symbols.EndpointSymbol): void {
+  // TODO
 }
