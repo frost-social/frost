@@ -1,10 +1,10 @@
+// 構文ツリーを構成するノードを定義します。
+
 export type SyntaxNode = FileNode | AttrNode | EndpointDeclNode | ResponseNode | ComponentRefNode | ObjectNode | NumberValueNode | BoolValueNode | StringValueNode | ComponentDeclNode;
 export type FileMemberNode = EndpointDeclNode | ComponentDeclNode;
 export type RouteMemberNode = RequestNode | ResponseNode;
 export type ComponentNode = ComponentRefNode | ObjectNode;
 export type ValueNode = NumberValueNode | BoolValueNode | StringValueNode;
-
-// 構文ツリーを構成するノードを定義します。
 
 export interface FileNode {
   kind: 'file';
