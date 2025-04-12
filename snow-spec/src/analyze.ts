@@ -1,5 +1,5 @@
-import * as Nodes from "./syntaxNode";
 import * as Symbols from "./symbolNode";
+import * as Nodes from "./syntaxNode";
 
 // このモジュールでは構文ツリーからシンボルグラフを構築します。
 
@@ -25,8 +25,22 @@ export function analyze(input: Nodes.FileNode): Symbols.FileSymbol {
   return symbol;
 }
 
+function collectComponent() {
+
+}
+
 function analyzeComponent(node: Nodes.ComponentDeclNode, parentSymbol: Symbols.FileSymbol): void {
-  // TODO
+  const componentName = node.name;
+  if (node.component == null) {
+    return;
+  }
+
+  if (node.component.kind == "object") {
+    //node.component.children;
+  }
+  if (node.component.kind == "componentRef") {
+    //node.component.name;
+  }
 }
 
 function analyzeEndpoint(node: Nodes.EndpointDeclNode, parentSymbol: Symbols.FileSymbol): void {
@@ -43,6 +57,7 @@ function analyzeEndpoint(node: Nodes.EndpointDeclNode, parentSymbol: Symbols.Fil
   if (routeSymbol == null) {
     routeSymbol = {
       kind: "route",
+      parent: parentSymbol,
       path: node.path,
       children: [],
     } satisfies Symbols.RouteSymbol;
@@ -50,19 +65,20 @@ function analyzeEndpoint(node: Nodes.EndpointDeclNode, parentSymbol: Symbols.Fil
   }
 
   // endpointシンボルを作成
-  const symbol: Symbols.EndpointSymbol = {
+  const endpointSymbol: Symbols.EndpointSymbol = {
     kind: "endpoint",
+    parent: routeSymbol,
     children: [],
     syntaxNode: node,
   };
-  routeSymbol.children.push(symbol);
+  routeSymbol.children.push(endpointSymbol);
 
   for (const member of node.children) {
     if (member.kind == "request") {
-      analyzeRequest(member, symbol);
+      analyzeRequest(member, endpointSymbol);
     }
     if (member.kind == "response") {
-      analyzeResponse(member, symbol);
+      analyzeResponse(member, endpointSymbol);
     }
   }
 }

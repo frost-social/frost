@@ -1,3 +1,5 @@
+// OASファイルを構成するノードを定義します。
+
 // https://spec.openapis.org/oas/v3.1.1.html#openapi-object
 export interface OpenAPI {
   openapi: string;

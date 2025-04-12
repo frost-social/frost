@@ -1,6 +1,8 @@
 import * as Nodes from "./openapiNode";
 import * as Symbols from "./symbolNode";
 
+// このモジュールではシンボルグラフからOASファイルのJSONデータを生成します。
+
 export function emit(file: Symbols.FileSymbol): string {
   const outFile: Nodes.OpenAPI = {
     openapi: "3.1.1",
