@@ -1,5 +1,5 @@
 import { expose } from "threads";
-import { sleep } from "../modules/sleep";
+import { sleep } from "../core/sleep";
 
 const echoMethods = {
   async echo(message: string) {

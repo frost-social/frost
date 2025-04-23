@@ -1,0 +1,14 @@
+GET /users {
+}
+
+POST /users {
+}
+
+DELETE /users {
+}
+
+POST /users/leafs {
+}
+
+GET /users/leafs {
+}
