@@ -1,5 +1,5 @@
 import { Button } from "@mantine/core";
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/login")({
   component: Login,

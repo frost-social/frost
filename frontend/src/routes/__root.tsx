@@ -1,5 +1,5 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Suspense, lazy } from "react";
 
 import type { OpenGraphProtocolType } from "@/staticDataRouteOption";
 
