@@ -20,8 +20,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
+        "biomejs.biome",
         "github.vscode-github-actions",
         "timonwong.shellcheck",
         "ms-azuretools.vscode-docker",

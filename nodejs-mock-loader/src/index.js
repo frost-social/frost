@@ -15,7 +15,7 @@ export const createMockResolver =
   async (specifier, context, next) => {
     if (
       ignoreExts.some((ignoreExt) =>
-        specifier.toUpperCase().endsWith(ignoreExt)
+        specifier.toUpperCase().endsWith(ignoreExt),
       )
     ) {
       return next("/dev/null", context);

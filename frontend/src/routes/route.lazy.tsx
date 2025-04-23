@@ -1,5 +1,5 @@
 import { Button, Group } from "@mantine/core";
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 
 import { DeleteParrot } from "./-components/DeleteParrot";
 
