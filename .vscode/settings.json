@@ -1,9 +1,10 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
   },
-  "[typescript][typescriptreact][javascript][javascriptreact][html][scss][json][jsonc][markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "prettier.prettierPath": "./backend/node_modules/prettier"
+  "biome.rename": true,
+  "[typescript][typescriptreact][javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }
