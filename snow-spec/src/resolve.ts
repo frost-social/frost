@@ -7,32 +7,38 @@ import * as Nodes from "./syntaxNode";
 // NOTE:
 // OpenAPIにおけるコンポーネントの種類を決定する必要がある(参照が複数ある場合はそれぞれ別の種類に分類される可能性あり)。
 
-function resolveRequest(node: Nodes.RequestNode, parentSymbol: SymbolObject, symbolTable: Map<string, SymbolObject>): void {
+function resolveRequest(node: Nodes.RequestNode, parentNode: Nodes.SyntaxNode, symbolTable: Map<string, SymbolObject>): void {
   // TODO
 }
 
-function resolveResponse(node: Nodes.ResponseNode, parentSymbol: SymbolObject, symbolTable: Map<string, SymbolObject>): void {
+function resolveResponse(node: Nodes.ResponseNode, parentNode: Nodes.SyntaxNode, symbolTable: Map<string, SymbolObject>): void {
   // TODO
 }
 
-function resolveComponent(node: Nodes.ComponentDeclNode, parentSymbol: SymbolObject, symbolTable: Map<string, SymbolObject>): void {
-  if (node.component != null) {
-    if (node.component.kind == "object") {
-      createSymbol(node.component, node);
-      //node.component.children;
+function resolveComponent(node: Nodes.ComponentNode, parentNode: Nodes.SyntaxNode, symbolTable: Map<string, SymbolObject>): void {
+  if (node.kind == "object") {
+    createSymbol(node, parentNode);
+    for (const fieldNode of node.children) {
+      resolveComponent(fieldNode.value, node, symbolTable);
     }
-    if (node.component.kind == "componentRef") {
-      const declSymbol = symbolTable.get(node.name);
-      if (declSymbol != null) {
-        node.component.symbol = declSymbol;
-      }
-
-      //node.component.name;
+  }
+  if (node.kind == "componentRef") {
+    // lookup the symbol table
+    const declSymbol = symbolTable.get(node.name);
+    if (declSymbol != null) {
+      node.symbol = declSymbol;
     }
   }
 }
 
-function resolveEndpoint(node: Nodes.EndpointDeclNode, parentSymbol: SymbolObject, symbolTable: Map<string, SymbolObject>): void {
+function resolveComponentDecl(node: Nodes.ComponentDeclNode, parentNode: Nodes.SyntaxNode, symbolTable: Map<string, SymbolObject>): void {
+  createSymbol(node, parentNode);
+  if (node.component != null) {
+    resolveComponent(node.component, node, symbolTable);
+  }
+}
+
+function resolveEndpointDecl(node: Nodes.EndpointDeclNode, parentNode: Nodes.SyntaxNode, symbolTable: Map<string, SymbolObject>): void {
   // routeシンボルを探す
   let routeSymbol;
   for (const member of parentSymbol.children) {
@@ -87,10 +93,10 @@ function resolveFile(node: Nodes.FileNode): void {
   // analyze declarations
   for (const member of node.children) {
     if (member.kind == "componentDecl") {
-      resolveComponent(member, fileSymbol, symbolTable);
+      resolveComponentDecl(member, node, symbolTable);
     }
     if (member.kind == "endpointDecl") {
-      resolveEndpoint(member, fileSymbol, symbolTable);
+      resolveEndpointDecl(member, node, symbolTable);
     }
   }
 }
