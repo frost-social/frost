@@ -1,9 +1,10 @@
+import util from "node:util";
 import * as Nodes from "./openapiNode";
-import * as Symbols from "./symbolNode";
+import * as Syntax from "./syntaxNode";
 
-// このモジュールではシンボルグラフからOASファイルのJSONデータを生成します。
+// このモジュールでは構文ツリーとシンボル情報からOASファイルのJSONデータを生成します。
 
-export function emit(file: Symbols.FileSymbol): string {
+export function emit(file: Syntax.FileNode): string {
   const outFile: Nodes.OpenAPI = {
     openapi: "3.1.1",
     info: {
@@ -27,15 +28,15 @@ export function emit(file: Symbols.FileSymbol): string {
     }
   }
 
-  //console.log(util.inspect(outFile, { depth: 30 }));
+  console.log(util.inspect(outFile, { depth: 30 }));
 
   const json = JSON.stringify(outFile);
 
   return json;
 }
 
-function emitRoute(symbol: Symbols.RouteSymbol, target: Record<string, Nodes.PathItemObject>): void {
-  for (const endpoint of symbol.children) {
+function emitRoute(node: Syntax.SyntaxNode, target: Record<string, Nodes.PathItemObject>): void {
+  for (const endpoint of node.children) {
     if (target[endpoint.syntaxNode.path] == null) {
       target[endpoint.syntaxNode.path] = { };
     }
@@ -67,7 +68,7 @@ function emitRoute(symbol: Symbols.RouteSymbol, target: Record<string, Nodes.Pat
   }
 }
 
-function emitComponentBase(symbol: Symbols.ComponentBaseSymbol, target: Nodes.ComponentsObject): void {
+function emitComponentBase(symbol: Syntax.SyntaxNode, target: Nodes.ComponentsObject): void {
   for (const component of symbol.children) {
     if (component.kind == "parameterComponent") {
       if (target.parameters == null) {
