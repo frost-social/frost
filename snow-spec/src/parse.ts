@@ -14,7 +14,7 @@ export function parse(input: string): Nodes.FileNode {
       attrs.push(parseAttr(p));
       continue;
     }
-    if (p.match("POST") || p.match("GET") || p.match("PUT") || p.match("PATCH") || p.match("DELETE")) {
+    if (p.match("POST", false) || p.match("GET", false) || p.match("PUT", false) || p.match("PATCH", false) || p.match("DELETE", false)) {
       children.push(parseEndpoint(p, attrs));
       attrs = [];
       continue;
@@ -342,15 +342,25 @@ class Parser {
     return this.scanner.token!.kind;
   }
 
-  match(kindOrWord: TokenKind | string): boolean {
+  /**
+   * caseSensitiveはデフォルトで大文字小文字を区別します。
+  */
+  match(kindOrWord: TokenKind | string, caseSensitive: boolean = true): boolean {
     if (this.scanner.token == null) {
       return false;
     }
     if (typeof kindOrWord == "string") {
-      return (
-        this.scanner.token.kind == TokenKind.Word &&
-        this.scanner.token.value == kindOrWord
-      );
+      if (caseSensitive) {
+        return (
+          this.scanner.token.kind == TokenKind.Word &&
+          this.scanner.token.value == kindOrWord
+        );
+      } else {
+        return (
+          this.scanner.token.kind == TokenKind.Word &&
+          this.scanner.token.value!.toLowerCase() == kindOrWord.toLowerCase()
+        );
+      }
     } else {
       return (this.scanner.token.kind == kindOrWord);
     }
