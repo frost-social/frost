@@ -1,3 +1,3 @@
 export type AccessInfo = {
-  userId: string,
+  userId: string;
 };

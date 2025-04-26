@@ -5,12 +5,12 @@ import * as httpServer from "./core/httpServer";
 import * as restApi from "./core/restApi";
 
 async function bootstrap() {
-  const projectInfo = JSON.parse(await readFile('../package.json', { encoding: 'utf8' }));
+  const projectInfo = JSON.parse(await readFile("../package.json", { encoding: "utf8" }));
 
-  console.log('+----------------------------------+');
-  console.log('|          Frost *                 |');
-  console.log('|          backend server          |');
-  console.log('+----------------------------------+');
+  console.log("+----------------------------------+");
+  console.log("|          Frost *                 |");
+  console.log("|          backend server          |");
+  console.log("+----------------------------------+");
   console.log(`Version ${projectInfo.version}`);
   console.log();
 

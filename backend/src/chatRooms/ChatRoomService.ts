@@ -1,3 +1,3 @@
-import type { components } from '../../openapi/generated/schema';
+import type { components } from "../../openapi/generated/schema";
 
-export type ChatRoomObject = components['schemas']['Api.v1.ChatRoom'];
+export type ChatRoomObject = components["schemas"]["Api.v1.ChatRoom"];

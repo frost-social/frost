@@ -13,7 +13,11 @@ export type UserEntity = {
  * ユーザーを追加する
 */
 export async function createUser(
-  params: { userName: string, displayName: string, passwordAuthEnabled: boolean },
+  params: {
+    userName: string;
+    displayName: string;
+    passwordAuthEnabled: boolean;
+  },
   info: AccessInfo,
   db: DB,
 ) {
@@ -32,11 +36,11 @@ export async function createUser(
  * ユーザーを取得する
 */
 export async function getUser(
-  params: { userId?: string, userName?: string },
+  params: { userId?: string; userName?: string },
   info: AccessInfo,
   db: DB,
 ): Promise<UserEntity | undefined> {
-  if ([params.userId, params.userName].every(x => x == null)) {
+  if ([params.userId, params.userName].every((x) => x == null)) {
     throw new Error("invalid condition");
   }
 
@@ -69,14 +73,14 @@ export async function deleteUser(
     },
   });
 
-  return (result.count > 0);
+  return result.count > 0;
 }
 
 /**
  * ユーザーをフォローする
 */
 export async function getUserFollowing(
-  params: { followedByUserId: string, followingUserId: string },
+  params: { followedByUserId: string; followingUserId: string },
   info: AccessInfo,
   db: DB,
 ): Promise<boolean> {
@@ -85,18 +89,18 @@ export async function getUserFollowing(
       user_id_followed_by_user_id_following: {
         user_id_followed_by: params.followedByUserId,
         user_id_following: params.followingUserId,
-      }
+      },
     },
   });
 
-  return (row != null);
+  return row != null;
 }
 
 /**
  * ユーザーをフォローする
 */
 export async function followUser(
-  params: { followedByUserId: string, followingUserId: string },
+  params: { followedByUserId: string; followingUserId: string },
   info: AccessInfo,
   db: DB,
 ): Promise<void> {

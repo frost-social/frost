@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import type { components } from '../../../openapi/generated/schema';
+import type { components } from "../../../openapi/generated/schema";
 import type { DB } from "../database";
 import * as TokenRepository from "../repository/TokenRepository";
 import * as UserRepository from "../repository/UserRepository";
@@ -14,13 +14,17 @@ export type tokenInfoObject = {
   scopes: string[]
 };
 
-export type TokenObject = components['schemas']['Api.v1.Token'];
+export type TokenObject = components["schemas"]["Api.v1.Token"];
 
 /**
  * トークン情報を追加します。
 */
 export async function createToken(
-  params: { userId: string, tokenKind: TokenRepository.TokenKind, scopes: string[] },
+  params: {
+    userId: string;
+    tokenKind: TokenRepository.TokenKind;
+    scopes: string[];
+  },
   info: AccessInfo,
   db: DB,
 ): Promise<TokenObject> {
@@ -29,7 +33,7 @@ export async function createToken(
     userId: params.userId,
   }, info, db);
   if (userEntity == null) {
-    throw new RestError(new ResourceNotFound('user'));
+    throw new RestError(new ResourceNotFound("user"));
   }
 
   const tokenValue = generateTokenValue(32);
@@ -56,7 +60,7 @@ export async function getTokenInfo(
 ): Promise<{ tokenKind: TokenRepository.TokenKind, userId: string, scopes: string[] }> {
   if (params.token.length < 1) {
     throw new RestError(new BadRequest([
-      { message: 'token invalid.' },
+      { message: "token invalid." },
     ]));
   }
   const t = await TokenRepository.getToken({

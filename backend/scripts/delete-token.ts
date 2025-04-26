@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import * as TokenRepository from '../src/core/repository/TokenRepository';
-import type { AccessInfo } from '../src/core/service';
+import { PrismaClient } from "@prisma/client";
+import * as TokenRepository from "../src/core/repository/TokenRepository";
+import type { AccessInfo } from "../src/core/service";
 
 async function run() {
   const token = process.argv[2];
@@ -11,7 +11,7 @@ async function run() {
 
   const db = new PrismaClient();
 
-  const info: AccessInfo = { userId: 'internal' };
+  const info: AccessInfo = { userId: "internal" };
 
   const success = await TokenRepository.deleteToken({
     token,
@@ -24,7 +24,6 @@ async function run() {
 
   await db.$disconnect();
 }
-run()
-  .catch(err => {
-    console.error(err);
-  });
+run().catch((err) => {
+  console.error(err);
+});

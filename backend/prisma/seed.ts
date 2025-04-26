@@ -1,32 +1,32 @@
-import 'reflect-metadata';
-import { PrismaClient } from '@prisma/client';
-import { AccessInfo } from '../src/modules/AccessInfo';
-import * as UserRepository from '../src/repositories/UserRepository';
-import * as TokenService from '../src/services/TokenService';
+import "reflect-metadata";
+import { PrismaClient } from "@prisma/client";
+import * as UserRepository from "../src/core/repository/UserRepository";
+import type { AccessInfo } from "../src/core/service";
+import * as TokenService from "../src/core/service/TokenService";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const ctx: AccessInfo = { userId: '' };
+  const ctx: AccessInfo = { userId: "" };
 
   // create root user
-  let rootUser = await UserRepository.getUser({ userName: 'root' }, ctx, prisma);
+  let rootUser = await UserRepository.getUser({ userName: "root" }, ctx, prisma);
   if (rootUser == null) {
     rootUser = await UserRepository.createUser({
-      userName: 'root',
-      displayName: 'root',
+      userName: "root",
+      displayName: "root",
       passwordAuthEnabled: false,
     }, ctx, prisma);
-    console.log('User "root" has been created.');
+    console.log("User 'root' has been created.");
   }
   ctx.userId = rootUser.userId;
 
   // create public user
-  let publicUser = await UserRepository.getUser({ userName: 'public' }, ctx, prisma);
+  let publicUser = await UserRepository.getUser({ userName: "public" }, ctx, prisma);
   if (publicUser == null) {
     publicUser = await UserRepository.createUser({
-      userName: 'public',
-      displayName: 'public',
+      userName: "public",
+      displayName: "public",
       passwordAuthEnabled: false,
     }, ctx, prisma);
 
@@ -38,7 +38,7 @@ async function main() {
       scopes: scopes,
     }, ctx, prisma);
 
-    console.log('User "public" has been created.');
+    console.log("User 'public' has been created.");
   }
 }
 main()
