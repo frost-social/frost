@@ -1,10 +1,11 @@
-import * as Nodes from "./openapiNode";
-import * as Symbols from "./symbolNode";
+import util from "node:util";
+import * as Src from "./irNode";
+import * as Dest from "./openapiNode";
 
-// このモジュールではシンボルグラフからOASファイルのJSONデータを生成します。
+// このモジュールではIRツリーからOASファイルのJSONデータを生成します。
 
-export function emit(file: Symbols.FileSymbol): string {
-  const outFile: Nodes.OpenAPI = {
+export function emit(file: Src.FileNode): string {
+  const outFile: Dest.OpenAPI = {
     openapi: "3.1.1",
     info: {
       title: "",
@@ -12,74 +13,82 @@ export function emit(file: Symbols.FileSymbol): string {
     },
   };
 
-  for (const fileMember of file.children) {
-    if (fileMember.kind == "route") {
-      if (outFile.paths == null) {
-        outFile.paths = {};
-      }
-      emitRoute(fileMember, outFile.paths);
+  for (const fileMember of file.routes) {
+    if (outFile.paths == null) {
+      outFile.paths = {};
     }
-    if (fileMember.kind == "componentBase") {
-      if (outFile.components == null) {
-        outFile.components = {};
+    emitRoute(fileMember, outFile.paths);
+  }
+
+  for (const [componentName, component] of file.components) {
+    if (outFile.components == null) {
+      outFile.components = {};
+    }
+    for (const kind of component.blockKind) {
+      if (kind == "parameter") {
+        if (outFile.components.parameters == null) {
+          outFile.components.parameters = {};
+        }
+        outFile.components.parameters[componentName] = {};
       }
-      emitComponentBase(fileMember, outFile.components);
+      if (kind == "header") {
+        if (outFile.components.headers == null) {
+          outFile.components.headers = {};
+        }
+        outFile.components.headers[componentName] = {};
+      }
+      if (kind == "requestBody") {
+        if (outFile.components.requestBodies == null) {
+          outFile.components.requestBodies = {};
+        }
+        outFile.components.requestBodies[componentName] = {};
+      }
+      if (kind == "response") {
+        if (outFile.components.responses == null) {
+          outFile.components.responses = {};
+        }
+        outFile.components.responses[componentName] = {};
+      }
     }
   }
 
-  //console.log(util.inspect(outFile, { depth: 30 }));
+  console.log(util.inspect(outFile, { depth: 30 }));
 
   const json = JSON.stringify(outFile);
 
   return json;
 }
 
-function emitRoute(symbol: Symbols.RouteSymbol, target: Record<string, Nodes.PathItemObject>): void {
-  for (const endpoint of symbol.children) {
-    if (target[endpoint.syntaxNode.path] == null) {
-      target[endpoint.syntaxNode.path] = { };
+function emitRoute(node: Src.RouteNode, target: Record<string, Dest.PathItemObject>): void {
+  const path = node.path;
+  for (const endpoint of node.endpoints) {
+    if (target[path] == null) {
+      target[path] = { };
     }
-    if (endpoint.syntaxNode.method == "GET") {
-      if (target[endpoint.syntaxNode.path]!.get == null) {
-        target[endpoint.syntaxNode.path]!.get = {};
+    if (endpoint.method == "GET") {
+      if (target[path]!.get == null) {
+        target[path]!.get = {};
       }
     }
-    if (endpoint.syntaxNode.method == "POST") {
-      if (target[endpoint.syntaxNode.path]!.post == null) {
-        target[endpoint.syntaxNode.path]!.post = {};
+    if (endpoint.method == "POST") {
+      if (target[path]!.post == null) {
+        target[path]!.post = {};
       }
     }
-    if (endpoint.syntaxNode.method == "PUT") {
-      if (target[endpoint.syntaxNode.path]!.put == null) {
-        target[endpoint.syntaxNode.path]!.put = {};
+    if (endpoint.method == "PUT") {
+      if (target[path]!.put == null) {
+        target[path]!.put = {};
       }
     }
-    if (endpoint.syntaxNode.method == "PATCH") {
-      if (target[endpoint.syntaxNode.path]!.patch == null) {
-        target[endpoint.syntaxNode.path]!.patch = {};
+    if (endpoint.method == "PATCH") {
+      if (target[path]!.patch == null) {
+        target[path]!.patch = {};
       }
     }
-    if (endpoint.syntaxNode.method == "DELETE") {
-      if (target[endpoint.syntaxNode.path]!.delete == null) {
-        target[endpoint.syntaxNode.path]!.delete = {};
+    if (endpoint.method == "DELETE") {
+      if (target[path]!.delete == null) {
+        target[path]!.delete = {};
       }
-    }
-  }
-}
-
-function emitComponentBase(symbol: Symbols.ComponentBaseSymbol, target: Nodes.ComponentsObject): void {
-  for (const component of symbol.children) {
-    if (component.kind == "parameterComponent") {
-      if (target.parameters == null) {
-        target.parameters = {};
-      }
-      target.parameters[symbol.syntaxNode.name] = {};
-    }
-    if (component.kind == "requestBodyComponent") {
-      if (target.requestBodies == null) {
-        target.requestBodies = {};
-      }
-      target.requestBodies[symbol.syntaxNode.name] = {};
     }
   }
 }
