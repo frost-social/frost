@@ -1,33 +1,16 @@
 export type AnyNode =
-  | ValueNode
   | AttrNode
-  | ComponentNode
-  | ComponentBlockNode
-  | EndpointMemberNode
-  | EndpointNode
-  | ObjectFieldNode
+  | FileNode
   | RouteNode
-  | FileNode;
+  | EndpointNode
+  | EndpointMemberNode
+  | ComponentBlockNode
+  | ComponentNode
+  | ObjectFieldNode
+  | ValueNode;
 
 export interface NodeBase {
 }
-
-export interface NumberValueNode extends NodeBase {
-  kind: "numberValue";
-  value: string;
-}
-
-export interface BoolValueNode extends NodeBase {
-  kind: "boolValue";
-  value: string;
-}
-
-export interface StringValueNode extends NodeBase {
-  kind: "stringValue";
-  value: string;
-}
-
-export type ValueNode = NumberValueNode | BoolValueNode | StringValueNode;
 
 export interface AttrNode extends NodeBase {
   kind: "attr";
@@ -35,14 +18,25 @@ export interface AttrNode extends NodeBase {
   value?: ValueNode;
 }
 
-export type ComponentNode = ObjectComponentNode;
+export interface FileNode extends NodeBase {
+  kind: "file";
+  routes: RouteNode[];
+  components: Map<string, ComponentBlockNode>;
+}
 
-export interface ComponentBlockNode extends NodeBase {
-  kind: "componentBlock";
-  blockKind: string;
-  component: ComponentNode;
+export interface RouteNode {
+  path: string;
+  endpoints: EndpointNode[];
+}
+
+export interface EndpointNode extends NodeBase {
+  kind: "endpointDecl";
+  method: string;
+  children: EndpointMemberNode[];
   attrs: AttrNode[];
 }
+
+export type EndpointMemberNode = RequestNode | ResponseNode;
 
 export interface RequestNode extends NodeBase {
   kind: "request";
@@ -57,13 +51,18 @@ export interface ResponseNode extends NodeBase {
   attrs: AttrNode[];
 }
 
-export type EndpointMemberNode = RequestNode | ResponseNode;
-
-export interface EndpointNode extends NodeBase {
-  kind: "endpointDecl";
-  method: string;
-  children: EndpointMemberNode[];
+export interface ComponentBlockNode extends NodeBase {
+  kind: "componentBlock";
+  blockKind: string[];
+  component: ComponentNode;
   attrs: AttrNode[];
+}
+
+export type ComponentNode = ObjectComponentNode;
+
+export interface ObjectComponentNode extends NodeBase {
+  kind: "object";
+  fields: ObjectFieldNode[];
 }
 
 export interface ObjectFieldNode extends NodeBase {
@@ -73,17 +72,19 @@ export interface ObjectFieldNode extends NodeBase {
   attrs: AttrNode[];
 }
 
-export interface ObjectComponentNode extends NodeBase {
-  kind: "object";
-  fields: ObjectFieldNode[];
+export type ValueNode = NumberValueNode | BoolValueNode | StringValueNode;
+
+export interface NumberValueNode extends NodeBase {
+  kind: "numberValue";
+  value: string;
 }
 
-export interface RouteNode {
-  path: string;
-  endpoints: EndpointNode[];
+export interface BoolValueNode extends NodeBase {
+  kind: "boolValue";
+  value: string;
 }
 
-export interface FileNode extends NodeBase {
-  kind: "file";
-  routes: RouteNode[];
+export interface StringValueNode extends NodeBase {
+  kind: "stringValue";
+  value: string;
 }
