@@ -1,6 +1,6 @@
-import { password_verification } from "@prisma/client";
-import { DB } from "../database";
-import { AccessInfo } from "../service";
+import type { password_verification } from "@prisma/client";
+import type { DB } from "../database";
+import type { AccessInfo } from "../service";
 
 export type PasswordVerificationEntity = {
   userId: string,

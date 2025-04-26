@@ -1,10 +1,10 @@
-import express, { Express } from "express";
-import { DB } from "./database";
+import express, { type Express } from "express";
 import { createApiRouter } from "../routers";
+import type { DB } from "./database";
 
 /**
  * 任意のエラー情報を元にREST APIのエラーを組み立てます。
-*/
+ */
 function buildRestApiError(err: unknown): { error: ErrorObject } {
   // app error
   if (err instanceof RestError) {
@@ -35,12 +35,15 @@ export function configure(db: DB, app: Express) {
 
 export function corsApi(): express.RequestHandler {
   return (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader("Access-Control-Allow-Origin", "*");
 
     // preflight request
-    if (req.method == 'OPTIONS') {
-      res.setHeader('Access-Control-Allow-Methods', 'POST,GET,DELETE,OPTIONS');
-      res.setHeader("Access-Control-Allow-Headers", "Accept,Content-Type,Origin,Authorization");
+    if (req.method == "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Methods", "POST,GET,DELETE,OPTIONS");
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Accept,Content-Type,Origin,Authorization",
+      );
       res.setHeader("Access-Control-Max-Age", "60");
       return res.status(204).send();
     }
@@ -50,69 +53,63 @@ export function corsApi(): express.RequestHandler {
 }
 
 export interface ErrorObject {
-  [x: string]: any,
-  code: string,
-  message: string,
-  status: number,
+  [x: string]: any;
+  code: string;
+  message: string;
+  status: number;
 }
 
 export class RestError extends Error {
-  constructor(
-    public error: ErrorObject,
-  ) {
+  constructor(public error: ErrorObject) {
     super(error.message);
   }
 }
 
 export class BadRequest implements ErrorObject {
-  code = 'bad_request';
-  message = 'The request is invalid.';
+  code = "bad_request";
+  message = "The request is invalid.";
   status = 400;
-  details?: { code?: string, path?: (string | number)[], message: string }[];
+  details?: { code?: string; path?: (string | number)[]; message: string }[];
 
-  constructor(
-    details?: BadRequest["details"],
-  ) {
+  constructor(details?: BadRequest["details"]) {
     this.details = details;
   }
 }
 
 export class Unauthenticated implements ErrorObject {
-  code = 'unauthenticated';
-  message = 'Credentials are required for access.';
+  code = "unauthenticated";
+  message = "Credentials are required for access.";
   status = 401;
 }
 
 export class AccessDenied implements ErrorObject {
-  code = 'access_denied';
-  message = 'You do not have access permissions.';
+  code = "access_denied";
+  message = "You do not have access permissions.";
   status = 403;
 }
 
 export class ResourceNotFound implements ErrorObject {
-  code = 'resource_not_found';
-  message = 'The specified resource was not found.';
+  code = "resource_not_found";
+  message = "The specified resource was not found.";
   status = 404;
 
-  constructor(
-    public resorceName: string,
-  ) {}
+  constructor(public resorceName: string) {}
 }
 
 export class EndpointNotFound implements ErrorObject {
-  code = 'endpoint_not_found';
-  message = 'The specified API endpoint was not found.';
+  code = "endpoint_not_found";
+  message = "The specified API endpoint was not found.";
   status = 404;
 }
 
 export class MethodNotAllowed implements ErrorObject {
-  code = 'method_not_allowed';
-  message = 'This API endpoint does not support the specified operation.';
+  code = "method_not_allowed";
+  message = "This API endpoint does not support the specified operation.";
   status = 405;
 }
 
 export class ServerError implements ErrorObject {
-  code = 'server_error';
-  message = 'An internal error occurred on the server.';
+  code = "server_error";
+  message = "An internal error occurred on the server.";
   status = 500;
 }

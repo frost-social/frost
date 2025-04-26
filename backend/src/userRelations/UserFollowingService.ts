@@ -1,7 +1,7 @@
-import { AccessInfo, DB } from "../core";
-import { RestError } from "../core/restApi";
+import type { AccessInfo, DB } from "../core";
 import * as UserRepository from "../core/repository/UserRepository";
-import { UserObject } from "../core/service/UserService";
+import { RestError } from "../core/restApi";
+import type { UserObject } from "../core/service/UserService";
 
 export async function followUser(
   params: { userId: string },
@@ -54,7 +54,7 @@ export async function unfollowUser(
 }
 
 export async function getFollowings(
-  params: { userId: string, offset?: number, limit?: number },
+  params: { userId: string; offset?: number; limit?: number },
   info: AccessInfo,
   db: DB,
 ): Promise<UserObject[]> {
@@ -67,7 +67,7 @@ export async function getFollowings(
 }
 
 export async function getFollowedBy(
-  params: { userId: string, offset?: number, limit?: number },
+  params: { userId: string; offset?: number; limit?: number },
   info: AccessInfo,
   db: DB,
 ): Promise<UserObject[]> {

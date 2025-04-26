@@ -1,31 +1,36 @@
-import express from "express";
-import z from 'zod';
+import type express from "express";
+import type z from "zod";
 import * as authentication from "./authentication";
-import { DB } from "./database";
+import type { DB } from "./database";
 import { BadRequest, RestError } from "./restApi";
-import { UserObject } from "./service/UserService";
+import type { UserObject } from "./service/UserService";
 
 export function registerRoute<R>(
   router: express.Router,
   db: DB,
   params: {
-    method: 'GET' | 'POST' | 'DELETE'
-    path: string,
-    scope?: string | string[],
-    requestHandler: (ctx: ApiRouteContext) => Promise<R>,
+    method: "GET" | "POST" | "DELETE";
+    path: string;
+    scope?: string | string[];
+    requestHandler: (ctx: ApiRouteContext) => Promise<R>;
   },
 ) {
-  const middlewares = createMiddlewareStack<R>(params.method, params.scope, db, params.requestHandler);
+  const middlewares = createMiddlewareStack<R>(
+    params.method,
+    params.scope,
+    db,
+    params.requestHandler,
+  );
   switch (params.method) {
-    case 'POST': {
+    case "POST": {
       router.post(params.path, ...middlewares);
       break;
     }
-    case 'DELETE': {
+    case "DELETE": {
       router.delete(params.path, ...middlewares);
       break;
     }
-    case 'GET': {
+    case "GET": {
       router.get(params.path, ...middlewares);
       break;
     }
@@ -33,16 +38,16 @@ export function registerRoute<R>(
 }
 
 function createMiddlewareStack<R>(
-  method: 'POST' | 'DELETE' | 'GET',
+  method: "POST" | "DELETE" | "GET",
   requiredScope: string | string[] | undefined,
   db: DB,
-  handler: (ctx: ApiRouteContext) => Promise<R> | R
+  handler: (ctx: ApiRouteContext) => Promise<R> | R,
 ): express.RequestHandler[] {
   const middlewares: express.RequestHandler[] = [];
 
   // authenticate
   if (requiredScope != null) {
-    if (typeof requiredScope == 'string' || requiredScope.length > 0) {
+    if (typeof requiredScope == "string" || requiredScope.length > 0) {
       middlewares.push(...authentication.getMiddlewares(requiredScope));
     }
   }
@@ -54,12 +59,12 @@ function createMiddlewareStack<R>(
 
     // ハンドラ用のパラメータオブジェクト
     let params: any;
-    if (method == 'GET' || method == 'DELETE') {
+    if (method == "GET" || method == "DELETE") {
       params = req.query;
-    } else if (method == 'POST') {
+    } else if (method == "POST") {
       params = req.body;
     } else {
-      return next(new Error('unsupported http method'));
+      return next(new Error("unsupported http method"));
     }
 
     // ハンドラ用の認証情報
@@ -71,7 +76,9 @@ function createMiddlewareStack<R>(
     }
 
     async function asyncHandler() {
-      const returnValue = await handler(new ApiRouteContext(params, db, req, res, user, scopes));
+      const returnValue = await handler(
+        new ApiRouteContext(params, db, req, res, user, scopes),
+      );
       // ハンドラ内でレスポンスが設定されなければレスポンスを生成する。
       if (res.statusCode == 0) {
         if (returnValue != null) {
@@ -81,7 +88,7 @@ function createMiddlewareStack<R>(
         }
       }
     }
-    asyncHandler().catch(err => {
+    asyncHandler().catch((err) => {
       next(err);
     });
   });
@@ -103,25 +110,27 @@ export class ApiRouteContext {
     this._user = user;
     this._scopes = scopes;
   }
-  
+
   public getUser(): UserObject {
-    if (this._user == null) throw new Error('not authenticated');
+    if (this._user == null) throw new Error("not authenticated");
     return this._user;
   }
 
   public getScopes(): string[] {
-    if (this._scopes == null) throw new Error('not authenticated');
+    if (this._scopes == null) throw new Error("not authenticated");
     return this._scopes;
   }
 
   public validateParams<T>(schema: z.ZodType<T>): T {
     const result = schema.safeParse(this.params);
     if (!result.success) {
-      throw new RestError(new BadRequest(
-        result.error.issues.map(x => {
-          return { code: x.code, path: x.path, message: x.message };
-        })
-      ));
+      throw new RestError(
+        new BadRequest(
+          result.error.issues.map((x) => {
+            return { code: x.code, path: x.path, message: x.message };
+          }),
+        ),
+      );
     }
     return result.data;
   }

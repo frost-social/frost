@@ -1,6 +1,6 @@
-import { user } from "@prisma/client";
-import { DB } from "../database";
-import { AccessInfo } from "../service";
+import type { user } from "@prisma/client";
+import type { DB } from "../database";
+import type { AccessInfo } from "../service";
 
 export type UserEntity = {
   userId: string;

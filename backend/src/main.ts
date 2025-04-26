@@ -1,4 +1,4 @@
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 import * as authentication from "./core/authentication";
 import * as database from "./core/database";
 import * as httpServer from "./core/httpServer";
@@ -11,7 +11,7 @@ async function bootstrap() {
   console.log('|          Frost *                 |');
   console.log('|          backend server          |');
   console.log('+----------------------------------+');
-  console.log('Version ' + projectInfo.version);
+  console.log(`Version ${projectInfo.version}`);
   console.log();
 
   // TODO: validate config
@@ -27,7 +27,7 @@ async function bootstrap() {
   await new Promise<void>(resolve => {
     app.listen(port, () => resolve());
   });
-  console.log('listen on port ' + port);
+  console.log(`listen on port ${port}`);
 }
 bootstrap()
 .catch(err => {

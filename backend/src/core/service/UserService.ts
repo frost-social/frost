@@ -1,12 +1,12 @@
 import crypto from "node:crypto";
-import { components } from '../../../openapi/generated/schema';
-import { DB } from "../database";
+import type { components } from '../../../openapi/generated/schema';
+import type { DB } from "../database";
 import * as PasswordVerificationRepository from "../repository/PasswordVerificationRepository";
-import { PasswordVerificationEntity } from "../repository/PasswordVerificationRepository";
+import type { PasswordVerificationEntity } from "../repository/PasswordVerificationRepository";
 import * as UserRepository from "../repository/UserRepository";
-import { AccessInfo } from "../service";
-import * as TokenService from "./TokenService";
 import { BadRequest, ResourceNotFound, RestError } from "../restApi";
+import type { AccessInfo } from "../service";
+import * as TokenService from "./TokenService";
 
 export type UserObject = components['schemas']['Api.v1.User'];
 export type AuthResultObject = components['schemas']['Api.v1.AuthInfo'];
@@ -116,7 +116,7 @@ export async function signin(
     return { accessToken, refreshToken, user };
   }
 
-  throw new Error("authentication method not exists: " + user.userId);
+  throw new Error(`authentication method not exists: ${user.userId}`);
 }
 
 /**

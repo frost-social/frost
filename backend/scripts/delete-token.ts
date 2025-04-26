@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { AccessInfo } from '../src/core/service';
 import * as TokenRepository from '../src/core/repository/TokenRepository';
+import type { AccessInfo } from '../src/core/service';
 
 async function run() {
   const token = process.argv[2];

@@ -1,22 +1,25 @@
-import { components } from '../../openapi/generated/schema';
-import { AccessInfo, DB } from "../core";
-import { AccessDenied, BadRequest, ResourceNotFound, RestError } from "../core/restApi";
+import type { components } from "../../openapi/generated/schema";
+import type { AccessInfo, DB } from "../core";
+import {
+  AccessDenied,
+  BadRequest,
+  ResourceNotFound,
+  RestError,
+} from "../core/restApi";
 import * as LeafRepository from "./LeafRepository";
 
-export type LeafObject = components['schemas']['Api.v1.Leaf'];
+export type LeafObject = components["schemas"]["Api.v1.Leaf"];
 
 /**
  * 投稿を作成します。
-*/
+ */
 export async function createLeaf(
   params: { content: string },
   info: AccessInfo,
   db: DB,
 ): Promise<LeafObject> {
   if (params.content.length < 1) {
-    throw new RestError(new BadRequest([
-      { message: 'content invalid.' },
-    ]));
+    throw new RestError(new BadRequest([{ message: "content invalid." }]));
   }
   const leaf = await LeafRepository.createTimelineLeaf({
     userId: info.userId,
@@ -27,7 +30,7 @@ export async function createLeaf(
 
 /**
  * 投稿を取得します。
-*/
+ */
 export async function getLeaf(
   params: { leafId: string },
   info: AccessInfo,
@@ -49,7 +52,7 @@ export async function getLeaf(
 
 /**
  * 投稿を削除します。
-*/
+ */
 export async function deleteLeaf(
   params: { leafId: string },
   info: AccessInfo,
