@@ -1,12 +1,12 @@
 import * as Nodes from "./syntaxNode";
 
 export interface SymbolObject {
-  node: Nodes.SyntaxNode;
-  parentNode: Nodes.SyntaxNode | undefined;
+  node: Nodes.AnyNode;
+  parentNode: Nodes.AnyNode | undefined;
   container?: Container;
 }
 
-export function createSymbol(node: Nodes.SyntaxNode, parentNode: Nodes.SyntaxNode | undefined): SymbolObject {
+export function createSymbol(node: Nodes.AnyNode, parentNode: Nodes.AnyNode | undefined): SymbolObject {
   const symbol: SymbolObject = {
     node: node,
     parentNode: parentNode,
@@ -19,7 +19,7 @@ export interface Container {
   symbolTable: Map<string, SymbolObject>;
 }
 
-export function createContainer(node: Nodes.SyntaxNode, parentNode: Nodes.SyntaxNode | undefined): SymbolObject {
+export function createContainer(node: Nodes.AnyNode, parentNode: Nodes.AnyNode | undefined): SymbolObject {
   const symbol = createSymbol(node, parentNode);
   symbol.container = {
     symbolTable: new Map(),

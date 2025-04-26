@@ -1,3 +1,14 @@
+export type AnyNode =
+  | ValueNode
+  | AttrNode
+  | ComponentNode
+  | ComponentBlockNode
+  | EndpointMemberNode
+  | EndpointNode
+  | ObjectFieldNode
+  | RouteNode
+  | FileNode;
+
 export interface NodeBase {
 }
 
@@ -19,7 +30,7 @@ export interface StringValueNode extends NodeBase {
 export type ValueNode = NumberValueNode | BoolValueNode | StringValueNode;
 
 export interface AttrNode extends NodeBase {
-  kind: 'attr';
+  kind: "attr";
   key: string;
   value?: ValueNode;
 }
@@ -49,7 +60,7 @@ export interface ResponseNode extends NodeBase {
 export type EndpointMemberNode = RequestNode | ResponseNode;
 
 export interface EndpointNode extends NodeBase {
-  kind: 'endpointDecl';
+  kind: "endpointDecl";
   method: string;
   children: EndpointMemberNode[];
   attrs: AttrNode[];
@@ -73,6 +84,6 @@ export interface RouteNode {
 }
 
 export interface FileNode extends NodeBase {
-  kind: 'file';
+  kind: "file";
   routes: RouteNode[];
 }

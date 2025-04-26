@@ -2,7 +2,7 @@
 
 import { SymbolObject } from "./symbol";
 
-export type SyntaxNode = FileNode | AttrNode | EndpointDeclNode | ResponseNode | ComponentRefNode | ObjectNode | NumberValueNode | BoolValueNode | StringValueNode | ComponentDeclNode;
+export type AnyNode = FileNode | AttrNode | EndpointDeclNode | ResponseNode | ComponentRefNode | ObjectNode | NumberValueNode | BoolValueNode | StringValueNode | ComponentDeclNode;
 export type FileMemberNode = EndpointDeclNode | ComponentDeclNode;
 export type RouteMemberNode = RequestNode | ResponseNode;
 export type ComponentNode = ComponentRefNode | ObjectNode;
