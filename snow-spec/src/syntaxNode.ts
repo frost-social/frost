@@ -13,18 +13,18 @@ export interface NodeBase {
 }
 
 export interface FileNode extends NodeBase {
-  kind: 'file';
+  kind: "file";
   children: FileMemberNode[];
 }
 
 export interface AttrNode extends NodeBase {
-  kind: 'attr';
+  kind: "attr";
   key: string;
   value?: ValueNode;
 }
 
 export interface EndpointDeclNode extends NodeBase {
-  kind: 'endpointDecl';
+  kind: "endpointDecl";
   method: string;
   path: string;
   children: RouteMemberNode[];

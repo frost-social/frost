@@ -420,7 +420,7 @@ const wordChar = /^[A-Za-z0-9_/]$/;
 export class Scanner {
   private input: string | undefined;
   private nextOffset: number = 0;
-  private _bufChar: string = '';
+  private _bufChar: string = "";
   private column: number = 1;
   private line: number = 1;
   token: Token | undefined;
@@ -429,7 +429,7 @@ export class Scanner {
   initialize(input: string) {
     this.input = input;
     this.nextOffset = 0;
-    this._bufChar = '';
+    this._bufChar = "";
     this.column = 1;
     this.line = 1;
     this.token = undefined;
@@ -470,7 +470,7 @@ export class Scanner {
     this.token = undefined;
     while (true) {
       this.readChar();
-      if (this.char() == '') {
+      if (this.char() == "") {
         this.token = TOKEN(TokenKind.EOF);
         return;
       }
@@ -493,7 +493,7 @@ export class Scanner {
         // CR
         case "\r":
           // LFが続いていたら一緒に消費する
-          if (this.peekChar() == '\n') {
+          if (this.peekChar() == "\n") {
             this.readChar();
           }
           this.column = 1;
@@ -510,12 +510,12 @@ export class Scanner {
           return;
 
         case "/":
-          if (this.peekChar() == '*') {
+          if (this.peekChar() == "*") {
             this.column += 2;
             this.skipCommentRange();
             continue;
           }
-          if (this.peekChar() == '/') {
+          if (this.peekChar() == "/") {
             this.column += 2;
             this.skipCommentLine();
             continue;
@@ -559,7 +559,7 @@ export class Scanner {
       }
 
       // 数字
-      if (this.char() != '' && digit.test(this.char())) {
+      if (this.char() != "" && digit.test(this.char())) {
           //beginLocation = new TokenLocation(this.column, this.line);
           let wholeNumber = "";
 
@@ -571,7 +571,7 @@ export class Scanner {
           {
             // 先読みして必要に応じて消費する
             const ch = this.peekChar();
-            if (ch == '' || !digit.test(ch)) {
+            if (ch == "" || !digit.test(ch)) {
               break;
             }
 
@@ -586,7 +586,7 @@ export class Scanner {
       }
 
       // 識別子またはキーワード
-      if (this.char() != '' && wordChar.test(this.char())) {
+      if (this.char() != "" && wordChar.test(this.char())) {
         //beginLocation = new TokenLocation(this.column, this.line);
         let value = "";
 
@@ -597,7 +597,7 @@ export class Scanner {
         while (true) {
           // 先読みして必要に応じて消費する
           const ch = this.peekChar();
-          if (ch == '' || !wordChar.test(ch)) {
+          if (ch == "" || !wordChar.test(ch)) {
             break;
           }
 
@@ -624,7 +624,7 @@ export class Scanner {
     let value = "";
     while (true) {
       const ch = this.peekChar();
-      if (ch == '') {
+      if (ch == "") {
         throw new Error("unexpected EOF");
       }
       if (ch == "\"") {
@@ -643,18 +643,18 @@ export class Scanner {
   private skipCommentLine(): void {
     while (true) {
       this.readChar();
-      if (this.char() == '') {
+      if (this.char() == "") {
         break;
       }
-      if (this.char() == '\r') {
+      if (this.char() == "\r") {
         // LFが続いていたら一緒に消費する
-        if (this.peekChar() == '\n') {
+        if (this.peekChar() == "\n") {
           this.readChar();
         }
         this.column = 1;
         this.line += 1;
       }
-      if (this.char() == '\n') {
+      if (this.char() == "\n") {
         this.column = 1;
         this.line += 1;
         break;
@@ -666,11 +666,11 @@ export class Scanner {
   private skipCommentRange(): void {
     while (true) {
       this.readChar();
-      if (this.char() == '') {
+      if (this.char() == "") {
         break;
       }
-      if (this.char() == '*') {
-        if (this.peekChar() == '/') {
+      if (this.char() == "*") {
+        if (this.peekChar() == "/") {
           this.readChar();
           break;
         }
