@@ -70,7 +70,7 @@ function parseEndpoint(p: Parser, parentAttrs: Nodes.AttrNode[]): Nodes.Endpoint
 
   return {
     kind: "endpointDecl",
-    method: method,
+    method: method.toUpperCase(),
     path: path,
     children: children,
     attrs: parentAttrs,
