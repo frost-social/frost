@@ -1,28 +1,39 @@
 import * as sql from "@prisma/client/sql";
-import { AccessInfo, DB } from "../core";
+import type { AccessInfo, DB } from "../core";
 import * as LeafRepository from "./LeafRepository";
-import { LeafObject } from "./LeafService";
+import type { LeafObject } from "./LeafService";
 
 /**
  * タイムラインを取得する\
  * prevCursorとnextCursorはleafIdを指定します。
-*/
+ */
 export async function fetchHomeTimeline(
-  params: { kind: string, prevCursor?: string, nextCursor?: string, limit?: number },
+  params: {
+    kind: string;
+    prevCursor?: string;
+    nextCursor?: string;
+    limit?: number;
+  },
   info: AccessInfo,
   db: DB,
-): Promise<{ leafs: LeafObject[], nextCursor?: string, prevCursor?: string }> {
+): Promise<{ leafs: LeafObject[]; nextCursor?: string; prevCursor?: string }> {
   const limit = params.limit ?? 50;
   let rows;
   if (params.nextCursor != null) {
-    rows = await db.$queryRawTyped(sql.fetchHomeTimelineNextCursor(info.userId, params.nextCursor, limit));
+    rows = await db.$queryRawTyped(
+      sql.fetchHomeTimelineNextCursor(info.userId, params.nextCursor, limit),
+    );
     rows.reverse();
   } else if (params.prevCursor != null) {
-    rows = await db.$queryRawTyped(sql.fetchHomeTimelinePrevCursor(info.userId, params.prevCursor, limit));
+    rows = await db.$queryRawTyped(
+      sql.fetchHomeTimelinePrevCursor(info.userId, params.prevCursor, limit),
+    );
   } else {
-    rows = await db.$queryRawTyped(sql.fetchHomeTimelineLatest(info.userId, limit));
+    rows = await db.$queryRawTyped(
+      sql.fetchHomeTimelineLatest(info.userId, limit),
+    );
   }
-  const leafs = rows.map(x => LeafRepository.toEntity(x));
+  const leafs = rows.map((x) => LeafRepository.toEntity(x));
   return {
     leafs: leafs,
     nextCursor: leafs[0]?.leafId,

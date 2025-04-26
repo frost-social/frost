@@ -1,20 +1,26 @@
-import { password_verification } from "@prisma/client";
-import { DB } from "../database";
-import { AccessInfo } from "../service";
+import type { password_verification } from "@prisma/client";
+import type { DB } from "../database";
+import type { AccessInfo } from "../service";
 
 export type PasswordVerificationEntity = {
-  userId: string,
-  algorithm: string,
-  salt: string,
-  iteration: number,
-  hash: string,
+  userId: string;
+  algorithm: string;
+  salt: string;
+  iteration: number;
+  hash: string;
 };
 
 /*
  * パスワード検証情報を追加する
-*/
+ */
 export async function createVerification(
-  params: { userId: string, algorithm: string, salt: string, iteration: number, hash: string },
+  params: {
+    userId: string;
+    algorithm: string;
+    salt: string;
+    iteration: number;
+    hash: string;
+  },
   info: AccessInfo,
   db: DB,
 ): Promise<PasswordVerificationEntity> {
@@ -33,7 +39,7 @@ export async function createVerification(
 
 /*
  * パスワード検証情報を取得する
-*/
+ */
 export async function getVerification(
   params: { userId: string },
   info: AccessInfo,
@@ -55,7 +61,7 @@ export async function getVerification(
 /**
  * パスワード検証情報を削除する
  * @returns 削除に成功したかどうか
-*/
+ */
 export async function deleteVerification(
   params: { userId: string },
   info: AccessInfo,
@@ -67,10 +73,12 @@ export async function deleteVerification(
     },
   });
 
-  return (result.count > 0);
+  return result.count > 0;
 }
 
-export function mapEntity(row: password_verification): PasswordVerificationEntity {
+export function mapEntity(
+  row: password_verification,
+): PasswordVerificationEntity {
   return {
     userId: row.user_id,
     algorithm: row.algorithm,

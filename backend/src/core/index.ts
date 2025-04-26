@@ -1,7 +1,4 @@
-import { DB } from './database';
+import { DB } from "./database";
 import { AccessInfo } from "./service";
 
-export {
-  DB,
-  AccessInfo,
-};
+export { DB, AccessInfo };

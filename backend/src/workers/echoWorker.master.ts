@@ -1,13 +1,11 @@
-import { ModuleThread, spawn, Thread, Worker } from "threads";
-import { EchoMethods } from "./echoWorker";
+import { type ModuleThread, Thread, Worker, spawn } from "threads";
+import type { EchoMethods } from "./echoWorker";
 
 export class EchoThread {
-  constructor(
-    private thread: ModuleThread<EchoMethods>,
-  ) {}
+  constructor(private thread: ModuleThread<EchoMethods>) {}
 
   static async create(): Promise<EchoThread> {
-    const thread = await spawn<EchoMethods>(new Worker('./echoWorker'));
+    const thread = await spawn<EchoMethods>(new Worker("./echoWorker"));
     return new EchoThread(thread);
   }
 
@@ -21,20 +19,19 @@ export class EchoThread {
 }
 
 export async function run(): Promise<void> {
-  console.log('start');
+  console.log("start");
   const echoThread = await EchoThread.create();
 
   const promises: Promise<unknown>[] = [];
 
   for (const i of [...Array(5).keys()]) {
-    const p = echoThread.echo(i.toString())
-      .then(message => {
-        console.log(message);
-      });
+    const p = echoThread.echo(i.toString()).then((message) => {
+      console.log(message);
+    });
     promises.push(p);
   }
 
   await Promise.all(promises);
   await echoThread.dispose();
-  console.log('finish');
+  console.log("finish");
 }
