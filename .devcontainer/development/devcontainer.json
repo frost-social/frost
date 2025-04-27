@@ -15,12 +15,18 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts",
       "nvmVersion": "latest"
-    }
+    },
+    "ghcr.io/devcontainers-community/features/deno:1": {}
   },
   "customizations": {
     "vscode": {
+      "settings": {
+        "deno.enable": true,
+        "deno.lint": false
+      },
       "extensions": [
         "biomejs.biome",
+        "denoland.vscode-deno",
         "github.vscode-github-actions",
         "timonwong.shellcheck",
         "ms-azuretools.vscode-docker",

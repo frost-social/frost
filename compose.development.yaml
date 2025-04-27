@@ -29,15 +29,12 @@ services:
       - frost-development-local
 
   db:
-    # container_name: db
     image: postgres:16
     restart: always
     volumes:
       - frost-db-data:/var/lib/postgresql/data
-    # working_dir: /workspaces
     # ports:
     #   - "5432:5432"
-    # command: sleep infinity
     environment:
       POSTGRES_DB: frost
       POSTGRES_USER: postgres
