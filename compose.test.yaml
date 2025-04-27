@@ -30,9 +30,6 @@ services:
       dockerfile: ./frontend/Dockerfile
       target: frontend
     # volumes:
-    # working_dir: /workspaces
-    # ports:
-    #   - "3000:3000"
     command: sleep infinity
     depends_on:
       - backend
@@ -45,9 +42,6 @@ services:
       dockerfile: ./backend/Dockerfile
       target: backend
     # volumes:
-    # working_dir: /workspaces
-    # ports:
-    #   - "3001:3000"
     command: sleep infinity
     depends_on:
       - db
@@ -55,12 +49,10 @@ services:
       - frost-test-local
 
   db:
-    # container_name: db
     image: postgres:15
     volumes:
       - ./db/data:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
-    # working_dir: /workspaces
     # ports:
     #   - "5432:5432"
     command: sleep infinity
