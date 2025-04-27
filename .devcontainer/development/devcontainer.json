@@ -19,8 +19,14 @@
   },
   "customizations": {
     "vscode": {
+      "settings": {
+        "deno.enable": true,
+        "deno.lint": true,
+        "deno.enablePaths": ["./backend-deno"]
+      },
       "extensions": [
         "biomejs.biome",
+        "denoland.vscode-deno",
         "github.vscode-github-actions",
         "timonwong.shellcheck",
         "ms-azuretools.vscode-docker",
