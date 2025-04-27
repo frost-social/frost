@@ -8,5 +8,8 @@
   "compilerOptions": {
     "jsx": "precompile",
     "jsxImportSource": "hono/jsx"
+  },
+  "lock": {
+    "frozen": true
   }
 }

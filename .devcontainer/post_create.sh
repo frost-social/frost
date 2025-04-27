@@ -18,6 +18,7 @@ IFS=$'\n\t'
 WORKSPACE_PATH=/workspace
 SPEC_PACKAGE_PATH="${WORKSPACE_PATH}/spec"
 BACKEND_PACKAGE_PATH="${WORKSPACE_PATH}/backend"
+BACKEND_DENO_PACKAGE_PATH="${WORKSPACE_PATH}/backend-deno"
 FRONTEND_PACKAGE_PATH="${WORKSPACE_PATH}/frontend"
 CUSTOM_POST_CREATE_SCRIPT_PATH="${WORKSPACE_PATH}/.devcontainer/post_create_custom.sh"
 
@@ -38,6 +39,10 @@ corepack pnpm install --frozen-lockfile
 echo "Install backend dependencies..."
 cd "$BACKEND_PACKAGE_PATH"
 corepack pnpm install --frozen-lockfile
+
+echo "Install backend dependencies..."
+cd "$BACKEND_DENO_PACKAGE_PATH"
+deno install
 
 echo "Install frontend dependencies..."
 cd "$FRONTEND_PACKAGE_PATH"
