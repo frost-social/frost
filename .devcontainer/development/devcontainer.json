@@ -15,8 +15,7 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts",
       "nvmVersion": "latest"
-    },
-    "ghcr.io/devcontainers-community/features/deno:1": {}
+    }
   },
   "customizations": {
     "vscode": {
