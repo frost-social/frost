@@ -42,7 +42,7 @@ corepack pnpm install --frozen-lockfile
 
 echo "Install backend dependencies..."
 cd "$BACKEND_DENO_PACKAGE_PATH"
-deno install
+deno install --frozen=true
 
 echo "Install frontend dependencies..."
 cd "$FRONTEND_PACKAGE_PATH"
