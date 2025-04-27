@@ -19,5 +19,11 @@ https://honi.club/channels/a7157mah8p
 ## Documents
 [Contribution Guides](./docs/)
 
+## Contributors
+- @ikasoba - [Details](https://github.com/frost-social/frost/commits/develop/?author=ikasoba)
+- @marihachi - [Details](https://github.com/frost-social/frost/commits/develop/?author=marihachi)
+- @Simirall - [Details](https://github.com/frost-social/frost/commits/develop/?author=Simirall)
+- @ThinaticSystem - [Details](https://github.com/frost-social/frost/commits/develop/?author=ThinaticSystem)
+
 ## License
 MIT
