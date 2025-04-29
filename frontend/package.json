@@ -13,10 +13,10 @@
     "@mantine/core": "^7.17.5",
     "@mantine/hooks": "^7.17.5",
     "@phosphor-icons/react": "^2.1.7",
+    "@tanstack/react-query": "^5.74.9",
     "@tanstack/react-router": "^1.117.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "swr": "^2.3.3"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@tanstack/router-plugin": "^1.117.0",
