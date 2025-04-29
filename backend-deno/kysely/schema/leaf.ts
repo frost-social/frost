@@ -3,7 +3,7 @@ import type { Table } from "./database.ts";
 
 export type LeafKind = "timeline" | "chat";
 
-export interface LeafsTable extends Table {
+export interface LeafTable extends Table {
   leaf_id: Generated<string>;
   leaf_kind: LeafKind;
   chat_room_id: string | null;
@@ -11,6 +11,6 @@ export interface LeafsTable extends Table {
   content: string;
 }
 
-export type SelectableLeafRow = Selectable<LeafsTable>;
-export type InsertableLeafRow = Insertable<LeafsTable>;
-export type UpdateableLeafRow = Updateable<LeafsTable>;
+export type SelectableLeafRow = Selectable<LeafTable>;
+export type InsertableLeafRow = Insertable<LeafTable>;
+export type UpdateableLeafRow = Updateable<LeafTable>;

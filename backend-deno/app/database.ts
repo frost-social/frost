@@ -10,7 +10,7 @@ export function configure(): Kysely<Database> {
   return new Kysely<Database>({
     dialect: new PostgresDialect({
       pool: new Pool({
-        url: url,
+        connectionString: url,
         max: 10,
       }),
     }),

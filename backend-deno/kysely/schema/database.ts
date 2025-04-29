@@ -1,9 +1,9 @@
-import type { LeafsTable } from "./leafs.ts";
-import type { UsersTable } from "./users.ts";
+import type { LeafTable } from "./leaf.ts";
+import type { UserTable } from "./user.ts";
 
 export interface Database {
-  users: UsersTable;
-  leafs: LeafsTable;
+  user: UserTable;
+  leaf: LeafTable;
 }
 
 export interface Table {
