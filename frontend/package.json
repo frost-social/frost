@@ -4,33 +4,31 @@
   "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a",
   "type": "module",
   "scripts": {
-    "generate-routes": "tsr generate",
     "generate-html-template": "pnpm exec tsx --tsconfig tsconfig.app.json --import=./scripts/ignore-assets-loader/register.js scripts/generate-template-html.js",
-    "watch-routes": "tsr watch",
     "dev": "vite",
-    "build": "pnpm run generate-routes && pnpm run generate-html-template && tsc -b && vite build && node ./scripts/generate-ejs.js",
+    "build": "pnpm run generate-html-template && tsc -b && vite build && node ./scripts/generate-ejs.js",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^7.17.4",
-    "@mantine/hooks": "^7.17.4",
+    "@mantine/core": "^7.17.5",
+    "@mantine/hooks": "^7.17.5",
     "@phosphor-icons/react": "^2.1.7",
-    "@tanstack/react-router": "^1.115.2",
-    "@tanstack/router-devtools": "^1.115.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "swr": "^2.3.3"
+    "@tanstack/react-query": "^5.74.9",
+    "@tanstack/react-router": "^1.117.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@tanstack/router-cli": "^1.115.2",
-    "@tanstack/router-plugin": "^1.115.2",
-    "@types/node": "^20.17.30",
-    "@types/react": "^18.3.20",
-    "@types/react-dom": "^18.3.6",
-    "@vitejs/plugin-react-swc": "^3.8.1",
+    "@tanstack/router-plugin": "^1.117.0",
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "@vitejs/plugin-react-swc": "^3.9.0",
+    "babel-plugin-react-compiler": "19.1.0-rc.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
-    "vite": "^5.4.18",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite": "^6.3.3",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
