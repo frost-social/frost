@@ -6,7 +6,7 @@
     "pg": "npm:pg@^8.15.6"
   },
   "tasks": {
-    "start": "deno run --check --allow-net ./src/main.ts"
+    "start": "deno run --check --allow-net --allow-env --env ./app/main.ts"
   },
   "compilerOptions": {
     "jsx": "precompile",

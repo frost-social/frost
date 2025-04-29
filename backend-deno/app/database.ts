@@ -3,13 +3,14 @@ import { Pool } from "npm:pg";
 import type { Database } from "../kysely/schema/database.ts";
 
 export function configure(): Kysely<Database> {
+  const url = Deno.env.get("DATABASE_URL");
+  if (url == null) {
+    throw new Error("database config required");
+  }
   return new Kysely<Database>({
     dialect: new PostgresDialect({
       pool: new Pool({
-        database: "frost",
-        host: "db",
-        user: "postgres",
-        port: 5432,
+        url: url,
         max: 10,
       }),
     }),
