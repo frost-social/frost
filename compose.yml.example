@@ -1,0 +1,64 @@
+name: frost
+
+services:
+  db:
+    container_name: frost-db
+    image: postgres:16
+    restart: always
+    volumes:
+      - frost-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: frost
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - frost-local
+
+  backend:
+    container_name: frost-backend
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: backend
+    working_dir: /workspace
+    # ports:
+    #   - "3001:3000"
+    depends_on:
+      - db
+    networks:
+      - frost-local
+
+  frontend:
+    container_name: frost-frontend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+      target: frontend
+    working_dir: /workspace
+    # ports:
+    #   - "3000:3000"
+    networks:
+      - frost-local
+
+  pgadmin:
+    container_name: frost-pgadmin
+    image: dpage/pgadmin4:9.3
+    ports:
+      - 5678:80
+    volumes:
+      - frost-pgadmin:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@example.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - frost-local
+
+volumes:
+  frost-db-data:
+  frost-pgadmin:
+
+networks:
+  frost-local:

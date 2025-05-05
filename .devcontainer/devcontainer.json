@@ -1,6 +1,6 @@
 {
-  "name": "Production Test",
-  "dockerComposeFile": "../../compose.test.yaml",
+  "name": "Development",
+  "dockerComposeFile": "../compose.devcontainer.yml",
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
   "postCreateCommand": "/workspace/.devcontainer/post_create.sh",
@@ -19,8 +19,14 @@
   },
   "customizations": {
     "vscode": {
+      "settings": {
+        "deno.enable": true,
+        "deno.lint": true,
+        "deno.enablePaths": ["./backend-deno"]
+      },
       "extensions": [
         "biomejs.biome",
+        "denoland.vscode-deno",
         "github.vscode-github-actions",
         "timonwong.shellcheck",
         "ms-azuretools.vscode-docker",
