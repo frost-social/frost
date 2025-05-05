@@ -1,7 +1,7 @@
-import type { AccessInfo, DB } from "../core";
-import * as UserRepository from "../core/repository/UserRepository";
-import { RestError } from "../core/restApi";
-import type { UserObject } from "../core/service/UserService";
+import type { AccessInfo, DB } from "../core/index.js";
+import * as UserRepository from "../core/repository/UserRepository.js";
+import { RestError } from "../core/restApi.js";
+import type { UserObject } from "../core/service/UserService.js";
 
 export async function followUser(
   params: { userId: string },

@@ -1,4 +1,4 @@
-import { DB } from "./database";
-import { AccessInfo } from "./service";
+import { DB } from "./database.js";
+import { AccessInfo } from "./service.js";
 
 export { DB, AccessInfo };

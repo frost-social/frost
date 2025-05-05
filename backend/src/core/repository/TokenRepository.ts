@@ -1,6 +1,6 @@
-import type { Prisma, token, token_scope } from "@prisma/client/";
-import type { DB } from "../database";
-import type { AccessInfo } from "../service";
+import type { Prisma, token, token_scope } from "@prisma/client";
+import type { DB } from "../database.js";
+import type { AccessInfo } from "../service.js";
 
 export type TokenKind = "access_token" | "refresh_token";
 

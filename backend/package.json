@@ -1,12 +1,12 @@
 {
   "name": "frost-backend",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971",
   "scripts": {
+    "clean": "rm -rf dist",
     "build": "tsc --project tsconfig.build.json",
     "rebuild": "pnpm clean && pnpm build",
-    "clean": "rm -rf dist",
     "update-spec": "mkdir -p openapi/generated && cp -r ../spec/generated/* openapi/generated",
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset --skip-seed",
@@ -21,7 +21,7 @@
     "test:cov": "jest --coverage"
   },
   "prisma": {
-    "seed": "ts-node --transpile-only prisma/seed.ts"
+    "seed": "node dist/prisma/seed"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -30,7 +30,6 @@
     "passport": "^0.7.0",
     "passport-http-bearer": "^1.0.1",
     "reflect-metadata": "^0.2.2",
-    "threads": "^1.7.0",
     "ts-node": "^10.9.2",
     "zod": "^3.23.8"
   },

@@ -1,4 +1,4 @@
-import type { paths } from "../openapi/generated/schema";
+import type { paths } from "../openapi/generated/schema.js";
 
 export type Endpoints = {
   "/api/v1/auth/signin": {

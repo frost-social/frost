@@ -1,9 +1,9 @@
 import type express from "express";
 import type z from "zod";
-import * as authentication from "./authentication";
-import type { DB } from "./database";
-import { BadRequest, RestError } from "./restApi";
-import type { UserObject } from "./service/UserService";
+import * as authentication from "./authentication.js";
+import type { DB } from "./database.js";
+import { BadRequest, RestError } from "./restApi.js";
+import type { UserObject } from "./service/UserService.js";
 
 export function registerRoute<R>(
   router: express.Router,

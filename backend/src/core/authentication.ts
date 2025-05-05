@@ -1,10 +1,10 @@
 import type express from "express";
 import passport from "passport";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
-import type { DB } from "./database";
-import { AccessDenied, RestError, Unauthenticated } from "./restApi";
-import * as TokenService from "./service/TokenService";
-import * as UserService from "./service/UserService";
+import type { DB } from "./database.js";
+import { AccessDenied, RestError, Unauthenticated } from "./restApi.js";
+import * as TokenService from "./service/TokenService.js";
+import * as UserService from "./service/UserService.js";
 
 export function configure(db: DB) {
   passport.use(

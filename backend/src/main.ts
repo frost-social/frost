@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
-import * as authentication from "./core/authentication";
-import * as database from "./core/database";
-import * as httpServer from "./core/httpServer";
-import * as restApi from "./core/restApi";
+import * as authentication from "./core/authentication.js";
+import * as database from "./core/database.js";
+import * as httpServer from "./core/httpServer.js";
+import * as restApi from "./core/restApi.js";
 
 async function bootstrap() {
   const projectInfo = JSON.parse(await readFile("../package.json", { encoding: "utf8" }));
