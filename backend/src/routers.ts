@@ -1,13 +1,13 @@
 import express from "express";
 import z from "zod";
-import { registerRoute } from "./core/apiRouteBuilder";
-import type { DB } from "./core/database";
-import { EndpointNotFound, RestError, corsApi } from "./core/restApi";
-import * as UserService from "./core/service/UserService";
-import type { Endpoints } from "./endpoints";
-import * as LeafService from "./leafs/LeafService";
-import * as LeafsQueryService from "./leafs/QueryService";
-import * as UserFollowingService from "./userRelations/UserFollowingService";
+import { registerRoute } from "./core/apiRouteBuilder.js";
+import type { DB } from "./core/database.js";
+import { EndpointNotFound, RestError, corsApi } from "./core/restApi.js";
+import * as UserService from "./core/service/UserService.js";
+import type { Endpoints } from "./endpoints.js";
+import * as LeafService from "./leafs/LeafService.js";
+import * as LeafsQueryService from "./leafs/QueryService.js";
+import * as UserFollowingService from "./userRelations/UserFollowingService.js";
 
 const zUuid = z.string().length(36);
 const zNumericString = z

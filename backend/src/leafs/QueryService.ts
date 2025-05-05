@@ -1,7 +1,7 @@
 import * as sql from "@prisma/client/sql";
-import type { AccessInfo, DB } from "../core";
-import * as LeafRepository from "./LeafRepository";
-import type { LeafObject } from "./LeafService";
+import type { AccessInfo, DB } from "../core/index.js";
+import * as LeafRepository from "./LeafRepository.js";
+import type { LeafObject } from "./LeafService.js";
 
 /**
  * タイムラインを取得する\

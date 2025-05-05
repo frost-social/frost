@@ -1,6 +1,6 @@
 import express, { type Express } from "express";
-import { createApiRouter } from "../routers";
-import type { DB } from "./database";
+import { createApiRouter } from "../routers.js";
+import type { DB } from "./database.js";
 
 /**
  * 任意のエラー情報を元にREST APIのエラーを組み立てます。

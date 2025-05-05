@@ -1,5 +1,5 @@
-import type { components } from "../../openapi/generated/schema";
-import type { AccessInfo, DB } from "../core";
+import type { components } from "../../openapi/generated/schema.js";
+import type { AccessInfo, DB } from "../core/index.js";
 import {
   AccessDenied,
   BadRequest,
