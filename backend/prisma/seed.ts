@@ -1,8 +1,7 @@
-import "reflect-metadata";
 import { PrismaClient } from "@prisma/client";
-import * as UserRepository from "../src/core/repository/UserRepository";
-import type { AccessInfo } from "../src/core/service";
-import * as TokenService from "../src/core/service/TokenService";
+import * as UserRepository from "../src/core/repository/UserRepository.js";
+import type { AccessInfo } from "../src/core/service.js";
+import * as TokenService from "../src/core/service/TokenService.js";
 
 const prisma = new PrismaClient();
 

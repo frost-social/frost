@@ -5,8 +5,8 @@ import {
   BadRequest,
   ResourceNotFound,
   RestError,
-} from "../core/restApi";
-import * as LeafRepository from "./LeafRepository";
+} from "../core/restApi.js";
+import * as LeafRepository from "./LeafRepository.js";
 
 export type LeafObject = components["schemas"]["Api.v1.Leaf"];
 
