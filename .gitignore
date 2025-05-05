@@ -1,7 +1,7 @@
-node_modules
-dist
+node_modules/
+dist/
 tsconfig.build.tsbuildinfo
-.pnpm-store
+.pnpm-store/
 .pnpm/
 .env
 
@@ -13,6 +13,5 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-.temp
-.tmp
-
+.temp/
+.tmp/
