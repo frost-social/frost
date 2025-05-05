@@ -4,6 +4,7 @@ tsconfig.build.tsbuildinfo
 .pnpm-store
 .pnpm/
 .env
+compose.yml
 
 logs
 *.log

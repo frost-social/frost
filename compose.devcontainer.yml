@@ -11,7 +11,21 @@
 name: frost-development
 
 services:
+  db:
+    container_name: frost-db
+    image: postgres:16
+    restart: always
+    volumes:
+      - frost-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: frost
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - frost-devcontainer-local
+
   devcontainer:
+    container_name: frost-devcontainer
     build:
       context: .
       dockerfile: ./.devcontainer/Dockerfile
@@ -19,32 +33,15 @@ services:
     volumes:
       - .:/workspace:cached
     working_dir: /workspace
-    # ports:
     command: sleep infinity
-    environment:
-      DB_URL: postgresql://postgres:postgres@db:5432/frost
     depends_on:
       - db
     networks:
-      - frost-development-local
-
-  db:
-    image: postgres:16
-    restart: always
-    volumes:
-      - frost-db-data:/var/lib/postgresql/data
-    # ports:
-    #   - "5432:5432"
-    environment:
-      POSTGRES_DB: frost
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    networks:
-      - frost-development-local
+      - frost-devcontainer-local
 
   pgadmin:
-    image: dpage/pgadmin4:6.11
-    container_name: pgadmin
+    container_name: frost-pgadmin
+    image: dpage/pgadmin4:9.3
     ports:
       - 5678:80
     volumes:
@@ -56,11 +53,11 @@ services:
       - db
     restart: always
     networks:
-      - frost-development-local
+      - frost-devcontainer-local
 
 volumes:
   frost-db-data:
   frost-pgadmin:
 
 networks:
-  frost-development-local:
+  frost-devcontainer-local:

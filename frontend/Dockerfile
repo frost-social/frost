@@ -1,5 +1,6 @@
-# Node.js 20 image on Debian 12 (bookworm)
-FROM node:20-bookworm AS frontend
+# Docker image of Node.js LTS on Debian
+FROM node:lts AS frontend
+
 ARG USERNAME=node
 
 # Install pnpm
