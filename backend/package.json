@@ -7,12 +7,11 @@
     "clean": "rm -rf dist",
     "build": "tsc --project tsconfig.build.json",
     "rebuild": "pnpm clean && pnpm build",
-    "update-spec": "mkdir -p openapi/generated && cp -r ../spec/generated/* openapi/generated",
-    "db:push": "prisma db push",
-    "db:reset": "prisma migrate reset --skip-seed",
+    "db:generate": "prisma generate --sql",
+    "db:migrate": "prisma migrate dev --skip-generate",
     "db:seed": "prisma db seed",
-    "db:create-migration": "prisma migrate dev --create-only",
-    "db:generate": "prisma generate && prisma generate --sql",
+    "db:reset": "prisma migrate reset --skip-seed",
+    "update-spec": "mkdir -p openapi/generated && cp -r ../spec/generated/* openapi/generated",
     "start": "node --enable-source-maps dist/src/main",
     "start:dev": "node --enable-source-maps --watch dist/src/main",
     "start:prod": "node dist/src/main",
@@ -21,7 +20,7 @@
     "test:cov": "jest --coverage"
   },
   "prisma": {
-    "seed": "node dist/prisma/seed"
+    "seed": "tsx prisma/seed"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -30,7 +29,6 @@
     "passport": "^0.7.0",
     "passport-http-bearer": "^1.0.1",
     "reflect-metadata": "^0.2.2",
-    "ts-node": "^10.9.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -44,6 +42,7 @@
     "prisma": "^5.22.0",
     "supertest": "^6.3.4",
     "ts-jest": "^29.2.5",
+    "tsx": "^4.19.4",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.13.0"
   }
