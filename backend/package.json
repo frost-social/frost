@@ -7,7 +7,7 @@
     "clean": "rm -rf dist",
     "build": "tsc --project tsconfig.build.json",
     "rebuild": "pnpm clean && pnpm build",
-    "db:generate": "prisma generate && prisma generate --sql",
+    "db:generate": "prisma generate --sql",
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --skip-seed",
