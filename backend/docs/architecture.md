@@ -4,7 +4,7 @@
 - 認可: 未定
 - トークン認証: Passport (passport-http-bearer)
 - データベース: PostgreSQL
-- データベースアクセス: node-postgres + Dizzle
+- データベースアクセス: node-postgres + Prisma
 - テンプレートエンジン: EJS
 
 # 主なアーキテクチャ
