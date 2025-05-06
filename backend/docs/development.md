@@ -23,14 +23,7 @@
    pnpm run db:generate
    ```
 
-4. リビルド
-
-   ※既にdist/prisma以下にあるスクリプトが最新になっていればこの操作は不要。一応やっておくほうが無難。
-   ```
-   pnpm run rebuild
-   ```
-
-5. DBに初期データを投入
+4. DBに初期データを投入
 
    ```
    pnpm run db:seed
