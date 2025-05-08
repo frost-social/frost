@@ -7,7 +7,7 @@ export type PrismaTransaction = Omit<
 >;
 export type DB = PrismaClient | PrismaTransaction;
 
-export function configure() {
+export function connectDB() {
   const db: DB = new PrismaClient();
 
   return db;

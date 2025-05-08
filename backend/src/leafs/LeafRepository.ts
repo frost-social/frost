@@ -88,6 +88,22 @@ export async function deleteLeaf(
   }
 }
 
+/**
+ * 投稿を削除する
+ */
+export async function clearLeafsOfUser(
+  params: { userId: string },
+  info: AccessInfo,
+  db: DB,
+): Promise<number> {
+  const result = await db.leaf.deleteMany({
+    where: {
+      user_id: params.userId,
+    },
+  });
+  return result.count;
+}
+
 export function toEntity(row: leaf): LeafEntity {
   const leaf: LeafEntity = {
     leafId: row.leaf_id,

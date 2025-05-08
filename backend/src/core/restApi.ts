@@ -20,7 +20,7 @@ function buildRestApiError(err: unknown): { error: ErrorObject } {
   };
 }
 
-export function configure(db: DB, app: Express) {
+export function configureRestApi(db: DB, app: Express) {
   app.use(express.json());
 
   app.use(createApiRouter(db));

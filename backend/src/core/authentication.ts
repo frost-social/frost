@@ -6,7 +6,7 @@ import { AccessDenied, RestError, Unauthenticated } from "./restApi.js";
 import * as TokenService from "./service/TokenService.js";
 import * as UserService from "./service/UserService.js";
 
-export function configure(db: DB) {
+export function configureAuth(db: DB) {
   passport.use(
     new BearerStrategy(async (token, done) => {
       try {

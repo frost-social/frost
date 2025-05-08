@@ -1,14 +1,14 @@
 import type { AccessInfo, DB } from "../core/index.js";
-import * as UserRepository from "../core/repository/UserRepository.js";
 import { RestError } from "../core/restApi.js";
 import type { UserObject } from "../core/service/UserService.js";
+import * as UserFollowingRepository from "./UserFollowingRepository.js";
 
 export async function followUser(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
 ): Promise<void> {
-  const relationExisting = await UserRepository.getUserFollowing({
+  const relationExisting = await UserFollowingRepository.getUserFollowing({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -22,7 +22,7 @@ export async function followUser(
     });
   }
 
-  await UserRepository.followUser({
+  await UserFollowingRepository.createUserFollowing({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -33,7 +33,7 @@ export async function unfollowUser(
   info: AccessInfo,
   db: DB,
 ): Promise<void> {
-  const relationExisting = await UserRepository.getUserFollowing({
+  const relationExisting = await UserFollowingRepository.getUserFollowing({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -47,7 +47,7 @@ export async function unfollowUser(
     });
   }
 
-  await UserRepository.unfollowUser({
+  await UserFollowingRepository.deleteUserFollowing({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -58,7 +58,7 @@ export async function getFollowings(
   info: AccessInfo,
   db: DB,
 ): Promise<UserObject[]> {
-  const users = await UserRepository.getFollowings({
+  const users = await UserFollowingRepository.getFollowings({
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,
@@ -71,7 +71,7 @@ export async function getFollowedBy(
   info: AccessInfo,
   db: DB,
 ): Promise<UserObject[]> {
-  const users = await UserRepository.getFollowedBy({
+  const users = await UserFollowingRepository.getFollowedBy({
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,

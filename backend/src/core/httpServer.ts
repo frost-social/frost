@@ -1,6 +1,6 @@
 import express from "express";
 
-export function configure() {
+export function createHttpServer() {
   const app = express();
 
   app.disable("x-powered-by");
@@ -11,4 +11,10 @@ export function configure() {
   });
 
   return app;
+}
+
+export function listenHttpServer(app: express.Express, listenPort: number): Promise<void> {
+  return new Promise<void>(resolve => {
+    app.listen(listenPort, () => resolve());
+  });
 }
