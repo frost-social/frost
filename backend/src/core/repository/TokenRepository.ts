@@ -70,6 +70,28 @@ export async function getToken(
 }
 
 /**
+ * トークン情報を取得する
+*/
+export async function getTokensOfUser(
+  params: { userId: string },
+  info: AccessInfo,
+  db: DB,
+): Promise<TokenEntity[]> {
+  // トークン情報を取得
+  const rows = await db.token.findMany({
+    where: {
+      user: {
+        user_id: params.userId,
+      }
+    },
+    include: {
+      scopes: true,
+    },
+  });
+  return rows.map(row => mapEntity(row));
+}
+
+/**
  * トークン情報を削除する
  * @returns 削除に成功したかどうか
 */

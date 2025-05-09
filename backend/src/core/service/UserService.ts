@@ -116,7 +116,11 @@ export async function signin(
     return { accessToken, refreshToken, user };
   }
 
-  throw new Error(`authentication method not exists: ${user.userId}`);
+  throw new RestError({
+    code: "signinDisabled",
+    message: "Sign-in have been disabled for this user.",
+    status: 403,
+  });
 }
 
 /**

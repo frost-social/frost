@@ -17,7 +17,10 @@
     "start:prod": "node dist/src/main",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "admin:lookup-user": "tsx scripts/lookup-user.ts",
+    "admin:lookup-token": "tsx scripts/lookup-token.ts",
+    "admin:delete-user": "tsx scripts/delete-user.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed"

@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
-import * as authentication from "./core/authentication.js";
-import * as database from "./core/database.js";
-import * as httpServer from "./core/httpServer.js";
-import * as restApi from "./core/restApi.js";
+import { configureAuth } from "./core/authentication.js";
+import { connectDB } from "./core/database.js";
+import { getEnvInteger } from "./core/env.js";
+import { createHttpServer, listenHttpServer } from "./core/httpServer.js";
+import { configureRestApi } from "./core/restApi.js";
 
 async function bootstrap() {
   const projectInfo = JSON.parse(await readFile("../package.json", { encoding: "utf8" }));
@@ -16,18 +17,16 @@ async function bootstrap() {
 
   // TODO: validate config
 
-  const db = database.configure();
-  authentication.configure(db);
+  const db = connectDB();
+  configureAuth(db);
 
-  const app = httpServer.configure();
-  restApi.configure(db, app);
+  const http = createHttpServer();
+  configureRestApi(db, http);
 
   // listen http
-  const port = process.env.LISTEN_PORT;
-  await new Promise<void>(resolve => {
-    app.listen(port, () => resolve());
-  });
-  console.log(`listen on port ${port}`);
+  const listenPort = getEnvInteger("LISTEN_PORT", 3000);
+  await listenHttpServer(http, listenPort);
+  console.log(`listening on http://localhost:${listenPort}`);
 }
 bootstrap()
 .catch(err => {
