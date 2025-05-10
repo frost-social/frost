@@ -1,4 +1,4 @@
-import express, { type Application } from "express";
+import express, { type Application, type NextFunction, type Request, type Response } from "express";
 import { createApiRouter } from "../routers.js";
 import type { DB } from "./database.js";
 
@@ -33,8 +33,8 @@ export function configureRestApi(db: DB, app: Application) {
   });
 }
 
-export function corsApi(): express.RequestHandler {
-  return (req, res, next) => {
+export function corsApi() {
+  return (req: Request, res: Response, next: NextFunction) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
 
     // preflight request
@@ -45,7 +45,8 @@ export function corsApi(): express.RequestHandler {
         "Accept,Content-Type,Origin,Authorization",
       );
       res.setHeader("Access-Control-Max-Age", "60");
-      return res.status(204).send();
+      res.status(204).send();
+      return;
     }
 
     next();
