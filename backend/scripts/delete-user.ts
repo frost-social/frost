@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import { deletePasswordEntity } from "../src/core/repository/PasswordRepository.js";
-import { deleteTokenEntity, getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
-import { deleteUserEntity, getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
-import { clearLeafEntitiesOfUser } from "../src/leafs/LeafRepository.js";
-import { clearUserFollowingRel } from "../src/userRelations/UserFollowingRepository.js";
+import { clearLeafEntitiesOfUser } from "../src/repositories/LeafRepository.js";
+import { deletePasswordEntity } from "../src/repositories/PasswordRepository.js";
+import { deleteTokenEntity, getTokenEntitiesOfUser } from "../src/repositories/TokenRepository.js";
+import { clearUserFollowingRel } from "../src/repositories/UserFollowingRepository.js";
+import { deleteUserEntity, getUserEntity } from "../src/repositories/UserRepository.js";
 
 async function run() {
   const userName = process.argv[2];

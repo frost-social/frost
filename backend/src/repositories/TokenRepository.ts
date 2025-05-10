@@ -1,5 +1,5 @@
-import type { DB } from "../database.js";
-import type { AccessInfo } from "../service.js";
+import type { DB } from "../core/database.js";
+import type { AccessInfo } from "../core/service.js";
 
 export type TokenEntity = {
   userId: string;

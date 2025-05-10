@@ -3,11 +3,12 @@ import z from "zod";
 import { registerRoute } from "./core/apiRouteBuilder.js";
 import type { DB } from "./core/database.js";
 import { EndpointNotFound, RestError, corsApi } from "./core/restApi.js";
-import * as UserService from "./core/service/UserService.js";
 import type { Endpoints } from "./endpoints.js";
-import * as LeafService from "./leafs/LeafService.js";
-import * as LeafsQueryService from "./leafs/QueryService.js";
-import * as UserFollowingService from "./userRelations/UserFollowingService.js";
+import { signin, signup } from "./services/AuthenticationService.js";
+import * as LeafsQueryService from "./services/LeafQueryService.js";
+import * as LeafService from "./services/LeafService.js";
+import * as UserFollowingService from "./services/UserFollowingService.js";
+import * as UserService from "./services/UserService.js";
 
 const zUuid = z.string().length(36);
 const zNumericString = z
@@ -39,7 +40,7 @@ function createApiVer1Router(db: DB) {
             password: z.string().min(1).optional(),
           }),
         );
-      const result = await UserService.signin(
+      const result = await signin(
         params,
         { userId: ctx.getUser().userId },
         ctx.db,
@@ -63,7 +64,7 @@ function createApiVer1Router(db: DB) {
             displayName: z.string().min(1),
           }),
         );
-      const result = await UserService.signup(
+      const result = await signup(
         params,
         { userId: ctx.getUser().userId },
         ctx.db,

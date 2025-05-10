@@ -1,6 +1,6 @@
 import type { DB } from "../core/database.js";
-import { type UserEntity, mapUserEntity } from "../core/repository/UserRepository.js";
 import type { AccessInfo } from "../core/service.js";
+import { type UserEntity, mapUserEntity } from "./UserRepository.js";
 
 /**
  * ユーザーをフォローする

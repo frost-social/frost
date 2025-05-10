@@ -6,7 +6,7 @@ import {
   ResourceNotFound,
   RestError,
 } from "../core/restApi.js";
-import { createTimelineLeafEntity, deleteLeafEntity, getLeafEntity } from "./LeafRepository.js";
+import { createTimelineLeafEntity, deleteLeafEntity, getLeafEntity } from "../repositories/LeafRepository.js";
 
 export type LeafObject = components["schemas"]["Api.v1.Leaf"];
 

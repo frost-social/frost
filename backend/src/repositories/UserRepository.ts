@@ -1,5 +1,5 @@
-import type { DB } from "../database.js";
-import type { AccessInfo } from "../service.js";
+import type { DB } from "../core/database.js";
+import type { AccessInfo } from "../core/service.js";
 
 export type UserEntity = {
   userId: string;
@@ -30,7 +30,7 @@ export function mapUserEntity(row: UserRow): UserEntity {
 export async function createUserEntity(
   params: {
     userName: string;
-    displayName: string;
+    displayName?: string;
     passwordAuthEnabled: boolean;
   },
   info: AccessInfo,

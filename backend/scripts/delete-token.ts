@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { deleteTokenEntity } from "../src/core/repository/TokenRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
+import { deleteTokenEntity } from "../src/repositories/TokenRepository.js";
 
 async function run() {
   const token = process.argv[2];

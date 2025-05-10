@@ -1,6 +1,21 @@
-import express, { type Express } from "express";
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+  type Express,
+} from "express";
 import { createApiRouter } from "../routers.js";
 import type { DB } from "./database.js";
+
+export function asyncRoute(
+  handler: (req: Request, res: Response, next: NextFunction) => Promise<void>,
+) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    handler(req, res, next).catch((err) => {
+      next(err);
+    });
+  };
+}
 
 /**
  * 任意のエラー情報を元にREST APIのエラーを組み立てます。

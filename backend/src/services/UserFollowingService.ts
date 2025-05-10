@@ -1,7 +1,7 @@
 import type { AccessInfo, DB } from "../core/index.js";
 import { RestError } from "../core/restApi.js";
-import type { UserObject } from "../core/service/UserService.js";
-import { createUserFollowingRel, deleteUserFollowingRel, getUserFollowingRel, listUserEntityOfFollowedBy, listUserEntityOfFollowing } from "./UserFollowingRepository.js";
+import { createUserFollowingRel, deleteUserFollowingRel, getUserFollowingRel, listUserEntityOfFollowedBy, listUserEntityOfFollowing } from "../repositories/UserFollowingRepository.js";
+import type { UserObject } from "./UserService.js";
 
 export async function followUser(
   params: { userId: string },

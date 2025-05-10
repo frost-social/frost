@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { createUserEntity, getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
-import { createToken } from "../src/core/service/TokenService.js";
+import { createUserEntity, getUserEntity } from "../src/repositories/UserRepository.js";
+import { createToken } from "../src/services/TokenService.js";
 
 const prisma = new PrismaClient();
 

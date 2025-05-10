@@ -1,10 +1,10 @@
 import crypto from "node:crypto";
-import type { components } from "../../../openapi/generated/schema.js";
-import type { DB } from "../database.js";
-import { type PasswordEntity, createPasswordEntity, getPasswordEntity } from "../repository/PasswordRepository.js";
-import { createUserEntity, deleteUserEntity, getUserEntity } from "../repository/UserRepository.js";
-import { BadRequest, ResourceNotFound, RestError } from "../restApi.js";
-import type { AccessInfo } from "../service.js";
+import type { components } from "../../openapi/generated/schema.js";
+import type { DB } from "../core/database.js";
+import { BadRequest, ResourceNotFound, RestError } from "../core/restApi.js";
+import type { AccessInfo } from "../core/service.js";
+import { type PasswordEntity, createPasswordEntity, getPasswordEntity } from "../repositories/PasswordRepository.js";
+import { createUserEntity, deleteUserEntity, getUserEntity } from "../repositories/UserRepository.js";
 import * as TokenService from "./TokenService.js";
 
 export type UserObject = components['schemas']['Api.v1.User'];
@@ -215,48 +215,4 @@ function generatePasswordHash(params: { token: string, algorithm: string, salt: 
 function generatePasswordSalt(): string {
   // 128bit random (length = 32)
   return crypto.randomBytes(16).toString("hex");
-}
-
-/**
- * ユーザー情報を取得します。
-*/
-export async function getUser(
-  params: { userId?: string, userName?: string },
-  info: AccessInfo,
-  db: DB,
-): Promise<UserObject> {
-  // either userId or userName must be specified
-  if ([params.userId, params.userName].every(x => x == null)) {
-    throw new RestError(new BadRequest([
-      { message: "Please specify the userId or userName." },
-    ]));
-  }
-
-  const userEntity = await getUserEntity({
-    userId: params.userId,
-    userName: params.userName,
-  }, info, db);
-
-  if (userEntity == null) {
-    throw new RestError(new ResourceNotFound("User"));
-  }
-
-  return userEntity;
-}
-
-/**
- * ユーザー情報を削除します。
-*/
-export async function deleteUser(
-  params: { userId: string },
-  info: AccessInfo,
-  db: DB,
-): Promise<void> {
-  const success = await deleteUserEntity({
-    userId: params.userId,
-  }, info, db);
-
-  if (!success) {
-    throw new RestError(new ResourceNotFound("User"));
-  }
 }

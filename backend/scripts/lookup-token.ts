@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
-import { getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
+import { getTokenEntitiesOfUser } from "../src/repositories/TokenRepository.js";
+import { getUserEntity } from "../src/repositories/UserRepository.js";
 
 async function run() {
   const userName = process.argv[2];
