@@ -22,7 +22,7 @@ async function main() {
         },
       });
       if (row == null) {
-        row = await ctx.db.user.create({
+        row = await db.user.create({
           data: {
             name: userName,
             display_name: userName,
@@ -38,11 +38,19 @@ async function main() {
     const publicUser = await prepareUser("public");
 
     // create token for public
-    await createToken(ctx, {
-      userId: publicUser.userId,
-      tokenKind: "access_token",
-      scopes: ["user.auth"],
+    const tokenRow = await db.token.findFirst({
+      where: {
+        user_id: publicUser.userId,
+        token_kind: "access_token",
+      },
     });
+    if (tokenRow == null) {
+      await createToken(ctx, {
+        userId: publicUser.userId,
+        tokenKind: "access_token",
+        scopes: ["user.auth"],
+      });
+    }
   } catch (err) {
     console.error(err);
   } finally {
