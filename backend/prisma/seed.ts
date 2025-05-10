@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import * as UserRepository from "../src/core/repository/UserRepository.js";
+import { createUserEntity, getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
-import * as TokenService from "../src/core/service/TokenService.js";
+import { createToken } from "../src/core/service/TokenService.js";
 
 const prisma = new PrismaClient();
 
@@ -9,9 +9,9 @@ async function main() {
   const ctx: AccessInfo = { userId: "" };
 
   // create root user
-  let rootUser = await UserRepository.getUser({ userName: "root" }, ctx, prisma);
+  let rootUser = await getUserEntity({ userName: "root" }, ctx, prisma);
   if (rootUser == null) {
-    rootUser = await UserRepository.createUser({
+    rootUser = await createUserEntity({
       userName: "root",
       displayName: "root",
       passwordAuthEnabled: false,
@@ -21,9 +21,9 @@ async function main() {
   ctx.userId = rootUser.userId;
 
   // create public user
-  let publicUser = await UserRepository.getUser({ userName: "public" }, ctx, prisma);
+  let publicUser = await getUserEntity({ userName: "public" }, ctx, prisma);
   if (publicUser == null) {
-    publicUser = await UserRepository.createUser({
+    publicUser = await createUserEntity({
       userName: "public",
       displayName: "public",
       passwordAuthEnabled: false,
@@ -31,7 +31,7 @@ async function main() {
 
     // create token for public
     const scopes = ["user.auth"];
-    await TokenService.createToken({
+    await createToken({
       userId: publicUser.userId,
       tokenKind: "access_token",
       scopes: scopes,

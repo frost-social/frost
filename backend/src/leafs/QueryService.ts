@@ -1,6 +1,6 @@
 import * as sql from "@prisma/client/sql";
 import type { AccessInfo, DB } from "../core/index.js";
-import * as LeafRepository from "./LeafRepository.js";
+import { mapLeafEntity } from "./LeafRepository.js";
 import type { LeafObject } from "./LeafService.js";
 
 /**
@@ -33,7 +33,7 @@ export async function fetchHomeTimeline(
       sql.fetchHomeTimelineLatest(info.userId, limit),
     );
   }
-  const leafs = rows.map((x) => LeafRepository.toEntity(x));
+  const leafs = rows.map((x) => mapLeafEntity(x));
   return {
     leafs: leafs,
     nextCursor: leafs[0]?.leafId,

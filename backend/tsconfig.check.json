@@ -1,10 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "declaration": false,
-    "sourceMap": true,
-    "incremental": true,
+    "noEmit": true,
+    "incremental": false,
   },
-  "include": ["src"],
+  "include": ["src", "scripts", "prisma"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }

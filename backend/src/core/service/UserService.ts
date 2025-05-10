@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import type { components } from "../../../openapi/generated/schema.js";
 import type { DB } from "../database.js";
 import { type PasswordEntity, createPasswordEntity, getPasswordEntity } from "../repository/PasswordRepository.js";
-import * as UserRepository from "../repository/UserRepository.js";
+import { createUserEntity, deleteUserEntity, getUserEntity } from "../repository/UserRepository.js";
 import { BadRequest, ResourceNotFound, RestError } from "../restApi.js";
 import type { AccessInfo } from "../service.js";
 import * as TokenService from "./TokenService.js";
@@ -33,7 +33,7 @@ export async function signup(
     });
   }
 
-  const user = await UserRepository.createUser({
+  const user = await createUserEntity({
     userName: params.userName,
     displayName: params.displayName,
     passwordAuthEnabled: true,
@@ -76,7 +76,7 @@ export async function signin(
     ]));
   }
 
-  const user = await UserRepository.getUser({
+  const user = await getUserEntity({
     userName: params.userName,
   }, info, db);
 
@@ -232,7 +232,7 @@ export async function getUser(
     ]));
   }
 
-  const userEntity = await UserRepository.getUser({
+  const userEntity = await getUserEntity({
     userId: params.userId,
     userName: params.userName,
   }, info, db);
@@ -252,7 +252,7 @@ export async function deleteUser(
   info: AccessInfo,
   db: DB,
 ): Promise<void> {
-  const success = await UserRepository.deleteUser({
+  const success = await deleteUserEntity({
     userId: params.userId,
   }, info, db);
 

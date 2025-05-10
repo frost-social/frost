@@ -1,14 +1,14 @@
 import type { AccessInfo, DB } from "../core/index.js";
 import { RestError } from "../core/restApi.js";
 import type { UserObject } from "../core/service/UserService.js";
-import * as UserFollowingRepository from "./UserFollowingRepository.js";
+import { createUserFollowingRel, deleteUserFollowingRel, getUserFollowingRel, listUserEntityOfFollowedBy, listUserEntityOfFollowing } from "./UserFollowingRepository.js";
 
 export async function followUser(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
 ): Promise<void> {
-  const relationExisting = await UserFollowingRepository.getUserFollowing({
+  const relationExisting = await getUserFollowingRel({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -22,7 +22,7 @@ export async function followUser(
     });
   }
 
-  await UserFollowingRepository.createUserFollowing({
+  await createUserFollowingRel({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -33,7 +33,7 @@ export async function unfollowUser(
   info: AccessInfo,
   db: DB,
 ): Promise<void> {
-  const relationExisting = await UserFollowingRepository.getUserFollowing({
+  const relationExisting = await getUserFollowingRel({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -47,7 +47,7 @@ export async function unfollowUser(
     });
   }
 
-  await UserFollowingRepository.deleteUserFollowing({
+  await deleteUserFollowingRel({
     followedByUserId: info.userId,
     followingUserId: params.userId,
   }, info, db);
@@ -58,7 +58,7 @@ export async function getFollowings(
   info: AccessInfo,
   db: DB,
 ): Promise<UserObject[]> {
-  const users = await UserFollowingRepository.getFollowings({
+  const users = await listUserEntityOfFollowing({
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,
@@ -71,7 +71,7 @@ export async function getFollowedBy(
   info: AccessInfo,
   db: DB,
 ): Promise<UserObject[]> {
-  const users = await UserFollowingRepository.getFollowedBy({
+  const users = await listUserEntityOfFollowedBy({
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,

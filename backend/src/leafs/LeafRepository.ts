@@ -13,7 +13,7 @@ export type LeafEntity = {
 /**
  * 投稿を作成する
  */
-export async function createTimelineLeaf(
+export async function createTimelineLeafEntity(
   params: { userId: string; content: string },
   info: AccessInfo,
   db: DB,
@@ -26,13 +26,13 @@ export async function createTimelineLeaf(
     },
   });
 
-  return toEntity(row);
+  return mapLeafEntity(row);
 }
 
 /**
  * チャット投稿を作成する
  */
-export async function createChatLeaf(
+export async function createChatLeafEntity(
   params: { chatRoomId: string; userId: string; content: string },
   info: AccessInfo,
   db: DB,
@@ -46,13 +46,13 @@ export async function createChatLeaf(
     },
   });
 
-  return toEntity(row);
+  return mapLeafEntity(row);
 }
 
 /**
  * 投稿を取得する
  */
-export async function getLeaf(
+export async function getLeafEntity(
   params: { leafId: string },
   info: AccessInfo,
   db: DB,
@@ -67,13 +67,13 @@ export async function getLeaf(
     return undefined;
   }
 
-  return toEntity(row);
+  return mapLeafEntity(row);
 }
 
 /**
  * 投稿を削除する
  */
-export async function deleteLeaf(
+export async function deleteLeafEntity(
   params: { leafId: string },
   info: AccessInfo,
   db: DB,
@@ -91,7 +91,7 @@ export async function deleteLeaf(
 /**
  * 投稿を削除する
  */
-export async function clearLeafsOfUser(
+export async function clearLeafEntitiesOfUser(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
@@ -104,7 +104,7 @@ export async function clearLeafsOfUser(
   return result.count;
 }
 
-export function toEntity(row: leaf): LeafEntity {
+export function mapLeafEntity(row: leaf): LeafEntity {
   const leaf: LeafEntity = {
     leafId: row.leaf_id,
     leafKind: row.leaf_kind,

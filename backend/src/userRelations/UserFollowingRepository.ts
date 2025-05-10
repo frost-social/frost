@@ -1,11 +1,11 @@
 import type { DB } from "../core/database.js";
-import { type UserEntity, mapUser } from "../core/repository/UserRepository.js";
+import type { UserEntity } from "../core/repository/UserRepository.js";
 import type { AccessInfo } from "../core/service.js";
 
 /**
  * ユーザーをフォローする
-*/
-export async function getUserFollowing(
+ */
+export async function getUserFollowingRel(
   params: { followedByUserId: string; followingUserId: string },
   info: AccessInfo,
   db: DB,
@@ -24,8 +24,8 @@ export async function getUserFollowing(
 
 /**
  * ユーザーをフォローする
-*/
-export async function createUserFollowing(
+ */
+export async function createUserFollowingRel(
   params: { followedByUserId: string; followingUserId: string },
   info: AccessInfo,
   db: DB,
@@ -40,9 +40,9 @@ export async function createUserFollowing(
 
 /**
  * ユーザーをフォロー解除する
-*/
-export async function deleteUserFollowing(
-  params: { followedByUserId: string, followingUserId: string },
+ */
+export async function deleteUserFollowingRel(
+  params: { followedByUserId: string; followingUserId: string },
   info: AccessInfo,
   db: DB,
 ): Promise<void> {
@@ -51,15 +51,15 @@ export async function deleteUserFollowing(
       user_id_followed_by_user_id_following: {
         user_id_followed_by: params.followedByUserId,
         user_id_following: params.followingUserId,
-      }
+      },
     },
   });
 }
 
 /**
  * 対象ユーザーに関するフォロー関係を全て解除する
-*/
-export async function clearUserFollowingForUser(
+ */
+export async function clearUserFollowingRel(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
@@ -68,7 +68,7 @@ export async function clearUserFollowingForUser(
     where: {
       OR: [
         { user_id_followed_by: params.userId },
-        { user_id_following: params.userId }
+        { user_id_following: params.userId },
       ],
     },
   });
@@ -77,9 +77,9 @@ export async function clearUserFollowingForUser(
 
 /**
  * 指定ユーザーがフォローしているユーザーの一覧を取得する
-*/
-export async function getFollowings(
-  params: { userId: string, offset: number, limit: number },
+ */
+export async function listUserEntityOfFollowing(
+  params: { userId: string; offset: number; limit: number },
   info: AccessInfo,
   db: DB,
 ): Promise<UserEntity[]> {
@@ -92,14 +92,22 @@ export async function getFollowings(
     take: params.limit,
   });
 
-  return rows.map(row => mapUser(row.user_following));
+  return rows.map((row) => {
+    const user = row.user_following;
+    return {
+      userId: user.user_id,
+      userName: user.name,
+      displayName: user.display_name,
+      passwordAuthEnabled: user.password_auth_enabled,
+    };
+  });
 }
 
 /**
  * 指定ユーザーをフォローしているユーザーの一覧を取得する
-*/
-export async function getFollowedBy(
-  params: { userId: string, offset: number, limit: number },
+ */
+export async function listUserEntityOfFollowedBy(
+  params: { userId: string; offset: number; limit: number },
   info: AccessInfo,
   db: DB,
 ): Promise<UserEntity[]> {
@@ -112,5 +120,13 @@ export async function getFollowedBy(
     take: params.limit,
   });
 
-  return rows.map(row => mapUser(row.user_followed_by));
+  return rows.map((row) => {
+    const user = row.user_followed_by;
+    return {
+      userId: user.user_id,
+      userName: user.name,
+      displayName: user.display_name,
+      passwordAuthEnabled: user.password_auth_enabled,
+    };
+  });
 }

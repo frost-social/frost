@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { deletePasswordEntity } from "../src/core/repository/PasswordRepository.js";
 import { deleteTokenEntity, getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
-import * as UserRepository from "../src/core/repository/UserRepository.js";
+import { deleteUserEntity, getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
-import * as LeafRepository from "../src/leafs/LeafRepository.js";
-import * as UserFollowingRepository from "../src/userRelations/UserFollowingRepository.js";
+import { clearLeafEntitiesOfUser } from "../src/leafs/LeafRepository.js";
+import { clearUserFollowingRel } from "../src/userRelations/UserFollowingRepository.js";
 
 async function run() {
   const userName = process.argv[2];
@@ -21,7 +21,7 @@ async function run() {
       let success: boolean;
       let count: number;
 
-      const user = await UserRepository.getUser({
+      const user = await getUserEntity({
         userName: userName,
       }, info, db);
       if (user != null) {
@@ -31,7 +31,7 @@ async function run() {
         return;
       }
 
-      count = await LeafRepository.clearLeafsOfUser({
+      count = await clearLeafEntitiesOfUser({
         userId: user.userId,
       }, info, db);
       if (count > 0) {
@@ -49,7 +49,7 @@ async function run() {
         console.log(`ユーザーID'${user.userId}'のアプリケーション認可情報を1件削除しました。`);
       }
 
-      count = await UserFollowingRepository.clearUserFollowingForUser({
+      count = await clearUserFollowingRel({
         userId: user.userId,
       }, info, db);
       if (count > 0) {
@@ -66,7 +66,7 @@ async function run() {
         return;
       }
 
-      success = await UserRepository.deleteUser({
+      success = await deleteUserEntity({
         userId: user.userId,
       }, info, db);
       if (success) {

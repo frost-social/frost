@@ -6,7 +6,7 @@ import {
   createTokenEntity,
   getTokenEntity,
 } from "../repository/TokenRepository.js";
-import * as UserRepository from "../repository/UserRepository.js";
+import { getUserEntity } from "../repository/UserRepository.js";
 import {
   BadRequest,
   ResourceNotFound,
@@ -39,7 +39,7 @@ export async function createToken(
   db: DB,
 ): Promise<TokenObject> {
   // ユーザーが存在しないトークンは作成できない
-  const userEntity = await UserRepository.getUser({
+  const userEntity = await getUserEntity({
     userId: params.userId,
   }, info, db);
   if (userEntity == null) {

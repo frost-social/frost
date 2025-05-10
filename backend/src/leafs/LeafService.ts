@@ -6,7 +6,7 @@ import {
   ResourceNotFound,
   RestError,
 } from "../core/restApi.js";
-import * as LeafRepository from "./LeafRepository.js";
+import { createTimelineLeafEntity, deleteLeafEntity, getLeafEntity } from "./LeafRepository.js";
 
 export type LeafObject = components["schemas"]["Api.v1.Leaf"];
 
@@ -21,7 +21,7 @@ export async function createLeaf(
   if (params.content.length < 1) {
     throw new RestError(new BadRequest([{ message: "content invalid." }]));
   }
-  const leaf = await LeafRepository.createTimelineLeaf({
+  const leaf = await createTimelineLeafEntity({
     userId: info.userId,
     content: params.content,
   }, info, db);
@@ -41,7 +41,7 @@ export async function getLeaf(
       { message: 'leafId invalid.' },
     ]));
   }
-  const leaf = await LeafRepository.getLeaf({
+  const leaf = await getLeafEntity({
     leafId: params.leafId
   }, info, db);
   if (leaf == null) {
@@ -65,7 +65,7 @@ export async function deleteLeaf(
   }
 
   // 作成者以外は削除できない
-  const leaf = await LeafRepository.getLeaf({
+  const leaf = await getLeafEntity({
     leafId: params.leafId
   }, info, db);
   if (leaf == null) {
@@ -75,7 +75,7 @@ export async function deleteLeaf(
     throw new RestError(new AccessDenied());
   }
 
-  await LeafRepository.deleteLeaf({
+  await deleteLeafEntity({
     leafId: params.leafId,
   }, info, db);
 }
