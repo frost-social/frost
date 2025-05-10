@@ -16,11 +16,3 @@ RUN echo "vscode ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/vscode
 
 # Install network tools
 RUN apt-get install -y iputils-ping net-tools
-
-# Install PostgreSQL
-# RUN apt-get install -y postgresql postgresql-contrib
-
-# Install Deno
-ENV DENO_INSTALL=/usr/local
-RUN curl -fsSL https://deno.land/install.sh \
-  | sh
