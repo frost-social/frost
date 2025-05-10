@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import * as PasswordVerificationRepository from "../src/core/repository/PasswordVerificationRepository.js";
-import * as TokenRepository from "../src/core/repository/TokenRepository.js";
+import { deletePasswordEntity } from "../src/core/repository/PasswordRepository.js";
+import { deleteTokenEntity, getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
 import * as UserRepository from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
 import * as LeafRepository from "../src/leafs/LeafRepository.js";
@@ -38,12 +38,12 @@ async function run() {
         console.log(`ユーザーID'${userName}'の${count}件のリーフを削除しました。`);
       }
 
-      const tokens = await TokenRepository.getTokensOfUser({
+      const tokens = await getTokenEntitiesOfUser({
         userId: user.userId,
       }, info, db);
 
       for (const tokenRow of tokens) {
-        await TokenRepository.deleteToken({
+        await deleteTokenEntity({
           token: tokenRow.token,
         }, info, db);
         console.log(`ユーザーID'${user.userId}'のアプリケーション認可情報を1件削除しました。`);
@@ -56,7 +56,7 @@ async function run() {
         console.log(`ユーザーID'${user.userId}'に関する${count}件のフォロー関係を解除しました。`);
       }
 
-      success = await PasswordVerificationRepository.deleteVerification({
+      success = await deletePasswordEntity({
         userId: user.userId,
       }, info, db);
       if (success) {

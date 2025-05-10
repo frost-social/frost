@@ -1,8 +1,7 @@
 import crypto from "node:crypto";
 import type { components } from "../../../openapi/generated/schema.js";
 import type { DB } from "../database.js";
-import * as PasswordVerificationRepository from "../repository/PasswordVerificationRepository.js";
-import type { PasswordVerificationEntity } from "../repository/PasswordVerificationRepository.js";
+import { type PasswordEntity, createPasswordEntity, getPasswordEntity } from "../repository/PasswordRepository.js";
 import * as UserRepository from "../repository/UserRepository.js";
 import { BadRequest, ResourceNotFound, RestError } from "../restApi.js";
 import type { AccessInfo } from "../service.js";
@@ -140,7 +139,7 @@ export async function registerPassword(
     userId: params.userId,
     password: params.password,
   });
-  await PasswordVerificationRepository.createVerification(entity, info, db);
+  await createPasswordEntity(entity, info, db);
 }
 
 /**
@@ -156,7 +155,7 @@ export async function verifyPassword(
       { message: 'password invalid.' },
     ]));
   }
-  const v = await PasswordVerificationRepository.getVerification({
+  const v = await getPasswordEntity({
     userId: params.userId,
   }, info, db);
   if (v == null) {
@@ -175,7 +174,7 @@ export async function verifyPassword(
  * パスワード認証情報を生成します。
  * @internal
 */
-export function generatePasswordVerification(params: { userId: string, password: string }): PasswordVerificationEntity {
+export function generatePasswordVerification(params: { userId: string, password: string }): PasswordEntity {
   const algorithm = "sha256";
   const salt = generatePasswordSalt();
   const iteration = 100000;

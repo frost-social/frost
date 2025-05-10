@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import * as TokenRepository from "../src/core/repository/TokenRepository.js";
+import { getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
 import * as UserRepository from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
 
@@ -22,7 +22,7 @@ async function run() {
       return;
     }
 
-    const tokens = await TokenRepository.getTokensOfUser({
+    const tokens = await getTokenEntitiesOfUser({
       userId: user.userId,
     }, info, db);
     if (tokens.length > 0) {

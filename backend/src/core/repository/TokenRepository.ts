@@ -14,7 +14,7 @@ export type TokenEntity = {
 /**
  * トークン情報を追加する
 */
-export async function createToken(
+export async function createTokenEntity(
   params: { userId: string, tokenKind: TokenKind, scopes: string[], token: string, },
   info: AccessInfo,
   db: DB,
@@ -48,7 +48,7 @@ export async function createToken(
 /**
  * トークン情報を取得する
 */
-export async function getToken(
+export async function getTokenEntity(
   params: { token: string },
   info: AccessInfo,
   db: DB,
@@ -72,7 +72,7 @@ export async function getToken(
 /**
  * トークン情報を取得する
 */
-export async function getTokensOfUser(
+export async function getTokenEntitiesOfUser(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
@@ -95,7 +95,7 @@ export async function getTokensOfUser(
  * トークン情報を削除する
  * @returns 削除に成功したかどうか
 */
-export async function deleteToken(
+export async function deleteTokenEntity(
   params: { token: string },
   info: AccessInfo,
   db: DB,

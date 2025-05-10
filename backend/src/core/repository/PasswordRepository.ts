@@ -1,8 +1,7 @@
-import type { password_verification } from "@prisma/client";
 import type { DB } from "../database.js";
 import type { AccessInfo } from "../service.js";
 
-export type PasswordVerificationEntity = {
+export type PasswordEntity = {
   userId: string;
   algorithm: string;
   salt: string;
@@ -13,7 +12,7 @@ export type PasswordVerificationEntity = {
 /*
  * パスワード検証情報を追加する
  */
-export async function createVerification(
+export async function createPasswordEntity(
   params: {
     userId: string;
     algorithm: string;
@@ -23,7 +22,7 @@ export async function createVerification(
   },
   info: AccessInfo,
   db: DB,
-): Promise<PasswordVerificationEntity> {
+): Promise<PasswordEntity> {
   const row = await db.password_verification.create({
     data: {
       user_id: params.userId,
@@ -33,18 +32,23 @@ export async function createVerification(
       hash: params.hash,
     },
   });
-
-  return mapEntity(row);
+  return {
+    userId: row.user_id,
+    algorithm: row.algorithm,
+    salt: row.salt,
+    iteration: row.iteration,
+    hash: row.hash,
+  };
 }
 
 /*
  * パスワード検証情報を取得する
  */
-export async function getVerification(
+export async function getPasswordEntity(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
-): Promise<PasswordVerificationEntity | undefined> {
+): Promise<PasswordEntity | undefined> {
   const row = await db.password_verification.findFirst({
     where: {
       user_id: params.userId,
@@ -55,14 +59,20 @@ export async function getVerification(
     return undefined;
   }
 
-  return mapEntity(row);
+  return {
+    userId: row.user_id,
+    algorithm: row.algorithm,
+    salt: row.salt,
+    iteration: row.iteration,
+    hash: row.hash,
+  };
 }
 
 /**
  * パスワード検証情報を削除する
  * @returns 削除に成功したかどうか
  */
-export async function deleteVerification(
+export async function deletePasswordEntity(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
@@ -74,16 +84,4 @@ export async function deleteVerification(
   });
 
   return result.count > 0;
-}
-
-export function mapEntity(
-  row: password_verification,
-): PasswordVerificationEntity {
-  return {
-    userId: row.user_id,
-    algorithm: row.algorithm,
-    salt: row.salt,
-    iteration: row.iteration,
-    hash: row.hash,
-  };
 }
