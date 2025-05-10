@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import * as TokenRepository from "../src/core/repository/TokenRepository.js";
-import * as UserRepository from "../src/core/repository/UserRepository.js";
+import { getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
+import { getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
 
 async function run() {
@@ -14,7 +14,7 @@ async function run() {
   try {
     const info: AccessInfo = { userId: "internal" };
 
-    const user = await UserRepository.getUser({
+    const user = await getUserEntity({
       userName: userName,
     }, info, db);
     if (user == null) {
@@ -22,7 +22,7 @@ async function run() {
       return;
     }
 
-    const tokens = await TokenRepository.getTokensOfUser({
+    const tokens = await getTokenEntitiesOfUser({
       userId: user.userId,
     }, info, db);
     if (tokens.length > 0) {

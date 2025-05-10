@@ -1,4 +1,3 @@
-import type { user } from "@prisma/client";
 import type { DB } from "../database.js";
 import type { AccessInfo } from "../service.js";
 
@@ -12,7 +11,7 @@ export type UserEntity = {
 /**
  * ユーザーを追加する
 */
-export async function createUser(
+export async function createUserEntity(
   params: {
     userName: string;
     displayName: string;
@@ -29,13 +28,18 @@ export async function createUser(
     },
   });
 
-  return mapUser(row);
+  return {
+    userId: row.user_id,
+    userName: row.name,
+    displayName: row.display_name,
+    passwordAuthEnabled: row.password_auth_enabled,
+  };
 }
 
 /**
  * ユーザーを取得する
 */
-export async function getUser(
+export async function getUserEntity(
   params: { userId?: string; userName?: string },
   info: AccessInfo,
   db: DB,
@@ -55,14 +59,19 @@ export async function getUser(
     return undefined;
   }
 
-  return mapUser(row);
+  return {
+    userId: row.user_id,
+    userName: row.name,
+    displayName: row.display_name,
+    passwordAuthEnabled: row.password_auth_enabled,
+  };
 }
 
 /**
  * ユーザーを削除する
  * @returns 削除に成功したかどうか
 */
-export async function deleteUser(
+export async function deleteUserEntity(
   params: { userId: string },
   info: AccessInfo,
   db: DB,
@@ -74,13 +83,4 @@ export async function deleteUser(
   });
 
   return result.count > 0;
-}
-
-export function mapUser(row: user): UserEntity {
-  return {
-    userId: row.user_id,
-    userName: row.name,
-    displayName: row.display_name,
-    passwordAuthEnabled: row.password_auth_enabled,
-  };
 }

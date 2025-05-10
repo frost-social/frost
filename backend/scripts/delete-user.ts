@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import * as PasswordVerificationRepository from "../src/core/repository/PasswordVerificationRepository.js";
-import * as TokenRepository from "../src/core/repository/TokenRepository.js";
-import * as UserRepository from "../src/core/repository/UserRepository.js";
+import { deletePasswordEntity } from "../src/core/repository/PasswordRepository.js";
+import { deleteTokenEntity, getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
+import { deleteUserEntity, getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
-import * as LeafRepository from "../src/leafs/LeafRepository.js";
-import * as UserFollowingRepository from "../src/userRelations/UserFollowingRepository.js";
+import { clearLeafEntitiesOfUser } from "../src/leafs/LeafRepository.js";
+import { clearUserFollowingRel } from "../src/userRelations/UserFollowingRepository.js";
 
 async function run() {
   const userName = process.argv[2];
@@ -21,7 +21,7 @@ async function run() {
       let success: boolean;
       let count: number;
 
-      const user = await UserRepository.getUser({
+      const user = await getUserEntity({
         userName: userName,
       }, info, db);
       if (user != null) {
@@ -31,32 +31,32 @@ async function run() {
         return;
       }
 
-      count = await LeafRepository.clearLeafsOfUser({
+      count = await clearLeafEntitiesOfUser({
         userId: user.userId,
       }, info, db);
       if (count > 0) {
         console.log(`ユーザーID'${userName}'の${count}件のリーフを削除しました。`);
       }
 
-      const tokens = await TokenRepository.getTokensOfUser({
+      const tokens = await getTokenEntitiesOfUser({
         userId: user.userId,
       }, info, db);
 
       for (const tokenRow of tokens) {
-        await TokenRepository.deleteToken({
+        await deleteTokenEntity({
           token: tokenRow.token,
         }, info, db);
         console.log(`ユーザーID'${user.userId}'のアプリケーション認可情報を1件削除しました。`);
       }
 
-      count = await UserFollowingRepository.clearUserFollowingForUser({
+      count = await clearUserFollowingRel({
         userId: user.userId,
       }, info, db);
       if (count > 0) {
         console.log(`ユーザーID'${user.userId}'に関する${count}件のフォロー関係を解除しました。`);
       }
 
-      success = await PasswordVerificationRepository.deleteVerification({
+      success = await deletePasswordEntity({
         userId: user.userId,
       }, info, db);
       if (success) {
@@ -66,7 +66,7 @@ async function run() {
         return;
       }
 
-      success = await UserRepository.deleteUser({
+      success = await deleteUserEntity({
         userId: user.userId,
       }, info, db);
       if (success) {

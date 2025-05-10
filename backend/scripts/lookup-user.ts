@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import * as UserRepository from "../src/core/repository/UserRepository.js";
+import { getUserEntity } from "../src/core/repository/UserRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
 
 async function run() {
@@ -13,7 +13,7 @@ async function run() {
 
   const info: AccessInfo = { userId: "internal" };
 
-  const user = await UserRepository.getUser({
+  const user = await getUserEntity({
     userName: userName,
   }, info, db);
   if (user != null) {

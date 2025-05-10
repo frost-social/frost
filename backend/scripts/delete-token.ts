@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import * as TokenRepository from "../src/core/repository/TokenRepository.js";
+import { deleteTokenEntity } from "../src/core/repository/TokenRepository.js";
 import type { AccessInfo } from "../src/core/service.js";
 
 async function run() {
@@ -13,7 +13,7 @@ async function run() {
 
   const info: AccessInfo = { userId: "internal" };
 
-  const success = await TokenRepository.deleteToken({
+  const success = await deleteTokenEntity({
     token,
   }, info, db);
   if (success) {
