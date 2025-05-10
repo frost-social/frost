@@ -21,7 +21,7 @@ async function bootstrap() {
   configureAuth(db);
 
   const http = createHttpServer();
-  configureRestApi(db, http);
+  configureRestApi(http, db);
 
   // listen http
   const listenPort = getEnvInteger("LISTEN_PORT", 3000);
