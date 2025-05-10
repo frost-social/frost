@@ -10,7 +10,7 @@ export function userController(router: Router, db: DB) {
   const zString = z.string().min(1);
 
   router.get(
-    "/api/v1/users/@:userName",
+    "/users/@:userName",
     tokenAuth(),
     checkScope("user.read"),
     async (req, res) => {
