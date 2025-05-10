@@ -1,8 +1,5 @@
-import type { Prisma, token, token_scope } from "@prisma/client";
 import type { DB } from "../database.js";
 import type { AccessInfo } from "../service.js";
-
-export type TokenKind = "access_token" | "refresh_token";
 
 export type TokenEntity = {
   userId: string;
@@ -10,6 +7,34 @@ export type TokenEntity = {
   token: string;
   scopes: string[];
 };
+
+export type TokenKind = "access_token" | "refresh_token";
+
+export type TokenScopeEntity = string;
+
+export type TokenRow = {
+  user_id: string;
+  token_kind: string;
+  token: string;
+  scopes: TokenScopeRow[];
+};
+
+export type TokenScopeRow = {
+  scope_name: string;
+};
+
+export function mapTokenEntity(row: TokenRow): TokenEntity {
+  return {
+    userId: row.user_id,
+    tokenKind: row.token_kind as TokenKind,
+    token: row.token,
+    scopes: row.scopes.map(x => mapTokenScopeEntity(x)),
+  };
+}
+
+export function mapTokenScopeEntity(row: TokenScopeRow): TokenScopeEntity {
+  return row.scope_name;
+}
 
 /**
  * トークン情報を追加する
@@ -19,7 +44,7 @@ export async function createTokenEntity(
   info: AccessInfo,
   db: DB,
 ): Promise<TokenEntity> {
-  const tokenScopes: Prisma.token_scopeCreateManyTokenInput[] = params.scopes.map(scope => {
+  const tokenScopes: TokenScopeRow[] = params.scopes.map(scope => {
     return {
       scope_name: scope,
     };
@@ -42,7 +67,7 @@ export async function createTokenEntity(
     },
   });
 
-  return mapEntity(token);
+  return mapTokenEntity(token);
 }
 
 /**
@@ -66,7 +91,7 @@ export async function getTokenEntity(
     return undefined;
   }
 
-  return mapEntity(row);
+  return mapTokenEntity(row);
 }
 
 /**
@@ -88,7 +113,7 @@ export async function getTokenEntitiesOfUser(
       scopes: true,
     },
   });
-  return rows.map(row => mapEntity(row));
+  return rows.map(row => mapTokenEntity(row));
 }
 
 /**
@@ -130,13 +155,4 @@ export async function deleteTokenEntity(
   }
 
   return true;
-}
-
-export function mapEntity(row: token & { scopes: token_scope[] }): TokenEntity {
-  return {
-    userId: row.user_id,
-    tokenKind: row.token_kind as TokenKind,
-    token: row.token,
-    scopes: row.scopes.map(x => x.scope_name),
-  };
 }

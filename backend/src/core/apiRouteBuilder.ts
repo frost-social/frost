@@ -1,6 +1,6 @@
 import type express from "express";
 import type z from "zod";
-import * as authentication from "./authentication.js";
+import { getAuthMiddlewares } from "./authentication.js";
 import type { DB } from "./database.js";
 import { BadRequest, RestError } from "./restApi.js";
 import type { UserObject } from "./service/UserService.js";
@@ -48,7 +48,7 @@ function createMiddlewareStack<R>(
   // authenticate
   if (requiredScope != null) {
     if (typeof requiredScope == "string" || requiredScope.length > 0) {
-      middlewares.push(...authentication.getMiddlewares(requiredScope));
+      middlewares.push(...getAuthMiddlewares(requiredScope));
     }
   }
 

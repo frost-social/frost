@@ -8,6 +8,22 @@ export type UserEntity = {
   passwordAuthEnabled: boolean;
 };
 
+export type UserRow = {
+  user_id: string;
+  name: string;
+  display_name: string;
+  password_auth_enabled: boolean;
+};
+
+export function mapUserEntity(row: UserRow): UserEntity {
+  return {
+    userId: row.user_id,
+    userName: row.name,
+    displayName: row.display_name,
+    passwordAuthEnabled: row.password_auth_enabled,
+  };
+}
+
 /**
  * ユーザーを追加する
 */
@@ -28,12 +44,7 @@ export async function createUserEntity(
     },
   });
 
-  return {
-    userId: row.user_id,
-    userName: row.name,
-    displayName: row.display_name,
-    passwordAuthEnabled: row.password_auth_enabled,
-  };
+  return mapUserEntity(row);
 }
 
 /**
@@ -59,12 +70,7 @@ export async function getUserEntity(
     return undefined;
   }
 
-  return {
-    userId: row.user_id,
-    userName: row.name,
-    displayName: row.display_name,
-    passwordAuthEnabled: row.password_auth_enabled,
-  };
+  return mapUserEntity(row);
 }
 
 /**

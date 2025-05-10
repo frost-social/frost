@@ -9,6 +9,24 @@ export type PasswordEntity = {
   hash: string;
 };
 
+export type PasswordRow = {
+  user_id: string;
+  algorithm: string;
+  salt: string;
+  iteration: number;
+  hash: string;
+};
+
+export function mapPasswordEntity(row: PasswordRow): PasswordEntity {
+  return {
+    userId: row.user_id,
+    algorithm: row.algorithm,
+    salt: row.salt,
+    iteration: row.iteration,
+    hash: row.hash,
+  };
+}
+
 /*
  * パスワード検証情報を追加する
  */
@@ -32,13 +50,7 @@ export async function createPasswordEntity(
       hash: params.hash,
     },
   });
-  return {
-    userId: row.user_id,
-    algorithm: row.algorithm,
-    salt: row.salt,
-    iteration: row.iteration,
-    hash: row.hash,
-  };
+  return mapPasswordEntity(row);
 }
 
 /*
@@ -59,13 +71,7 @@ export async function getPasswordEntity(
     return undefined;
   }
 
-  return {
-    userId: row.user_id,
-    algorithm: row.algorithm,
-    salt: row.salt,
-    iteration: row.iteration,
-    hash: row.hash,
-  };
+  return mapPasswordEntity(row);
 }
 
 /**

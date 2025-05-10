@@ -28,7 +28,7 @@ export function configureAuth(db: DB) {
   );
 }
 
-export function getMiddlewares(scope: string | string[]) {
+export function getAuthMiddlewares(scope: string | string[]) {
   const authBearer = passport.authenticate("bearer", { session: false });
 
   const checkScopes = (

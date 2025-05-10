@@ -1,4 +1,3 @@
-import type { leaf } from "@prisma/client";
 import type { AccessInfo, DB } from "../core/index.js";
 
 export type LeafEntity = {
@@ -9,6 +8,31 @@ export type LeafEntity = {
   createdAt: string;
   content: string;
 };
+
+export type LeafRow = {
+  leaf_id: string;
+  leaf_kind: string;
+  user_id: string;
+  chat_room_id: string | null;
+  created_at: Date;
+  content: string;
+};
+
+export function mapLeafEntity(row: LeafRow): LeafEntity {
+  const leaf: LeafEntity = {
+    leafId: row.leaf_id,
+    leafKind: row.leaf_kind,
+    userId: row.user_id,
+    createdAt: row.created_at.toJSON(),
+    content: row.content,
+  };
+
+  if (row.chat_room_id != null) {
+    leaf.chatRoomId = row.chat_room_id;
+  }
+
+  return leaf;
+}
 
 /**
  * 投稿を作成する
@@ -102,20 +126,4 @@ export async function clearLeafEntitiesOfUser(
     },
   });
   return result.count;
-}
-
-export function mapLeafEntity(row: leaf): LeafEntity {
-  const leaf: LeafEntity = {
-    leafId: row.leaf_id,
-    leafKind: row.leaf_kind,
-    userId: row.user_id,
-    createdAt: row.created_at.toJSON(),
-    content: row.content,
-  };
-
-  if (row.chat_room_id != null) {
-    leaf.chatRoomId = row.chat_room_id;
-  }
-
-  return leaf;
 }

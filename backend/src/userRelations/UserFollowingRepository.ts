@@ -1,5 +1,5 @@
 import type { DB } from "../core/database.js";
-import type { UserEntity } from "../core/repository/UserRepository.js";
+import { type UserEntity, mapUserEntity } from "../core/repository/UserRepository.js";
 import type { AccessInfo } from "../core/service.js";
 
 /**
@@ -92,15 +92,7 @@ export async function listUserEntityOfFollowing(
     take: params.limit,
   });
 
-  return rows.map((row) => {
-    const user = row.user_following;
-    return {
-      userId: user.user_id,
-      userName: user.name,
-      displayName: user.display_name,
-      passwordAuthEnabled: user.password_auth_enabled,
-    };
-  });
+  return rows.map((row) => mapUserEntity(row.user_following));
 }
 
 /**
@@ -120,13 +112,5 @@ export async function listUserEntityOfFollowedBy(
     take: params.limit,
   });
 
-  return rows.map((row) => {
-    const user = row.user_followed_by;
-    return {
-      userId: user.user_id,
-      userName: user.name,
-      displayName: user.display_name,
-      passwordAuthEnabled: user.password_auth_enabled,
-    };
-  });
+  return rows.map((row) => mapUserEntity(row.user_followed_by));
 }
