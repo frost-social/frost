@@ -1,5 +1,4 @@
-import type { DB } from "../core/database.js";
-import type { AccessInfo } from "../core/service.js";
+import type { RequestContext } from "../core/restApi.js";
 
 export type PasswordEntity = {
   userId: string;
@@ -31,6 +30,7 @@ export function mapPasswordEntity(row: PasswordRow): PasswordEntity {
  * パスワード検証情報を追加する
  */
 export async function createPasswordEntity(
+  ctx: RequestContext,
   params: {
     userId: string;
     algorithm: string;
@@ -38,10 +38,8 @@ export async function createPasswordEntity(
     iteration: number;
     hash: string;
   },
-  info: AccessInfo,
-  db: DB,
 ): Promise<PasswordEntity> {
-  const row = await db.password_verification.create({
+  const row = await ctx.db.password_verification.create({
     data: {
       user_id: params.userId,
       algorithm: params.algorithm,
@@ -57,11 +55,10 @@ export async function createPasswordEntity(
  * パスワード検証情報を取得する
  */
 export async function getPasswordEntity(
+  ctx: RequestContext,
   params: { userId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<PasswordEntity | undefined> {
-  const row = await db.password_verification.findFirst({
+  const row = await ctx.db.password_verification.findFirst({
     where: {
       user_id: params.userId,
     },
@@ -79,11 +76,10 @@ export async function getPasswordEntity(
  * @returns 削除に成功したかどうか
  */
 export async function deletePasswordEntity(
+  ctx: RequestContext,
   params: { userId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<boolean> {
-  const result = await db.password_verification.deleteMany({
+  const result = await ctx.db.password_verification.deleteMany({
     where: {
       user_id: params.userId,
     },

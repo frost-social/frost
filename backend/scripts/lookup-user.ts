@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import type { AccessInfo } from "../src/core/service.js";
-import { getUserEntity } from "../src/repositories/UserRepository.js";
+import { requestContext } from "../src/core/restApi.js";
+import {
+  getInternalUser,
+  getUserEntity,
+} from "../src/repositories/UserRepository.js";
 
 async function run() {
   const userName = process.argv[2];
@@ -10,20 +13,24 @@ async function run() {
   }
 
   const db = new PrismaClient();
+  try {
+    const internalUser = await getInternalUser(db);
+    const ctx = requestContext(internalUser, db);
 
-  const info: AccessInfo = { userId: "internal" };
-
-  const user = await getUserEntity({
-    userName: userName,
-  }, info, db);
-  if (user != null) {
-    console.log(user);
-  } else {
-    console.log(`ユーザー名'${userName}'のユーザー情報の取得に失敗しました。`);
+    const user = await getUserEntity(ctx, {
+      userName: userName,
+    });
+    if (user != null) {
+      console.log(user);
+    } else {
+      console.log(
+        `ユーザー名'${userName}'のユーザー情報の取得に失敗しました。`,
+      );
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await db.$disconnect();
   }
-
-  await db.$disconnect();
 }
-run().catch((err) => {
-  console.error(err);
-});
+run();

@@ -1,13 +1,10 @@
 import crypto from "node:crypto";
 import type { components } from "../../openapi/generated/schema.js";
-import type { DB } from "../core/database.js";
-import { BadRequest, ResourceNotFound, RestError } from "../core/restApi.js";
-import type { AccessInfo } from "../core/service.js";
+import { BadRequest, type RequestContext, ResourceNotFound, RestError } from "../core/restApi.js";
 import { type PasswordEntity, createPasswordEntity, getPasswordEntity } from "../repositories/PasswordRepository.js";
-import { createUserEntity, deleteUserEntity, getUserEntity } from "../repositories/UserRepository.js";
+import { createUserEntity, getUserEntity } from "../repositories/UserRepository.js";
 import * as TokenService from "./TokenService.js";
 
-export type UserObject = components['schemas']['Api.v1.User'];
 export type AuthResultObject = components['schemas']['Api.v1.AuthInfo'];
 
 /**
@@ -15,9 +12,8 @@ export type AuthResultObject = components['schemas']['Api.v1.AuthInfo'];
  * 登録に成功すると、そのユーザーのトークンと登録情報が返されます。
 */
 export async function signup(
+  ctx: RequestContext,
   params: { userName: string, displayName: string, password?: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<AuthResultObject> {
   if (params.userName.length < 5) {
     throw new RestError(new BadRequest([
@@ -33,30 +29,30 @@ export async function signup(
     });
   }
 
-  const user = await createUserEntity({
+  const user = await createUserEntity(ctx, {
     userName: params.userName,
     displayName: params.displayName,
     passwordAuthEnabled: true,
-  }, info, db);
+  });
 
-  await registerPassword({
+  await registerPassword(ctx, {
     userId: user.userId,
     password: params.password,
-  }, info, db);
+  });
 
   const scopes = ["user.read", "user.write", "leaf.read", "leaf.write", "leaf.delete"];
 
-  const accessToken = await TokenService.createToken({
+  const accessToken = await TokenService.createToken(ctx, {
     userId: user.userId,
     tokenKind: "access_token",
     scopes: scopes,
-  }, info, db);
+  });
 
-  const refreshToken = await TokenService.createToken({
+  const refreshToken = await TokenService.createToken(ctx, {
     userId: user.userId,
     tokenKind: "refresh_token",
     scopes: scopes,
-  }, info, db);
+  });
 
   return { accessToken, refreshToken, user };
 }
@@ -66,9 +62,8 @@ export async function signup(
  * 認証に成功すると、そのユーザーのトークンと登録情報が返されます。
 */
 export async function signin(
+  ctx: RequestContext,
   params: { userName: string, password?: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<AuthResultObject> {
   if (params.userName.length < 1) {
     throw new RestError(new BadRequest([
@@ -76,9 +71,9 @@ export async function signin(
     ]));
   }
 
-  const user = await getUserEntity({
+  const user = await getUserEntity(ctx, {
     userName: params.userName,
-  }, info, db);
+  });
 
   if (user == null) {
     throw new RestError(new ResourceNotFound("User"));
@@ -90,10 +85,10 @@ export async function signin(
         { message: 'password invalid.' },
       ]));
     }
-    const verification = await verifyPassword({
+    const verification = await verifyPassword(ctx, {
       userId: user.userId,
       password: params.password,
-    }, info, db);
+    });
     if (!verification) {
       throw new RestError({
         code: "incorrectCredential",
@@ -102,16 +97,16 @@ export async function signin(
       });
     }
     const scopes = ["user.read", "user.write", "leaf.read", "leaf.write", "leaf.delete"];
-    const accessToken = await TokenService.createToken({
+    const accessToken = await TokenService.createToken(ctx, {
       userId: user.userId,
       tokenKind: "access_token",
       scopes: scopes,
-    }, info, db);
-    const refreshToken = await TokenService.createToken({
+    });
+    const refreshToken = await TokenService.createToken(ctx, {
       userId: user.userId,
       tokenKind: "refresh_token",
       scopes: scopes,
-    }, info, db);
+    });
     return { accessToken, refreshToken, user };
   }
 
@@ -126,9 +121,8 @@ export async function signin(
  * パスワードの検証情報を作成します。
 */
 export async function registerPassword(
+  ctx: RequestContext,
   params: { userId: string, password: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<void> {
   if (params.password.length < 8) {
     throw new RestError(new BadRequest([
@@ -139,25 +133,24 @@ export async function registerPassword(
     userId: params.userId,
     password: params.password,
   });
-  await createPasswordEntity(entity, info, db);
+  await createPasswordEntity(ctx, entity);
 }
 
 /**
  * パスワード検証情報を用いてパスワードが正しいかどうかを確認します。
 */
 export async function verifyPassword(
+  ctx: RequestContext,
   params: { userId: string, password: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<boolean> {
   if (params.password.length < 1) {
     throw new RestError(new BadRequest([
       { message: 'password invalid.' },
     ]));
   }
-  const v = await getPasswordEntity({
+  const v = await getPasswordEntity(ctx, {
     userId: params.userId,
-  }, info, db);
+  });
   if (v == null) {
     throw new Error("PasswordVerification record not found");
   }

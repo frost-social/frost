@@ -1,51 +1,52 @@
 import { PrismaClient } from "@prisma/client";
-import type { AccessInfo } from "../src/core/service.js";
-import { createUserEntity, getUserEntity } from "../src/repositories/UserRepository.js";
+import type { RequestContext } from "../src/core/restApi.js";
+import { userMapper } from "../src/repositories/UserRepository.js";
 import { createToken } from "../src/services/TokenService.js";
 
-const prisma = new PrismaClient();
-
 async function main() {
-  const ctx: AccessInfo = { userId: "" };
+  const db = new PrismaClient();
 
-  // create root user
-  let rootUser = await getUserEntity({ userName: "root" }, ctx, prisma);
-  if (rootUser == null) {
-    rootUser = await createUserEntity({
-      userName: "root",
-      displayName: "root",
-      passwordAuthEnabled: false,
-    }, ctx, prisma);
-    console.log("User 'root' has been created.");
-  }
-  ctx.userId = rootUser.userId;
+  try {
+    // create internal user
+    const rootUser = await prepareUser("internal");
 
-  // create public user
-  let publicUser = await getUserEntity({ userName: "public" }, ctx, prisma);
-  if (publicUser == null) {
-    publicUser = await createUserEntity({
-      userName: "public",
-      displayName: "public",
-      passwordAuthEnabled: false,
-    }, ctx, prisma);
+    const ctx: RequestContext = {
+      user: rootUser,
+      db: db,
+    };
+
+    async function prepareUser(userName: string) {
+      let row = await db.user.findFirst({
+        where: {
+          name: userName,
+        },
+      });
+      if (row == null) {
+        row = await ctx.db.user.create({
+          data: {
+            name: userName,
+            display_name: userName,
+            password_auth_enabled: false,
+          },
+        });
+        console.log(`User '${userName}' has been created.`);
+      }
+      return userMapper(row);
+    }
+
+    // create public user
+    const publicUser = await prepareUser("public");
 
     // create token for public
-    const scopes = ["user.auth"];
-    await createToken({
+    await createToken(ctx, {
       userId: publicUser.userId,
       tokenKind: "access_token",
-      scopes: scopes,
-    }, ctx, prisma);
-
-    console.log("User 'public' has been created.");
+      scopes: ["user.auth"],
+    });
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await db.$disconnect();
   }
 }
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+main();

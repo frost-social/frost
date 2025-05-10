@@ -3,11 +3,11 @@ import type { components } from "../../openapi/generated/schema.js";
 import type { DB } from "../core/database.js";
 import {
   BadRequest,
+  type RequestContext,
   ResourceNotFound,
   RestError,
   Unauthenticated,
 } from "../core/restApi.js";
-import type { AccessInfo } from "../core/service.js";
 import {
   type TokenKind,
   createTokenEntity,
@@ -30,18 +30,17 @@ export type TokenObject = components["schemas"]["Api.v1.Token"];
  * トークン情報を追加します。
  */
 export async function createToken(
+  ctx: RequestContext,
   params: {
     userId: string;
     tokenKind: TokenKind;
     scopes: string[];
   },
-  info: AccessInfo,
-  db: DB,
 ): Promise<TokenObject> {
   // ユーザーが存在しないトークンは作成できない
-  const userEntity = await getUserEntity({
+  const userEntity = await getUserEntity(ctx, {
     userId: params.userId,
-  }, info, db);
+  });
   if (userEntity == null) {
     throw new RestError(new ResourceNotFound("user"));
   }
@@ -50,12 +49,12 @@ export async function createToken(
 
   // TODO: 一応トークンの重複を確認
 
-  const tokenEntity = await createTokenEntity({
+  const tokenEntity = await createTokenEntity(ctx, {
     userId: params.userId,
     tokenKind: params.tokenKind,
     scopes: params.scopes,
     token: tokenValue,
-  }, info, db);
+  });
 
   return tokenEntity;
 }
@@ -64,9 +63,8 @@ export async function createToken(
  * トークン情報を取得します。
  */
 export async function getTokenInfo(
+  ctx: RequestContext,
   params: { token: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<{
   tokenKind: TokenKind;
   userId: string;
@@ -75,9 +73,9 @@ export async function getTokenInfo(
   if (params.token.length < 1) {
     throw new RestError(new BadRequest([{ message: "token invalid." }]));
   }
-  const t = await getTokenEntity({
+  const t = await getTokenEntity(ctx, {
     token: params.token,
-  }, info, db);
+  });
   if (t == null) {
     throw new RestError(new Unauthenticated());
   }

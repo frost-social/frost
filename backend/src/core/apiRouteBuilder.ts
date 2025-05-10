@@ -2,7 +2,7 @@ import type express from "express";
 import type z from "zod";
 import type { DB } from "../core/database.js";
 import type { UserObject } from "../services/UserService.js";
-import { getAuthMiddlewares } from "./authorization.js";
+import { checkScope, tokenAuth } from "./authorization.js";
 import { BadRequest, RestError } from "./restApi.js";
 
 export function registerRoute<R>(
@@ -48,7 +48,7 @@ function createMiddlewareStack<R>(
   // authenticate
   if (requiredScope != null) {
     if (typeof requiredScope == "string" || requiredScope.length > 0) {
-      middlewares.push(...getAuthMiddlewares(requiredScope));
+      middlewares.push(tokenAuth(), checkScope(...requiredScope));
     }
   }
 

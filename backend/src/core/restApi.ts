@@ -1,6 +1,35 @@
-import express, { type Application, type NextFunction, type Request, type Response } from "express";
+import express, {
+  type Application,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
+import type { SafeParseError } from "zod";
 import { createApiRouter } from "../routers.js";
+import type { UserObject } from "../services/UserService.js";
 import type { DB } from "./database.js";
+
+export type RequestContext = {
+  user: UserObject;
+  db: DB;
+};
+
+export function requestContext(user: UserObject, db: DB): RequestContext {
+  return {
+    user,
+    db,
+  };
+}
+
+export function throwsValidationError<T>(validation: SafeParseError<T>): never {
+  throw new RestError(
+    new BadRequest(
+      validation.error.issues.map((x) => {
+        return { code: x.code, path: x.path, message: x.message };
+      }),
+    ),
+  );
+}
 
 /**
  * 任意のエラー情報を元にREST APIのエラーを組み立てます。

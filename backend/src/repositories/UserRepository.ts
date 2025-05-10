@@ -1,5 +1,5 @@
 import type { DB } from "../core/database.js";
-import type { AccessInfo } from "../core/service.js";
+import type { RequestContext } from "../core/restApi.js";
 
 export type UserEntity = {
   userId: string;
@@ -15,7 +15,7 @@ export type UserRow = {
   password_auth_enabled: boolean;
 };
 
-export function mapUserEntity(row: UserRow): UserEntity {
+export function userMapper(row: UserRow): UserEntity {
   return {
     userId: row.user_id,
     userName: row.name,
@@ -24,19 +24,32 @@ export function mapUserEntity(row: UserRow): UserEntity {
   };
 }
 
+export async function getInternalUser(db: DB) {
+  const row = await db.user.findFirst({
+    where: {
+      name: "internal",
+    },
+  });
+
+  if (row == null) {
+    throw new Error("failed to get the internal user.");
+  }
+
+  return userMapper(row);
+}
+
 /**
  * ユーザーを追加する
-*/
+ */
 export async function createUserEntity(
+  ctx: RequestContext,
   params: {
     userName: string;
     displayName?: string;
     passwordAuthEnabled: boolean;
   },
-  info: AccessInfo,
-  db: DB,
 ) {
-  const row = await db.user.create({
+  const row = await ctx.db.user.create({
     data: {
       name: params.userName,
       display_name: params.displayName,
@@ -44,45 +57,42 @@ export async function createUserEntity(
     },
   });
 
-  return mapUserEntity(row);
+  return userMapper(row);
 }
 
 /**
  * ユーザーを取得する
-*/
+ */
 export async function getUserEntity(
+  ctx: RequestContext,
   params: { userId?: string; userName?: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<UserEntity | undefined> {
   if ([params.userId, params.userName].every((x) => x == null)) {
     throw new Error("invalid condition");
   }
 
-  const row = await db.user.findFirst({
+  const row = await ctx.db.user.findFirst({
     where: {
-      user_id: params.userId,
-      name: params.userName,
-    }
+      OR: [{ user_id: params.userId }, { name: params.userName }],
+    },
   });
 
   if (row == null) {
     return undefined;
   }
 
-  return mapUserEntity(row);
+  return userMapper(row);
 }
 
 /**
  * ユーザーを削除する
  * @returns 削除に成功したかどうか
-*/
+ */
 export async function deleteUserEntity(
+  ctx: RequestContext,
   params: { userId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<boolean> {
-  const result = await db.user.deleteMany({
+  const result = await ctx.db.user.deleteMany({
     where: {
       user_id: params.userId,
     },

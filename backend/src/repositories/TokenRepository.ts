@@ -1,5 +1,4 @@
-import type { DB } from "../core/database.js";
-import type { AccessInfo } from "../core/service.js";
+import type { RequestContext } from "../core/restApi.js";
 
 export type TokenEntity = {
   userId: string;
@@ -28,7 +27,7 @@ export function mapTokenEntity(row: TokenRow): TokenEntity {
     userId: row.user_id,
     tokenKind: row.token_kind as TokenKind,
     token: row.token,
-    scopes: row.scopes.map(x => mapTokenScopeEntity(x)),
+    scopes: row.scopes.map((x) => mapTokenScopeEntity(x)),
   };
 }
 
@@ -38,20 +37,24 @@ export function mapTokenScopeEntity(row: TokenScopeRow): TokenScopeEntity {
 
 /**
  * トークン情報を追加する
-*/
+ */
 export async function createTokenEntity(
-  params: { userId: string, tokenKind: TokenKind, scopes: string[], token: string, },
-  info: AccessInfo,
-  db: DB,
+  ctx: RequestContext,
+  params: {
+    userId: string;
+    tokenKind: TokenKind;
+    scopes: string[];
+    token: string;
+  },
 ): Promise<TokenEntity> {
-  const tokenScopes: TokenScopeRow[] = params.scopes.map(scope => {
+  const tokenScopes: TokenScopeRow[] = params.scopes.map((scope) => {
     return {
       scope_name: scope,
     };
   });
 
   // トークンを登録
-  const token = await db.token.create({
+  const token = await ctx.db.token.create({
     data: {
       token_kind: params.tokenKind,
       user_id: params.userId,
@@ -59,7 +62,7 @@ export async function createTokenEntity(
       scopes: {
         createMany: {
           data: tokenScopes,
-        }
+        },
       },
     },
     include: {
@@ -72,14 +75,13 @@ export async function createTokenEntity(
 
 /**
  * トークン情報を取得する
-*/
+ */
 export async function getTokenEntity(
+  ctx: RequestContext,
   params: { token: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<TokenEntity | undefined> {
   // トークン情報を取得
-  const row = await db.token.findFirst({
+  const row = await ctx.db.token.findFirst({
     where: {
       token: params.token,
     },
@@ -96,36 +98,34 @@ export async function getTokenEntity(
 
 /**
  * トークン情報を取得する
-*/
+ */
 export async function getTokenEntitiesOfUser(
+  ctx: RequestContext,
   params: { userId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<TokenEntity[]> {
   // トークン情報を取得
-  const rows = await db.token.findMany({
+  const rows = await ctx.db.token.findMany({
     where: {
       user: {
         user_id: params.userId,
-      }
+      },
     },
     include: {
       scopes: true,
     },
   });
-  return rows.map(row => mapTokenEntity(row));
+  return rows.map((row) => mapTokenEntity(row));
 }
 
 /**
  * トークン情報を削除する
  * @returns 削除に成功したかどうか
-*/
+ */
 export async function deleteTokenEntity(
+  ctx: RequestContext,
   params: { token: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<boolean> {
-  const tokenRecord = await db.token.findFirst({
+  const tokenRecord = await ctx.db.token.findFirst({
     where: {
       token: params.token,
     },
@@ -138,14 +138,14 @@ export async function deleteTokenEntity(
   }
 
   // トークンの権限を削除 (0件以上)
-  await db.token_scope.deleteMany({
+  await ctx.db.token_scope.deleteMany({
     where: {
       token_id: tokenRecord.token_id,
     },
   });
 
   // トークンを削除
-  const result = await db.token.deleteMany({
+  const result = await ctx.db.token.deleteMany({
     where: {
       token_id: tokenRecord.token_id,
     },

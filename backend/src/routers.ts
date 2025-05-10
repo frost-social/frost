@@ -9,6 +9,7 @@ import * as LeafsQueryService from "./services/LeafQueryService.js";
 import * as LeafService from "./services/LeafService.js";
 import * as UserFollowingService from "./services/UserFollowingService.js";
 import * as UserService from "./services/UserService.js";
+import { userController } from "./controllers/UserController.js";
 
 const zUuid = z.string().length(36);
 const zNumericString = z
@@ -26,13 +27,13 @@ function createApiVer1Router(db: DB) {
   const router = express.Router();
   router.use(corsApi());
 
+  userController(router, db);
+
   registerRoute(router, db, {
     method: "POST",
     path: "/auth/signin",
     scope: "user.auth",
-    async requestHandler(
-      ctx,
-    ): Promise<Endpoints["/api/v1/auth/signin"]["result"]> {
+    async requestHandler(ctx): Promise<Endpoints["/api/v1/auth/signin"]["result"]> {
       const params: Endpoints["/api/v1/auth/signin"]["body"] =
         ctx.validateParams(
           z.object({
@@ -40,11 +41,7 @@ function createApiVer1Router(db: DB) {
             password: z.string().min(1).optional(),
           }),
         );
-      const result = await signin(
-        params,
-        { userId: ctx.getUser().userId },
-        ctx.db,
-      );
+      const result = await signin(params, { userId: ctx.getUser().userId }, ctx.db);
       return result;
     },
   });

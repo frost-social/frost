@@ -1,26 +1,29 @@
 import type express from "express";
 import passport from "passport";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
-import * as TokenService from "../services/TokenService.js";
-import * as UserService from "../services/UserService.js";
+import { getTokenInfo } from "../services/TokenService.js";
+import { getUser } from "../services/UserService.js";
 import type { DB } from "./database.js";
-import { AccessDenied, RestError, Unauthenticated } from "./restApi.js";
+import { AccessDenied, type AccessInfo, type RequestContext, RestError, Unauthenticated } from "./restApi.js";
 
 export function configureAuth(db: DB) {
   passport.use(
     new BearerStrategy(async (token, done) => {
       try {
-        const info = { userId: "internal" };
-        const tokenInfo = await TokenService.getTokenInfo({
+        const ctx: RequestContext = {
+          user: { userId: "internal" },
+          db,
+        };
+        const tokenInfo = await getTokenInfo(ctx, {
           token
-        }, info, db);
+        });
         if (tokenInfo.tokenKind != "access_token") {
           return done(new RestError(new Unauthenticated()));
         }
-        const user = await UserService.getUser({
+        const authUser = await getUser(ctx, {
           userId: tokenInfo.userId
-        }, info, db);
-        return done(null, user, { scope: tokenInfo.scopes });
+        });
+        return done(null, authUser, { scope: tokenInfo.scopes });
       } catch (err) {
         return done(err);
       }
@@ -28,24 +31,20 @@ export function configureAuth(db: DB) {
   );
 }
 
-export function getAuthMiddlewares(scope: string | string[]) {
-  const authBearer = passport.authenticate("bearer", { session: false });
+export function tokenAuth(): express.RequestHandler {
+  return passport.authenticate("bearer", { session: false });
+}
 
-  const checkScopes = (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    let requiredScopes: string[];
-    if (Array.isArray(scope)) {
-      requiredScopes = scope;
-    } else {
-      requiredScopes = [scope];
+export function checkScope(...scopes: string[]): express.RequestHandler {
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    let requestedScopes = scopes;
+    if (!Array.isArray(scopes)) {
+      requestedScopes = [scopes];
     }
     // check all required scopes
-    for (const requiredScope of requiredScopes) {
+    for (const requestedScope of requestedScopes) {
       if (
-        !(req.authInfo as { scope: string[] }).scope.includes(requiredScope)
+        !(req.authInfo as { scope: string[] }).scope.includes(requestedScope)
       ) {
         next(new RestError(new AccessDenied()));
         return;
@@ -53,6 +52,4 @@ export function getAuthMiddlewares(scope: string | string[]) {
     }
     next();
   };
-
-  return [authBearer, checkScopes];
 }

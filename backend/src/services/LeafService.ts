@@ -1,12 +1,16 @@
 import type { components } from "../../openapi/generated/schema.js";
-import type { AccessInfo, DB } from "../core/index.js";
 import {
   AccessDenied,
   BadRequest,
+  type RequestContext,
   ResourceNotFound,
   RestError,
 } from "../core/restApi.js";
-import { createTimelineLeafEntity, deleteLeafEntity, getLeafEntity } from "../repositories/LeafRepository.js";
+import {
+  createTimelineLeafEntity,
+  deleteLeafEntity,
+  getLeafEntity,
+} from "../repositories/LeafRepository.js";
 
 export type LeafObject = components["schemas"]["Api.v1.Leaf"];
 
@@ -14,17 +18,16 @@ export type LeafObject = components["schemas"]["Api.v1.Leaf"];
  * 投稿を作成します。
  */
 export async function createLeaf(
+  ctx: RequestContext,
   params: { content: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<LeafObject> {
   if (params.content.length < 1) {
     throw new RestError(new BadRequest([{ message: "content invalid." }]));
   }
-  const leaf = await createTimelineLeafEntity({
-    userId: info.userId,
+  const leaf = await createTimelineLeafEntity(ctx, {
+    userId: ctx.user.userId,
     content: params.content,
-  }, info, db);
+  });
   return leaf;
 }
 
@@ -32,18 +35,15 @@ export async function createLeaf(
  * 投稿を取得します。
  */
 export async function getLeaf(
+  ctx: RequestContext,
   params: { leafId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<LeafObject> {
   if (params.leafId.length < 1) {
-    throw new RestError(new BadRequest([
-      { message: 'leafId invalid.' },
-    ]));
+    throw new RestError(new BadRequest([{ message: "leafId invalid." }]));
   }
-  const leaf = await getLeafEntity({
-    leafId: params.leafId
-  }, info, db);
+  const leaf = await getLeafEntity(ctx, {
+    leafId: params.leafId,
+  });
   if (leaf == null) {
     throw new RestError(new ResourceNotFound("Leaf"));
   }
@@ -54,28 +54,26 @@ export async function getLeaf(
  * 投稿を削除します。
  */
 export async function deleteLeaf(
+  ctx: RequestContext,
   params: { leafId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<void> {
   if (params.leafId.length < 1) {
-    throw new RestError(new BadRequest([
-      { message: 'leafId invalid.' },
-    ]));
+    throw new RestError(new BadRequest([{ message: "leafId invalid." }]));
   }
 
-  // 作成者以外は削除できない
-  const leaf = await getLeafEntity({
-    leafId: params.leafId
-  }, info, db);
+  const leaf = await getLeafEntity(ctx, {
+    leafId: params.leafId,
+  });
   if (leaf == null) {
     throw new RestError(new ResourceNotFound("Leaf"));
   }
-  if (leaf.userId != info.userId) {
+
+  // 作成者以外は削除できない
+  if (leaf.userId != ctx.user.userId) {
     throw new RestError(new AccessDenied());
   }
 
-  await deleteLeafEntity({
+  await deleteLeafEntity(ctx, {
     leafId: params.leafId,
-  }, info, db);
+  });
 }

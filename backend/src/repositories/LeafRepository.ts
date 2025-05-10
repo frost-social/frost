@@ -1,4 +1,4 @@
-import type { AccessInfo, DB } from "../core/index.js";
+import type { RequestContext } from "../core/restApi.js";
 
 export type LeafEntity = {
   leafId: string;
@@ -38,11 +38,10 @@ export function mapLeafEntity(row: LeafRow): LeafEntity {
  * 投稿を作成する
  */
 export async function createTimelineLeafEntity(
+  ctx: RequestContext,
   params: { userId: string; content: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<LeafEntity> {
-  const row = await db.leaf.create({
+  const row = await ctx.db.leaf.create({
     data: {
       leaf_kind: "timeline",
       user_id: params.userId,
@@ -57,11 +56,10 @@ export async function createTimelineLeafEntity(
  * チャット投稿を作成する
  */
 export async function createChatLeafEntity(
+  ctx: RequestContext,
   params: { chatRoomId: string; userId: string; content: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<LeafEntity> {
-  const row = await db.leaf.create({
+  const row = await ctx.db.leaf.create({
     data: {
       leaf_kind: "chatroom",
       chat_room_id: params.chatRoomId,
@@ -77,11 +75,10 @@ export async function createChatLeafEntity(
  * 投稿を取得する
  */
 export async function getLeafEntity(
+  ctx: RequestContext,
   params: { leafId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<LeafEntity | undefined> {
-  const row = await db.leaf.findFirst({
+  const row = await ctx.db.leaf.findFirst({
     where: {
       leaf_id: params.leafId,
     },
@@ -98,11 +95,10 @@ export async function getLeafEntity(
  * 投稿を削除する
  */
 export async function deleteLeafEntity(
+  ctx: RequestContext,
   params: { leafId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<void> {
-  const result = await db.leaf.deleteMany({
+  const result = await ctx.db.leaf.deleteMany({
     where: {
       leaf_id: params.leafId,
     },
@@ -116,11 +112,10 @@ export async function deleteLeafEntity(
  * 投稿を削除する
  */
 export async function clearLeafEntitiesOfUser(
+  ctx: RequestContext,
   params: { userId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<number> {
-  const result = await db.leaf.deleteMany({
+  const result = await ctx.db.leaf.deleteMany({
     where: {
       user_id: params.userId,
     },
