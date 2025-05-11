@@ -5,15 +5,15 @@ import {
   throwsValidationError,
 } from "../core/restApi.js";
 
-const zEchoInput = z.object({
+const echoInput = z.object({
   message: z.string(),
 });
-export type EchoInput = z.infer<typeof zEchoInput>;
+export type EchoInput = z.infer<typeof echoInput>;
 
 export function otherController(router: Router, db: DB) {
   // Echo (GET)
   router.get("/echo", async (req, res) => {
-    const validation = zEchoInput.safeParse(req.query);
+    const validation = echoInput.safeParse(req.query);
     if (!validation.success) {
       throwsValidationError(validation);
     }
@@ -24,7 +24,7 @@ export function otherController(router: Router, db: DB) {
 
   // Echo (POST)
   router.post("/echo", async (req, res) => {
-    const validation = zEchoInput.safeParse(req.body);
+    const validation = echoInput.safeParse(req.body);
     if (!validation.success) {
       throwsValidationError(validation);
     }

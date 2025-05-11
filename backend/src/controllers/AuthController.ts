@@ -10,19 +10,19 @@ import { signin, signup } from "../services/AuthenticationService.js";
 import type { UserObject } from "../services/UserService.js";
 
 // Signup
-const zSignupInput = z.object({
+const signupInput = z.object({
   userName: z.string().min(3),
   displayName: z.string().min(1).optional(),
   password: z.string().min(5).optional(),
 });
-export type SignupInput = z.infer<typeof zSignupInput>;
+export type SignupInput = z.infer<typeof signupInput>;
 
 // Signin
-const zSigninInput = z.object({
+const signinInput = z.object({
   userName: z.string().min(3),
   password: z.string().min(5).optional(),
 });
-export type SigninInput = z.infer<typeof zSigninInput>;
+export type SigninInput = z.infer<typeof signinInput>;
 
 export function authController(router: Router, db: DB) {
   // Signup
@@ -32,7 +32,7 @@ export function authController(router: Router, db: DB) {
     checkScope("user.auth"),
     async (req, res) => {
       const ctx = await createRequestContext(req.user as UserObject, db);
-      const validation = zSignupInput.safeParse(req.body);
+      const validation = signupInput.safeParse(req.body);
       if (!validation.success) {
         throwsValidationError(validation);
       }
@@ -48,7 +48,7 @@ export function authController(router: Router, db: DB) {
     checkScope("user.auth"),
     async (req, res) => {
       const ctx = await createRequestContext(req.user as UserObject, db);
-      const validation = zSigninInput.safeParse(req.body);
+      const validation = signinInput.safeParse(req.body);
       if (!validation.success) {
         throwsValidationError(validation);
       }

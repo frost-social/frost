@@ -8,11 +8,11 @@ import {
 } from "../core/restApi.js";
 import { type UserObject, getUser } from "../services/UserService.js";
 
-const zGetUserInput = z.object({
+const getUserInput = z.object({
   userId: z.string().uuid().optional(),
   userName: z.string().min(1).optional(),
 });
-export type GetUserInput = z.infer<typeof zGetUserInput>;
+export type GetUserInput = z.infer<typeof getUserInput>;
 
 export function userController(router: Router, db: DB) {
   // GetUser
@@ -22,7 +22,7 @@ export function userController(router: Router, db: DB) {
     checkScope("user.read"),
     async (req, res) => {
       const ctx = await createRequestContext(req.user as UserObject, db);
-      const validation = zGetUserInput.safeParse(req.params);
+      const validation = getUserInput.safeParse(req.params);
       if (!validation.success) {
         throwsValidationError(validation);
       }
