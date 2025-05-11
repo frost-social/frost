@@ -38,14 +38,13 @@ export function checkScope(...scopes: string[]): express.RequestHandler {
     if (!Array.isArray(scopes)) {
       requestedScopes = [scopes];
     }
-    // check all required scopes
-    for (const requestedScope of requestedScopes) {
-      if (
-        !(req.authInfo as { scope: string[] }).scope.includes(requestedScope)
-      ) {
-        next(new RestError(new AccessDenied()));
-        return;
-      }
+    // check scopes
+    const allowed = requestedScopes.every(requiredScope => {
+      return (req.authInfo as { scope: string[] }).scope.includes(requiredScope);
+    });
+    if (!allowed) {
+      next(new RestError(new AccessDenied()));
+      return;
     }
     next();
   };
