@@ -4,12 +4,10 @@ export type TokenObject = {
   userId: string;
   tokenKind: TokenKind;
   token: string;
-  scopes: TokenScopeObject[];
+  scopes: string[];
 };
 
 export type TokenKind = "access_token" | "refresh_token";
-
-export type TokenScopeObject = { scopeName: string };
 
 export type TokenRow = {
   user_id: string;
@@ -27,13 +25,7 @@ export function mapTokenObject(row: TokenRow): TokenObject {
     userId: row.user_id,
     tokenKind: row.token_kind as TokenKind,
     token: row.token,
-    scopes: row.scopes.map((x) => mapTokenScopeObject(x)),
-  };
-}
-
-export function mapTokenScopeObject(row: TokenScopeRow): TokenScopeObject {
-  return {
-    scopeName: row.scope_name,
+    scopes: row.scopes.map((x) => x.scope_name),
   };
 }
 

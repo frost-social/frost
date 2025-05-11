@@ -9,7 +9,7 @@ import {
 } from "../core/restApi.js";
 import {
   type TokenKind,
-  type TokenScopeObject,
+  type TokenObject,
   createTokenRecord,
   getTokenRecord,
 } from "../models/TokenModel.js";
@@ -18,13 +18,21 @@ import { getUserRecord } from "../models/UserModel.js";
 const asciiTable =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-export type tokenInfoObject = {
+export type TokenInfoObject = {
   tokenKind: TokenKind;
   userId: string;
   scopes: string[];
 };
 
-export type TokenObject = components["schemas"]["Api.v1.Token"];
+export function mapTokenInfoObject(src: TokenObject): TokenInfoObject {
+  return {
+    userId: src.userId,
+    tokenKind: src.tokenKind,
+    scopes: src.scopes,
+  };
+}
+
+//export type TokenObject = components["schemas"]["Api.v1.Token"];
 
 /**
  * トークン情報を追加します。
@@ -49,14 +57,14 @@ export async function createToken(
 
   // TODO: 一応トークンの重複を確認
 
-  const tokenEntity = await createTokenRecord(ctx, {
+  const tokenObject = await createTokenRecord(ctx, {
     userId: params.userId,
     tokenKind: params.tokenKind,
     scopes: params.scopes,
     token: tokenValue,
   });
 
-  return tokenEntity;
+  return tokenObject;
 }
 
 /**
@@ -65,11 +73,7 @@ export async function createToken(
 export async function getTokenInfo(
   ctx: RequestContext,
   params: { token: string },
-): Promise<{
-  tokenKind: TokenKind;
-  userId: string;
-  scopes: TokenScopeObject[];
-}> {
+): Promise<TokenInfoObject> {
   if (params.token.length < 1) {
     throw new RestError(new BadRequest([{ message: "token invalid." }]));
   }
@@ -86,7 +90,7 @@ export async function getTokenInfo(
  * トークンの値を生成します。
  * @internal
  */
-export function generateTokenValue(length: number): string {
+function generateTokenValue(length: number): string {
   let token = "";
   for (const byte of crypto.randomBytes(length).values()) {
     token += asciiTable[byte % asciiTable.length];
