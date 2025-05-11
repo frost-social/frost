@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { RequestContext } from "../src/core/restApi.js";
-import { userMapper } from "../src/repositories/UserRepository.js";
+import { userMapper } from "../src/models/UserModel.js";
 import { createToken } from "../src/services/TokenService.js";
 
 async function main() {

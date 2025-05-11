@@ -5,7 +5,7 @@ import {
   getUserFollowingRel,
   listUserEntityOfFollowedBy,
   listUserEntityOfFollowing,
-} from "../repositories/UserFollowingRepository.js";
+} from "../models/UserFollowingModel.js";
 import type { UserObject } from "./UserService.js";
 
 export async function followUser(

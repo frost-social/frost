@@ -1,16 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 import { createRequestContext } from "../src/core/restApi.js";
-import { clearLeafEntitiesOfUser } from "../src/repositories/LeafRepository.js";
-import { deletePasswordEntity } from "../src/repositories/PasswordRepository.js";
+import { clearLeafEntitiesOfUser } from "../src/models/LeafModel.js";
+import { deletePasswordEntity } from "../src/models/PasswordModel.js";
 import {
   deleteTokenEntity,
   getTokenEntitiesOfUser,
-} from "../src/repositories/TokenRepository.js";
-import { clearUserFollowingRel } from "../src/repositories/UserFollowingRepository.js";
+} from "../src/models/TokenModel.js";
+import { clearUserFollowingRel } from "../src/models/UserFollowingModel.js";
 import {
   deleteUserEntity,
   getUserEntity,
-} from "../src/repositories/UserRepository.js";
+} from "../src/models/UserModel.js";
 
 async function run() {
   const userName = process.argv[2];

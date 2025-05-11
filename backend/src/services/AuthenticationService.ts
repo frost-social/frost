@@ -1,26 +1,33 @@
 import crypto from "node:crypto";
 import type { components } from "../../openapi/generated/schema.js";
-import { BadRequest, type RequestContext, ResourceNotFound, RestError } from "../core/restApi.js";
-import { type PasswordEntity, createPasswordEntity, getPasswordEntity } from "../repositories/PasswordRepository.js";
-import { createUserEntity, getUserEntity } from "../repositories/UserRepository.js";
+import type {
+  SigninInput,
+  SignupInput,
+} from "../controllers/AuthController.js";
+import {
+  BadRequest,
+  type RequestContext,
+  ResourceNotFound,
+  RestError,
+} from "../core/restApi.js";
+import {
+  type PasswordEntity,
+  createPasswordEntity,
+  getPasswordEntity,
+} from "../models/PasswordModel.js";
+import { createUserEntity, getUserEntity } from "../models/UserModel.js";
 import * as TokenService from "./TokenService.js";
 
-export type AuthResultObject = components['schemas']['Api.v1.AuthInfo'];
+export type AuthResultObject = components["schemas"]["Api.v1.AuthInfo"];
 
 /**
  * ユーザーを登録します。
  * 登録に成功すると、そのユーザーのトークンと登録情報が返されます。
-*/
+ */
 export async function signup(
   ctx: RequestContext,
-  params: { userName: string, displayName: string, password?: string },
+  params: SignupInput,
 ): Promise<AuthResultObject> {
-  if (params.userName.length < 5) {
-    throw new RestError(new BadRequest([
-      { message: 'userName invalid.' },
-    ]));
-  }
-
   if (params.password == null) {
     throw new RestError({
       code: "authMethodRequired",
@@ -29,18 +36,28 @@ export async function signup(
     });
   }
 
+  const passwordAuthEnabled = params.password != null;
+
   const user = await createUserEntity(ctx, {
     userName: params.userName,
     displayName: params.displayName,
-    passwordAuthEnabled: true,
+    passwordAuthEnabled: passwordAuthEnabled,
   });
 
-  await registerPassword(ctx, {
-    userId: user.userId,
-    password: params.password,
-  });
+  if (passwordAuthEnabled) {
+    await registerPassword(ctx, {
+      userId: user.userId,
+      password: params.password,
+    });
+  }
 
-  const scopes = ["user.read", "user.write", "leaf.read", "leaf.write", "leaf.delete"];
+  const scopes = [
+    "user.read",
+    "user.write",
+    "leaf.read",
+    "leaf.write",
+    "leaf.delete",
+  ];
 
   const accessToken = await TokenService.createToken(ctx, {
     userId: user.userId,
@@ -60,17 +77,11 @@ export async function signup(
 /**
  * 指定された認証情報でユーザーを認証します。
  * 認証に成功すると、そのユーザーのトークンと登録情報が返されます。
-*/
+ */
 export async function signin(
   ctx: RequestContext,
-  params: { userName: string, password?: string },
+  params: SigninInput,
 ): Promise<AuthResultObject> {
-  if (params.userName.length < 1) {
-    throw new RestError(new BadRequest([
-      { message: 'userName invalid.' },
-    ]));
-  }
-
   const user = await getUserEntity(ctx, {
     userName: params.userName,
   });
@@ -79,11 +90,13 @@ export async function signin(
     throw new RestError(new ResourceNotFound("User"));
   }
 
-  if (user.passwordAuthEnabled) {
-    if (params.password == null || params.password.length < 1) {
-      throw new RestError(new BadRequest([
-        { message: 'password invalid.' },
-      ]));
+  if (params.password != null) {
+    if (!user.passwordAuthEnabled) {
+      throw new RestError({
+        code: "incorrectCredential",
+        message: "The userName and/or password is incorrect.",
+        status: 401,
+      });
     }
     const verification = await verifyPassword(ctx, {
       userId: user.userId,
@@ -96,7 +109,13 @@ export async function signin(
         status: 401,
       });
     }
-    const scopes = ["user.read", "user.write", "leaf.read", "leaf.write", "leaf.delete"];
+    const scopes = [
+      "user.read",
+      "user.write",
+      "leaf.read",
+      "leaf.write",
+      "leaf.delete",
+    ];
     const accessToken = await TokenService.createToken(ctx, {
       userId: user.userId,
       tokenKind: "access_token",
@@ -111,23 +130,21 @@ export async function signin(
   }
 
   throw new RestError({
-    code: "signinDisabled",
-    message: "Sign-in have been disabled for this user.",
-    status: 403,
+    code: "authMethodRequired",
+    message: "Authentication method required.",
+    status: 400,
   });
 }
 
 /**
  * パスワードの検証情報を作成します。
-*/
+ */
 export async function registerPassword(
   ctx: RequestContext,
-  params: { userId: string, password: string },
+  params: { userId: string; password: string },
 ): Promise<void> {
   if (params.password.length < 8) {
-    throw new RestError(new BadRequest([
-      { message: 'password invalid.' },
-    ]));
+    throw new RestError(new BadRequest([{ message: "password invalid." }]));
   }
   const entity = generatePasswordVerification({
     userId: params.userId,
@@ -138,16 +155,11 @@ export async function registerPassword(
 
 /**
  * パスワード検証情報を用いてパスワードが正しいかどうかを確認します。
-*/
+ */
 export async function verifyPassword(
   ctx: RequestContext,
-  params: { userId: string, password: string },
+  params: { userId: string; password: string },
 ): Promise<boolean> {
-  if (params.password.length < 1) {
-    throw new RestError(new BadRequest([
-      { message: 'password invalid.' },
-    ]));
-  }
   const v = await getPasswordEntity(ctx, {
     userId: params.userId,
   });
@@ -160,14 +172,17 @@ export async function verifyPassword(
     salt: v.salt,
     iteration: v.iteration,
   });
-  return (hash === v.hash);
+  return hash === v.hash;
 }
 
 /**
  * パスワード認証情報を生成します。
  * @internal
-*/
-export function generatePasswordVerification(params: { userId: string, password: string }): PasswordEntity {
+ */
+export function generatePasswordVerification(params: {
+  userId: string;
+  password: string;
+}): PasswordEntity {
   const algorithm = "sha256";
   const salt = generatePasswordSalt();
   const iteration = 100000;
@@ -189,8 +204,13 @@ export function generatePasswordVerification(params: { userId: string, password:
 /**
  * ハッシュを生成します。
  * @internal
-*/
-function generatePasswordHash(params: { token: string, algorithm: string, salt: string, iteration: number }): string {
+ */
+function generatePasswordHash(params: {
+  token: string;
+  algorithm: string;
+  salt: string;
+  iteration: number;
+}): string {
   if (params.iteration < 1) {
     throw new Error("The iteration value must be 1 or greater");
   }
@@ -204,7 +224,7 @@ function generatePasswordHash(params: { token: string, algorithm: string, salt: 
 /**
  * 塩を生成します。
  * @internal
-*/
+ */
 function generatePasswordSalt(): string {
   // 128bit random (length = 32)
   return crypto.randomBytes(16).toString("hex");

@@ -12,8 +12,8 @@ import {
   type TokenKind,
   createTokenEntity,
   getTokenEntity,
-} from "../repositories/TokenRepository.js";
-import { getUserEntity } from "../repositories/UserRepository.js";
+} from "../models/TokenModel.js";
+import { getUserEntity } from "../models/UserModel.js";
 
 const asciiTable =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

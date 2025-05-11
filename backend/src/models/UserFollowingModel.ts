@@ -1,5 +1,5 @@
 import type { RequestContext } from "../core/restApi.js";
-import { type UserEntity, userMapper } from "./UserRepository.js";
+import { type UserEntity, userMapper } from "./UserModel.js";
 
 /**
  * ユーザーをフォローする

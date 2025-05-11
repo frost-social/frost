@@ -1,6 +1,6 @@
 import type { Application, NextFunction, Request, Response } from "express";
 import type { SafeParseError } from "zod";
-import { getInternalUser } from "../repositories/UserRepository.js";
+import { getInternalUser } from "../models/UserModel.js";
 import { createApiRouter } from "../routers.js";
 import type { UserObject } from "../services/UserService.js";
 import type { DB } from "./database.js";

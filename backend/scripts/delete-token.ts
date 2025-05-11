@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { createRequestContext } from "../src/core/restApi.js";
-import { deleteTokenEntity } from "../src/repositories/TokenRepository.js";
-import { getInternalUser } from "../src/repositories/UserRepository.js";
+import { deleteTokenEntity } from "../src/models/TokenModel.js";
+import { getInternalUser } from "../src/models/UserModel.js";
 
 async function run() {
   const token = process.argv[2];

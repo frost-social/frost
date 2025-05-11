@@ -1,4 +1,5 @@
 import type { components } from "../../openapi/generated/schema.js";
+import type { GetUserInput } from "../controllers/UserController.js";
 import {
   BadRequest,
   type RequestContext,
@@ -9,7 +10,7 @@ import {
   createUserEntity,
   deleteUserEntity,
   getUserEntity,
-} from "../repositories/UserRepository.js";
+} from "../models/UserModel.js";
 
 export type UserObject = components["schemas"]["Api.v1.User"];
 export type AuthResultObject = components["schemas"]["Api.v1.AuthInfo"];
@@ -35,7 +36,7 @@ export async function createUser(
  */
 export async function getUser(
   ctx: RequestContext,
-  params: { userId?: string; userName?: string },
+  params: GetUserInput,
 ): Promise<UserObject> {
   // either userId or userName must be specified
   if ([params.userId, params.userName].every((x) => x == null)) {

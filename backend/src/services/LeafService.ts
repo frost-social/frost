@@ -10,7 +10,7 @@ import {
   createTimelineLeafEntity,
   deleteLeafEntity,
   getLeafEntity,
-} from "../repositories/LeafRepository.js";
+} from "../models/LeafModel.js";
 
 export type LeafObject = components["schemas"]["Api.v1.Leaf"];
 

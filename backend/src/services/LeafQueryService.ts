@@ -1,6 +1,6 @@
 import * as sql from "@prisma/client/sql";
 import type { RequestContext } from "../core/restApi.js";
-import { mapLeafEntity } from "../repositories/LeafRepository.js";
+import { mapLeafEntity } from "../models/LeafModel.js";
 import type { LeafObject } from "./LeafService.js";
 
 /**

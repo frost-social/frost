@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { createRequestContext } from "../src/core/restApi.js";
-import { getTokenEntitiesOfUser } from "../src/repositories/TokenRepository.js";
+import { getTokenEntitiesOfUser } from "../src/models/TokenModel.js";
 import {
   getUserEntity,
-} from "../src/repositories/UserRepository.js";
+} from "../src/models/UserModel.js";
 
 async function run() {
   const userName = process.argv[2];
