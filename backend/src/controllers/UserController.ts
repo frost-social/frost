@@ -2,22 +2,21 @@ import type { Router } from "express";
 import { z } from "zod";
 import { checkScope, tokenAuth } from "../core/authorization.js";
 import type { DB } from "../core/database.js";
-import { requestContext, throwsValidationError } from "../core/restApi.js";
+import { createRequestContext, throwsValidationError } from "../core/restApi.js";
 import { type UserObject, getUser } from "../services/UserService.js";
 
 export function userController(router: Router, db: DB) {
-  const zUuid = z.string().length(36);
-  const zString = z.string().min(1);
 
+  // GetUser
   router.get(
     "/users/@:userName",
     tokenAuth(),
     checkScope("user.read"),
     async (req, res) => {
-      const ctx = requestContext(req.user as UserObject, db);
+      const ctx = await createRequestContext(req.user as UserObject, db);
       const validator = z.object({
-        userId: zUuid.optional(),
-        userName: zString.optional(),
+        userId: z.string().uuid().optional(),
+        userName: z.string().min(1).optional(),
       });
       const validation = validator.safeParse(req.params);
       if (!validation.success) {
@@ -27,4 +26,5 @@ export function userController(router: Router, db: DB) {
       res.json(user);
     },
   );
+
 }

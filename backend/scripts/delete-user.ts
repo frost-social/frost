@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { requestContext } from "../src/core/restApi.js";
+import { createRequestContext } from "../src/core/restApi.js";
 import { clearLeafEntitiesOfUser } from "../src/repositories/LeafRepository.js";
 import { deletePasswordEntity } from "../src/repositories/PasswordRepository.js";
 import {
@@ -9,7 +9,6 @@ import {
 import { clearUserFollowingRel } from "../src/repositories/UserFollowingRepository.js";
 import {
   deleteUserEntity,
-  getInternalUser,
   getUserEntity,
 } from "../src/repositories/UserRepository.js";
 
@@ -25,8 +24,7 @@ async function run() {
     let success: boolean;
     let count: number;
 
-    const internalUser = await getInternalUser(db);
-    const ctx = requestContext(internalUser, db);
+    const ctx = await createRequestContext(undefined, db);
 
     const user = await getUserEntity(ctx, {
       userName: userName,

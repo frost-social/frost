@@ -1,10 +1,6 @@
-import express, {
-  type Application,
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import type { Application, NextFunction, Request, Response } from "express";
 import type { SafeParseError } from "zod";
+import { getInternalUser } from "../repositories/UserRepository.js";
 import { createApiRouter } from "../routers.js";
 import type { UserObject } from "../services/UserService.js";
 import type { DB } from "./database.js";
@@ -14,9 +10,20 @@ export type RequestContext = {
   db: DB;
 };
 
-export function requestContext(user: UserObject, db: DB): RequestContext {
+/**
+ * コンテキストを生成します。\
+ * userを指定しなかった場合はInternal Userとして生成します。
+ */
+export async function createRequestContext(
+  user: UserObject | undefined,
+  db: DB,
+): Promise<RequestContext> {
+  let accessUser = user;
+  if (accessUser == null) {
+    accessUser = await getInternalUser(db);
+  }
   return {
-    user,
+    user: accessUser,
     db,
   };
 }
@@ -50,8 +57,6 @@ function buildRestApiError(err: unknown): { error: ErrorObject } {
 }
 
 export function configureRestApi(app: Application, db: DB) {
-  app.use(express.json());
-
   app.use(createApiRouter(db));
 
   // @ts-ignore

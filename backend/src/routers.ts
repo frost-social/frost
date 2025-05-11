@@ -1,4 +1,8 @@
 import express, { type Router } from "express";
+import { authController } from "./controllers/AuthController.js";
+import { chatRoomController } from "./controllers/ChatRoomController.js";
+import { leafController } from "./controllers/LeafController.js";
+import { otherController } from "./controllers/OtherController.js";
 import { userController } from "./controllers/UserController.js";
 import type { DB } from "./core/database.js";
 import { EndpointNotFound, RestError, corsApi } from "./core/restApi.js";
@@ -12,6 +16,7 @@ export function createApiRouter(db: DB) {
   const baseRouter = express.Router();
 
   const apiRouter = express.Router();
+  apiRouter.use(express.json());
   apiRouter.use(corsApi());
   apiControllers(apiRouter, db);
   apiRouter.use((req, res, next) => {
@@ -24,6 +29,10 @@ export function createApiRouter(db: DB) {
 }
 
 function apiControllers(apiRouter: Router, db: DB) {
+  authController(apiRouter, db);
+  chatRoomController(apiRouter, db);
+  leafController(apiRouter, db);
+  otherController(apiRouter, db);
   userController(apiRouter, db);
 }
 

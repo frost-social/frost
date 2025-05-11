@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { requestContext } from "../src/core/restApi.js";
+import { createRequestContext } from "../src/core/restApi.js";
 import { getTokenEntitiesOfUser } from "../src/repositories/TokenRepository.js";
 import {
-  getInternalUser,
   getUserEntity,
 } from "../src/repositories/UserRepository.js";
 
@@ -15,8 +14,7 @@ async function run() {
 
   const db = new PrismaClient();
   try {
-    const internalUser = await getInternalUser(db);
-    const ctx = requestContext(internalUser, db);
+    const ctx = await createRequestContext(undefined, db);
 
     const user = await getUserEntity(ctx, {
       userName: userName,

@@ -1,18 +1,16 @@
 import type express from "express";
 import passport from "passport";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
-import { getInternalUser } from "../repositories/UserRepository.js";
 import { getTokenInfo } from "../services/TokenService.js";
 import { getUser } from "../services/UserService.js";
 import type { DB } from "./database.js";
-import { AccessDenied, RestError, Unauthenticated, requestContext } from "./restApi.js";
+import { AccessDenied, RestError, Unauthenticated, createRequestContext } from "./restApi.js";
 
 export function configureAuth(db: DB) {
   passport.use(
     new BearerStrategy(async (token, done) => {
       try {
-        const internalUser = await getInternalUser(db);
-        const ctx = requestContext(internalUser, db);
+        const ctx = await createRequestContext(undefined, db);
         const tokenInfo = await getTokenInfo(ctx, {
           token
         });

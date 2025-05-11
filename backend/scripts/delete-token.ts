@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { requestContext } from "../src/core/restApi.js";
+import { createRequestContext } from "../src/core/restApi.js";
 import { deleteTokenEntity } from "../src/repositories/TokenRepository.js";
 import { getInternalUser } from "../src/repositories/UserRepository.js";
 
@@ -13,7 +13,7 @@ async function run() {
   const db = new PrismaClient();
 
   const internalUser = await getInternalUser(db);
-  const ctx = requestContext(internalUser, db);
+  const ctx = await createRequestContext(internalUser, db);
 
   const success = await deleteTokenEntity(ctx, {
     token,
