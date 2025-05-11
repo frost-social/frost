@@ -17,12 +17,12 @@ export type GetUserInput = z.infer<typeof getUserInput>;
 export function userController(router: Router, db: DB) {
   // GetUser
   router.get(
-    "/users/@:userName",
+    "/user/getUser",
     tokenAuth(),
     checkScope("user.read"),
     async (req, res) => {
       const ctx = await createRequestContext(req.user as UserObject, db);
-      const validation = getUserInput.safeParse(req.params);
+      const validation = getUserInput.safeParse(req.query);
       if (!validation.success) {
         throwsValidationError(validation);
       }
