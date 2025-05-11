@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
-import { getUserEntity } from "../src/core/repository/UserRepository.js";
-import type { AccessInfo } from "../src/core/service.js";
+import { createRequestContext } from "../src/core/restApi.js";
+import { getTokenRecordsOfUser } from "../src/models/TokenModel.js";
+import {
+  getUserRecord,
+} from "../src/models/UserModel.js";
 
 async function run() {
   const userName = process.argv[2];
@@ -12,29 +14,30 @@ async function run() {
 
   const db = new PrismaClient();
   try {
-    const info: AccessInfo = { userId: "internal" };
+    const ctx = await createRequestContext(undefined, db);
 
-    const user = await getUserEntity({
+    const user = await getUserRecord(ctx, {
       userName: userName,
-    }, info, db);
+    });
     if (user == null) {
-      console.log(`ユーザー名'${userName}'のユーザー情報を取得できませんでした。`);
+      console.log(
+        `ユーザー名'${userName}'のユーザー情報を取得できませんでした。`,
+      );
       return;
     }
 
-    const tokens = await getTokenEntitiesOfUser({
+    const tokens = await getTokenRecordsOfUser(ctx, {
       userId: user.userId,
-    }, info, db);
+    });
     if (tokens.length > 0) {
       console.log(tokens);
     } else {
       console.log(`ユーザー名'${userName}'のトークンの取得に失敗しました。`);
     }
-
+  } catch (err) {
+    console.error(err);
   } finally {
     await db.$disconnect();
   }
 }
-run().catch((err) => {
-  console.error(err);
-});
+run();

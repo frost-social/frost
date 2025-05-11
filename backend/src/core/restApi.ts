@@ -1,6 +1,42 @@
-import express, { type Express } from "express";
+import type { Application, NextFunction, Request, Response } from "express";
+import type { SafeParseError } from "zod";
+import { getInternalUserRecord } from "../models/UserModel.js";
 import { createApiRouter } from "../routers.js";
+import type { UserObject } from "../services/UserService.js";
 import type { DB } from "./database.js";
+
+export type RequestContext = {
+  user: UserObject;
+  db: DB;
+};
+
+/**
+ * コンテキストを生成します。\
+ * userを指定しなかった場合はInternal Userとして生成します。
+ */
+export async function createRequestContext(
+  user: UserObject | undefined,
+  db: DB,
+): Promise<RequestContext> {
+  let accessUser = user;
+  if (accessUser == null) {
+    accessUser = await getInternalUserRecord(db);
+  }
+  return {
+    user: accessUser,
+    db,
+  };
+}
+
+export function throwsValidationError<T>(validation: SafeParseError<T>): never {
+  throw new RestError(
+    new BadRequest(
+      validation.error.issues.map((x) => {
+        return { code: x.code, path: x.path, message: x.message };
+      }),
+    ),
+  );
+}
 
 /**
  * 任意のエラー情報を元にREST APIのエラーを組み立てます。
@@ -20,9 +56,7 @@ function buildRestApiError(err: unknown): { error: ErrorObject } {
   };
 }
 
-export function configureRestApi(db: DB, app: Express) {
-  app.use(express.json());
-
+export function configureRestApi(app: Application, db: DB) {
   app.use(createApiRouter(db));
 
   // @ts-ignore
@@ -33,8 +67,8 @@ export function configureRestApi(db: DB, app: Express) {
   });
 }
 
-export function corsApi(): express.RequestHandler {
-  return (req, res, next) => {
+export function corsApi() {
+  return (req: Request, res: Response, next: NextFunction) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
 
     // preflight request
@@ -45,7 +79,8 @@ export function corsApi(): express.RequestHandler {
         "Accept,Content-Type,Origin,Authorization",
       );
       res.setHeader("Access-Control-Max-Age", "60");
-      return res.status(204).send();
+      res.status(204).send();
+      return;
     }
 
     next();

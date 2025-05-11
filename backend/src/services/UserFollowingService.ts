@@ -1,17 +1,21 @@
-import type { AccessInfo, DB } from "../core/index.js";
-import { RestError } from "../core/restApi.js";
-import type { UserObject } from "../core/service/UserService.js";
-import { createUserFollowingRel, deleteUserFollowingRel, getUserFollowingRel, listUserEntityOfFollowedBy, listUserEntityOfFollowing } from "./UserFollowingRepository.js";
+import { type RequestContext, RestError } from "../core/restApi.js";
+import {
+  createUserFollowingRel,
+  deleteUserFollowingRel,
+  getUserFollowingRel,
+  listUserRecordOfFollowedBy,
+  listUserRecordOfFollowing,
+} from "../models/UserFollowingModel.js";
+import type { UserObject } from "./UserService.js";
 
 export async function followUser(
+  ctx: RequestContext,
   params: { userId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<void> {
-  const relationExisting = await getUserFollowingRel({
-    followedByUserId: info.userId,
+  const relationExisting = await getUserFollowingRel(ctx, {
+    followedByUserId: ctx.user.userId,
     followingUserId: params.userId,
-  }, info, db);
+  });
 
   // 既にフォローしているユーザーをフォローできない
   if (relationExisting) {
@@ -22,21 +26,20 @@ export async function followUser(
     });
   }
 
-  await createUserFollowingRel({
-    followedByUserId: info.userId,
+  await createUserFollowingRel(ctx, {
+    followedByUserId: ctx.user.userId,
     followingUserId: params.userId,
-  }, info, db);
+  });
 }
 
 export async function unfollowUser(
+  ctx: RequestContext,
   params: { userId: string },
-  info: AccessInfo,
-  db: DB,
 ): Promise<void> {
-  const relationExisting = await getUserFollowingRel({
-    followedByUserId: info.userId,
+  const relationExisting = await getUserFollowingRel(ctx, {
+    followedByUserId: ctx.user.userId,
     followingUserId: params.userId,
-  }, info, db);
+  });
 
   // フォローしていないユーザーをフォロー解除できない
   if (!relationExisting) {
@@ -47,34 +50,32 @@ export async function unfollowUser(
     });
   }
 
-  await deleteUserFollowingRel({
-    followedByUserId: info.userId,
+  await deleteUserFollowingRel(ctx, {
+    followedByUserId: ctx.user.userId,
     followingUserId: params.userId,
-  }, info, db);
+  });
 }
 
 export async function getFollowings(
+  ctx: RequestContext,
   params: { userId: string; offset?: number; limit?: number },
-  info: AccessInfo,
-  db: DB,
 ): Promise<UserObject[]> {
-  const users = await listUserEntityOfFollowing({
+  const users = await listUserRecordOfFollowing(ctx, {
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,
-  }, info, db);
+  });
   return users;
 }
 
 export async function getFollowedBy(
+  ctx: RequestContext,
   params: { userId: string; offset?: number; limit?: number },
-  info: AccessInfo,
-  db: DB,
 ): Promise<UserObject[]> {
-  const users = await listUserEntityOfFollowedBy({
+  const users = await listUserRecordOfFollowedBy(ctx, {
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,
-  }, info, db);
+  });
   return users;
 }

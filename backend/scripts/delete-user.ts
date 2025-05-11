@@ -1,10 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { deletePasswordEntity } from "../src/core/repository/PasswordRepository.js";
-import { deleteTokenEntity, getTokenEntitiesOfUser } from "../src/core/repository/TokenRepository.js";
-import { deleteUserEntity, getUserEntity } from "../src/core/repository/UserRepository.js";
-import type { AccessInfo } from "../src/core/service.js";
-import { clearLeafEntitiesOfUser } from "../src/leafs/LeafRepository.js";
-import { clearUserFollowingRel } from "../src/userRelations/UserFollowingRepository.js";
+import { createRequestContext } from "../src/core/restApi.js";
+import { clearLeafRecordsOfUser } from "../src/models/LeafModel.js";
+import { deletePasswordRecord } from "../src/models/PasswordModel.js";
+import {
+  deleteTokenRecord,
+  getTokenRecordsOfUser,
+} from "../src/models/TokenModel.js";
+import { clearUserFollowingRel } from "../src/models/UserFollowingModel.js";
+import { deleteUserRecord, getUserRecord } from "../src/models/UserModel.js";
 
 async function run() {
   const userName = process.argv[2];
@@ -14,71 +17,86 @@ async function run() {
   }
 
   const db = new PrismaClient();
-
   try {
-      const info: AccessInfo = { userId: "internal" };
+    let success: boolean;
+    let count: number;
 
-      let success: boolean;
-      let count: number;
+    const ctx = await createRequestContext(undefined, db);
 
-      const user = await getUserEntity({
-        userName: userName,
-      }, info, db);
-      if (user != null) {
-        console.log(`ユーザー名が'${userName}'のユーザーが見つかりました(ユーザーID'${user.userId}')。`);
-      } else {
-        console.log(`ユーザー名が'${userName}'のユーザーが見つかりませんでした。`);
-        return;
-      }
+    const user = await getUserRecord(ctx, {
+      userName: userName,
+    });
+    if (user != null) {
+      console.log(
+        `ユーザー名が'${userName}'のユーザーが見つかりました(ユーザーID'${user.userId}')。`,
+      );
+    } else {
+      console.log(
+        `ユーザー名が'${userName}'のユーザーが見つかりませんでした。`,
+      );
+      return;
+    }
 
-      count = await clearLeafEntitiesOfUser({
+    count = await clearLeafRecordsOfUser(ctx, {
+      userId: user.userId,
+    });
+    if (count > 0) {
+      console.log(
+        `ユーザーID'${userName}'の${count}件のリーフを削除しました。`,
+      );
+    }
+
+    const tokens = await getTokenRecordsOfUser(ctx, {
+      userId: user.userId,
+    });
+
+    for (const tokenRow of tokens) {
+      await deleteTokenRecord(ctx, {
+        token: tokenRow.token,
+      });
+      console.log(
+        `ユーザーID'${user.userId}'のアプリケーション認可情報を1件削除しました。`,
+      );
+    }
+
+    count = await clearUserFollowingRel(ctx, {
+      userId: user.userId,
+    });
+    if (count > 0) {
+      console.log(
+        `ユーザーID'${user.userId}'に関する${count}件のフォロー関係を解除しました。`,
+      );
+    }
+
+    if (ctx.user.passwordAuthEnabled) {
+      success = await deletePasswordRecord(ctx, {
         userId: user.userId,
-      }, info, db);
-      if (count > 0) {
-        console.log(`ユーザーID'${userName}'の${count}件のリーフを削除しました。`);
-      }
-
-      const tokens = await getTokenEntitiesOfUser({
-        userId: user.userId,
-      }, info, db);
-
-      for (const tokenRow of tokens) {
-        await deleteTokenEntity({
-          token: tokenRow.token,
-        }, info, db);
-        console.log(`ユーザーID'${user.userId}'のアプリケーション認可情報を1件削除しました。`);
-      }
-
-      count = await clearUserFollowingRel({
-        userId: user.userId,
-      }, info, db);
-      if (count > 0) {
-        console.log(`ユーザーID'${user.userId}'に関する${count}件のフォロー関係を解除しました。`);
-      }
-
-      success = await deletePasswordEntity({
-        userId: user.userId,
-      }, info, db);
+      });
       if (success) {
         console.log(`ユーザーID'${user.userId}'の認証情報を削除しました。`);
       } else {
-        console.log(`ユーザーID'${user.userId}'の認証情報の削除に失敗しました。`);
+        console.log(
+          `ユーザーID'${user.userId}'の認証情報の削除に失敗しました。`,
+        );
         return;
       }
+    }
 
-      success = await deleteUserEntity({
-        userId: user.userId,
-      }, info, db);
-      if (success) {
-        console.log(`ユーザーID'${user.userId}'のユーザー情報を削除しました。`);
-      } else {
-        console.log(`ユーザーID'${user.userId}'のユーザー情報の削除に失敗しました。`);
-        return;
-      }
+    success = await deleteUserRecord(ctx, {
+      userId: user.userId,
+    });
+    if (success) {
+      console.log(`ユーザーID'${user.userId}'のユーザー情報を削除しました。`);
+    } else {
+      console.log(
+        `ユーザーID'${user.userId}'のユーザー情報の削除に失敗しました。`,
+      );
+      return;
+    }
+  } catch (err) {
+    console.error(err);
   } finally {
     await db.$disconnect();
   }
 }
-run().catch((err) => {
-  console.error(err);
-});
+run();

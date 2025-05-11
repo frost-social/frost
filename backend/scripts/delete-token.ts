@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { deleteTokenEntity } from "../src/core/repository/TokenRepository.js";
-import type { AccessInfo } from "../src/core/service.js";
+import { createRequestContext } from "../src/core/restApi.js";
+import { deleteTokenRecord } from "../src/models/TokenModel.js";
 
 async function run() {
   const token = process.argv[2];
@@ -11,11 +11,11 @@ async function run() {
 
   const db = new PrismaClient();
 
-  const info: AccessInfo = { userId: "internal" };
+  const ctx = await createRequestContext(undefined, db);
 
-  const success = await deleteTokenEntity({
+  const success = await deleteTokenRecord(ctx, {
     token,
-  }, info, db);
+  });
   if (success) {
     console.log(`トークン'${token}'を削除しました`);
   } else {

@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { configureAuth } from "./core/authentication.js";
+import { configureAuth } from "./core/authorization.js";
 import { connectDB } from "./core/database.js";
 import { getEnvInteger } from "./core/env.js";
 import { createHttpServer, listenHttpServer } from "./core/httpServer.js";
@@ -21,7 +21,7 @@ async function bootstrap() {
   configureAuth(db);
 
   const http = createHttpServer();
-  configureRestApi(db, http);
+  configureRestApi(http, db);
 
   // listen http
   const listenPort = getEnvInteger("LISTEN_PORT", 3000);

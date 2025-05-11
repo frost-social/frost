@@ -1,47 +1,54 @@
 import crypto from "node:crypto";
-import type { components } from "../../../openapi/generated/schema.js";
-import type { DB } from "../database.js";
-import {
-  type TokenKind,
-  createTokenEntity,
-  getTokenEntity,
-} from "../repository/TokenRepository.js";
-import { getUserEntity } from "../repository/UserRepository.js";
+import type { components } from "../../openapi/generated/schema.js";
 import {
   BadRequest,
+  type RequestContext,
   ResourceNotFound,
   RestError,
   Unauthenticated,
-} from "../restApi.js";
-import type { AccessInfo } from "../service.js";
+} from "../core/restApi.js";
+import {
+  type TokenKind,
+  type TokenObject,
+  createTokenRecord,
+  getTokenRecord,
+} from "../models/TokenModel.js";
+import { getUserRecord } from "../models/UserModel.js";
 
 const asciiTable =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-export type tokenInfoObject = {
+export type TokenInfoObject = {
   tokenKind: TokenKind;
   userId: string;
   scopes: string[];
 };
 
-export type TokenObject = components["schemas"]["Api.v1.Token"];
+export function mapTokenInfoObject(src: TokenObject): TokenInfoObject {
+  return {
+    userId: src.userId,
+    tokenKind: src.tokenKind,
+    scopes: src.scopes,
+  };
+}
+
+//export type TokenObject = components["schemas"]["Api.v1.Token"];
 
 /**
  * トークン情報を追加します。
  */
 export async function createToken(
+  ctx: RequestContext,
   params: {
     userId: string;
     tokenKind: TokenKind;
     scopes: string[];
   },
-  info: AccessInfo,
-  db: DB,
 ): Promise<TokenObject> {
   // ユーザーが存在しないトークンは作成できない
-  const userEntity = await getUserEntity({
+  const userEntity = await getUserRecord(ctx, {
     userId: params.userId,
-  }, info, db);
+  });
   if (userEntity == null) {
     throw new RestError(new ResourceNotFound("user"));
   }
@@ -50,34 +57,29 @@ export async function createToken(
 
   // TODO: 一応トークンの重複を確認
 
-  const tokenEntity = await createTokenEntity({
+  const tokenObject = await createTokenRecord(ctx, {
     userId: params.userId,
     tokenKind: params.tokenKind,
     scopes: params.scopes,
     token: tokenValue,
-  }, info, db);
+  });
 
-  return tokenEntity;
+  return tokenObject;
 }
 
 /**
  * トークン情報を取得します。
  */
 export async function getTokenInfo(
+  ctx: RequestContext,
   params: { token: string },
-  info: AccessInfo,
-  db: DB,
-): Promise<{
-  tokenKind: TokenKind;
-  userId: string;
-  scopes: string[];
-}> {
+): Promise<TokenInfoObject> {
   if (params.token.length < 1) {
     throw new RestError(new BadRequest([{ message: "token invalid." }]));
   }
-  const t = await getTokenEntity({
+  const t = await getTokenRecord(ctx, {
     token: params.token,
-  }, info, db);
+  });
   if (t == null) {
     throw new RestError(new Unauthenticated());
   }
@@ -88,7 +90,7 @@ export async function getTokenInfo(
  * トークンの値を生成します。
  * @internal
  */
-export function generateTokenValue(length: number): string {
+function generateTokenValue(length: number): string {
   let token = "";
   for (const byte of crypto.randomBytes(length).values()) {
     token += asciiTable[byte % asciiTable.length];
