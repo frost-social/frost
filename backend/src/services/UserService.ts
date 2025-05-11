@@ -7,9 +7,9 @@ import {
   RestError,
 } from "../core/restApi.js";
 import {
-  createUserEntity,
-  deleteUserEntity,
-  getUserEntity,
+  createUserRecord,
+  deleteUserRecord,
+  getUserRecord,
 } from "../models/UserModel.js";
 
 export type UserObject = components["schemas"]["Api.v1.User"];
@@ -22,7 +22,7 @@ export async function createUser(
   params: { userName: string; displayName?: string },
   ctx: RequestContext,
 ): Promise<UserObject> {
-  const user = await createUserEntity(ctx, {
+  const user = await createUserRecord(ctx, {
     userName: params.userName,
     displayName: params.displayName,
     passwordAuthEnabled: true,
@@ -45,7 +45,7 @@ export async function getUser(
     );
   }
 
-  const userEntity = await getUserEntity(ctx, {
+  const userEntity = await getUserRecord(ctx, {
     userId: params.userId,
     userName: params.userName,
   });
@@ -64,7 +64,7 @@ export async function deleteUser(
   ctx: RequestContext,
   params: { userId: string },
 ): Promise<void> {
-  const success = await deleteUserEntity(ctx, {
+  const success = await deleteUserRecord(ctx, {
     userId: params.userId,
   });
 

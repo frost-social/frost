@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { createRequestContext } from "../src/core/restApi.js";
-import { getUserEntity } from "../src/models/UserModel.js";
+import { getUserRecord } from "../src/models/UserModel.js";
 
 async function run() {
   const userName = process.argv[2];
@@ -13,7 +13,7 @@ async function run() {
   try {
     const ctx = await createRequestContext(undefined, db);
 
-    const user = await getUserEntity(ctx, {
+    const user = await getUserRecord(ctx, {
       userName: userName,
     });
     if (user != null) {

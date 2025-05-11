@@ -1,6 +1,6 @@
 import * as sql from "@prisma/client/sql";
 import type { RequestContext } from "../core/restApi.js";
-import { mapLeafEntity } from "../models/LeafModel.js";
+import { mapLeafObject } from "../models/LeafModel.js";
 import type { LeafObject } from "./LeafService.js";
 
 /**
@@ -23,7 +23,7 @@ export async function fetchHomeTimeline(
       sql.fetchHomeTimelineNextCursor(ctx.user.userId, params.nextCursor, limit),
     );
     rows.reverse();
-    const leafs = rows.map((x) => mapLeafEntity(x));
+    const leafs = rows.map((x) => mapLeafObject(x));
     return {
       leafs: leafs,
       nextCursor: leafs[0]?.leafId,
@@ -35,7 +35,7 @@ export async function fetchHomeTimeline(
     const rows = await ctx.db.$queryRawTyped(
       sql.fetchHomeTimelinePrevCursor(ctx.user.userId, params.prevCursor, limit),
     );
-    const leafs = rows.map((x) => mapLeafEntity(x));
+    const leafs = rows.map((x) => mapLeafObject(x));
     return {
       leafs: leafs,
       nextCursor: leafs[0]?.leafId,
@@ -46,7 +46,7 @@ export async function fetchHomeTimeline(
   const rows = await ctx.db.$queryRawTyped(
     sql.fetchHomeTimelineLatest(ctx.user.userId, limit),
   );
-  const leafs = rows.map((x) => mapLeafEntity(x));
+  const leafs = rows.map((x) => mapLeafObject(x));
   return {
     leafs: leafs,
     nextCursor: leafs[0]?.leafId,

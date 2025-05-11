@@ -3,8 +3,8 @@ import {
   createUserFollowingRel,
   deleteUserFollowingRel,
   getUserFollowingRel,
-  listUserEntityOfFollowedBy,
-  listUserEntityOfFollowing,
+  listUserRecordOfFollowedBy,
+  listUserRecordOfFollowing,
 } from "../models/UserFollowingModel.js";
 import type { UserObject } from "./UserService.js";
 
@@ -60,7 +60,7 @@ export async function getFollowings(
   ctx: RequestContext,
   params: { userId: string; offset?: number; limit?: number },
 ): Promise<UserObject[]> {
-  const users = await listUserEntityOfFollowing(ctx, {
+  const users = await listUserRecordOfFollowing(ctx, {
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,
@@ -72,7 +72,7 @@ export async function getFollowedBy(
   ctx: RequestContext,
   params: { userId: string; offset?: number; limit?: number },
 ): Promise<UserObject[]> {
-  const users = await listUserEntityOfFollowedBy(ctx, {
+  const users = await listUserRecordOfFollowedBy(ctx, {
     userId: params.userId,
     offset: params.offset ?? 0,
     limit: params.limit ?? 10,

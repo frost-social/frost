@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { createRequestContext } from "../src/core/restApi.js";
-import { getTokenEntitiesOfUser } from "../src/models/TokenModel.js";
+import { getTokenRecordsOfUser } from "../src/models/TokenModel.js";
 import {
-  getUserEntity,
+  getUserRecord,
 } from "../src/models/UserModel.js";
 
 async function run() {
@@ -16,7 +16,7 @@ async function run() {
   try {
     const ctx = await createRequestContext(undefined, db);
 
-    const user = await getUserEntity(ctx, {
+    const user = await getUserRecord(ctx, {
       userName: userName,
     });
     if (user == null) {
@@ -26,7 +26,7 @@ async function run() {
       return;
     }
 
-    const tokens = await getTokenEntitiesOfUser(ctx, {
+    const tokens = await getTokenRecordsOfUser(ctx, {
       userId: user.userId,
     });
     if (tokens.length > 0) {

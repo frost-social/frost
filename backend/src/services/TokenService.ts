@@ -1,6 +1,5 @@
 import crypto from "node:crypto";
 import type { components } from "../../openapi/generated/schema.js";
-import type { DB } from "../core/database.js";
 import {
   BadRequest,
   type RequestContext,
@@ -10,10 +9,11 @@ import {
 } from "../core/restApi.js";
 import {
   type TokenKind,
-  createTokenEntity,
-  getTokenEntity,
+  type TokenScopeObject,
+  createTokenRecord,
+  getTokenRecord,
 } from "../models/TokenModel.js";
-import { getUserEntity } from "../models/UserModel.js";
+import { getUserRecord } from "../models/UserModel.js";
 
 const asciiTable =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -38,7 +38,7 @@ export async function createToken(
   },
 ): Promise<TokenObject> {
   // ユーザーが存在しないトークンは作成できない
-  const userEntity = await getUserEntity(ctx, {
+  const userEntity = await getUserRecord(ctx, {
     userId: params.userId,
   });
   if (userEntity == null) {
@@ -49,7 +49,7 @@ export async function createToken(
 
   // TODO: 一応トークンの重複を確認
 
-  const tokenEntity = await createTokenEntity(ctx, {
+  const tokenEntity = await createTokenRecord(ctx, {
     userId: params.userId,
     tokenKind: params.tokenKind,
     scopes: params.scopes,
@@ -68,12 +68,12 @@ export async function getTokenInfo(
 ): Promise<{
   tokenKind: TokenKind;
   userId: string;
-  scopes: string[];
+  scopes: TokenScopeObject[];
 }> {
   if (params.token.length < 1) {
     throw new RestError(new BadRequest([{ message: "token invalid." }]));
   }
-  const t = await getTokenEntity(ctx, {
+  const t = await getTokenRecord(ctx, {
     token: params.token,
   });
   if (t == null) {

@@ -7,9 +7,9 @@ import {
   RestError,
 } from "../core/restApi.js";
 import {
-  createTimelineLeafEntity,
-  deleteLeafEntity,
-  getLeafEntity,
+  createTimelineLeafRecord,
+  deleteLeafRecord,
+  getLeafRecord,
 } from "../models/LeafModel.js";
 
 export type LeafObject = components["schemas"]["Api.v1.Leaf"];
@@ -24,7 +24,7 @@ export async function createLeaf(
   if (params.content.length < 1) {
     throw new RestError(new BadRequest([{ message: "content invalid." }]));
   }
-  const leaf = await createTimelineLeafEntity(ctx, {
+  const leaf = await createTimelineLeafRecord(ctx, {
     userId: ctx.user.userId,
     content: params.content,
   });
@@ -41,7 +41,7 @@ export async function getLeaf(
   if (params.leafId.length < 1) {
     throw new RestError(new BadRequest([{ message: "leafId invalid." }]));
   }
-  const leaf = await getLeafEntity(ctx, {
+  const leaf = await getLeafRecord(ctx, {
     leafId: params.leafId,
   });
   if (leaf == null) {
@@ -61,7 +61,7 @@ export async function deleteLeaf(
     throw new RestError(new BadRequest([{ message: "leafId invalid." }]));
   }
 
-  const leaf = await getLeafEntity(ctx, {
+  const leaf = await getLeafRecord(ctx, {
     leafId: params.leafId,
   });
   if (leaf == null) {
@@ -73,7 +73,7 @@ export async function deleteLeaf(
     throw new RestError(new AccessDenied());
   }
 
-  await deleteLeafEntity(ctx, {
+  await deleteLeafRecord(ctx, {
     leafId: params.leafId,
   });
 }

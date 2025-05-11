@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { RequestContext } from "../src/core/restApi.js";
-import { userMapper } from "../src/models/UserModel.js";
+import { mapUserObject } from "../src/models/UserModel.js";
 import { createToken } from "../src/services/TokenService.js";
 
 async function main() {
@@ -31,7 +31,7 @@ async function main() {
         });
         console.log(`User '${userName}' has been created.`);
       }
-      return userMapper(row);
+      return mapUserObject(row);
     }
 
     // create public user

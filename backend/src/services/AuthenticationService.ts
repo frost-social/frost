@@ -11,11 +11,11 @@ import {
   RestError,
 } from "../core/restApi.js";
 import {
-  type PasswordEntity,
-  createPasswordEntity,
-  getPasswordEntity,
+  type PasswordObject,
+  createPasswordRecord,
+  getPasswordRecord,
 } from "../models/PasswordModel.js";
-import { createUserEntity, getUserEntity } from "../models/UserModel.js";
+import { createUserRecord, getUserRecord } from "../models/UserModel.js";
 import * as TokenService from "./TokenService.js";
 
 export type AuthResultObject = components["schemas"]["Api.v1.AuthInfo"];
@@ -38,7 +38,7 @@ export async function signup(
 
   const passwordAuthEnabled = params.password != null;
 
-  const user = await createUserEntity(ctx, {
+  const user = await createUserRecord(ctx, {
     userName: params.userName,
     displayName: params.displayName,
     passwordAuthEnabled: passwordAuthEnabled,
@@ -82,7 +82,7 @@ export async function signin(
   ctx: RequestContext,
   params: SigninInput,
 ): Promise<AuthResultObject> {
-  const user = await getUserEntity(ctx, {
+  const user = await getUserRecord(ctx, {
     userName: params.userName,
   });
 
@@ -150,7 +150,7 @@ export async function registerPassword(
     userId: params.userId,
     password: params.password,
   });
-  await createPasswordEntity(ctx, entity);
+  await createPasswordRecord(ctx, entity);
 }
 
 /**
@@ -160,7 +160,7 @@ export async function verifyPassword(
   ctx: RequestContext,
   params: { userId: string; password: string },
 ): Promise<boolean> {
-  const v = await getPasswordEntity(ctx, {
+  const v = await getPasswordRecord(ctx, {
     userId: params.userId,
   });
   if (v == null) {
@@ -182,7 +182,7 @@ export async function verifyPassword(
 export function generatePasswordVerification(params: {
   userId: string;
   password: string;
-}): PasswordEntity {
+}): PasswordObject {
   const algorithm = "sha256";
   const salt = generatePasswordSalt();
   const iteration = 100000;

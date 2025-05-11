@@ -1,15 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { createRequestContext } from "../src/core/restApi.js";
-import { clearLeafEntitiesOfUser } from "../src/models/LeafModel.js";
-import { deletePasswordEntity } from "../src/models/PasswordModel.js";
+import { clearLeafRecordsOfUser } from "../src/models/LeafModel.js";
+import { deletePasswordRecord } from "../src/models/PasswordModel.js";
 import {
-  deleteTokenEntity,
-  getTokenEntitiesOfUser,
+  deleteTokenRecord,
+  getTokenRecordsOfUser,
 } from "../src/models/TokenModel.js";
 import { clearUserFollowingRel } from "../src/models/UserFollowingModel.js";
 import {
-  deleteUserEntity,
-  getUserEntity,
+  deleteUserRecord,
+  getUserRecord,
 } from "../src/models/UserModel.js";
 
 async function run() {
@@ -26,7 +26,7 @@ async function run() {
 
     const ctx = await createRequestContext(undefined, db);
 
-    const user = await getUserEntity(ctx, {
+    const user = await getUserRecord(ctx, {
       userName: userName,
     });
     if (user != null) {
@@ -40,7 +40,7 @@ async function run() {
       return;
     }
 
-    count = await clearLeafEntitiesOfUser(ctx, {
+    count = await clearLeafRecordsOfUser(ctx, {
       userId: user.userId,
     });
     if (count > 0) {
@@ -49,12 +49,12 @@ async function run() {
       );
     }
 
-    const tokens = await getTokenEntitiesOfUser(ctx, {
+    const tokens = await getTokenRecordsOfUser(ctx, {
       userId: user.userId,
     });
 
     for (const tokenRow of tokens) {
-      await deleteTokenEntity(ctx, {
+      await deleteTokenRecord(ctx, {
         token: tokenRow.token,
       });
       console.log(
@@ -71,7 +71,7 @@ async function run() {
       );
     }
 
-    success = await deletePasswordEntity(ctx, {
+    success = await deletePasswordRecord(ctx, {
       userId: user.userId,
     });
     if (success) {
@@ -81,7 +81,7 @@ async function run() {
       return;
     }
 
-    success = await deleteUserEntity(ctx, {
+    success = await deleteUserRecord(ctx, {
       userId: user.userId,
     });
     if (success) {

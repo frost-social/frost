@@ -1,12 +1,6 @@
 import type { DB } from "../core/database.js";
 import type { RequestContext } from "../core/restApi.js";
 
-export type UserEntity = {
-  userId: string;
-  userName: string;
-  displayName: string;
-  passwordAuthEnabled: boolean;
-};
 
 export type UserRow = {
   user_id: string;
@@ -15,7 +9,14 @@ export type UserRow = {
   password_auth_enabled: boolean;
 };
 
-export function userMapper(row: UserRow): UserEntity {
+export type UserObject = {
+  userId: string;
+  userName: string;
+  displayName: string;
+  passwordAuthEnabled: boolean;
+};
+
+export function mapUserObject(row: UserRow): UserObject {
   return {
     userId: row.user_id,
     userName: row.name,
@@ -24,7 +25,7 @@ export function userMapper(row: UserRow): UserEntity {
   };
 }
 
-export async function getInternalUser(db: DB) {
+export async function getInternalUserRecord(db: DB) {
   const row = await db.user.findFirst({
     where: {
       name: "internal",
@@ -35,13 +36,13 @@ export async function getInternalUser(db: DB) {
     throw new Error("failed to get the internal user.");
   }
 
-  return userMapper(row);
+  return mapUserObject(row);
 }
 
 /**
  * ユーザーを追加する
  */
-export async function createUserEntity(
+export async function createUserRecord(
   ctx: RequestContext,
   params: {
     userName: string;
@@ -57,16 +58,16 @@ export async function createUserEntity(
     },
   });
 
-  return userMapper(row);
+  return mapUserObject(row);
 }
 
 /**
  * ユーザーを取得する
  */
-export async function getUserEntity(
+export async function getUserRecord(
   ctx: RequestContext,
   params: { userId?: string; userName?: string },
-): Promise<UserEntity | undefined> {
+): Promise<UserObject | undefined> {
   if ([params.userId, params.userName].every((x) => x == null)) {
     throw new Error("invalid condition");
   }
@@ -81,14 +82,14 @@ export async function getUserEntity(
     return undefined;
   }
 
-  return userMapper(row);
+  return mapUserObject(row);
 }
 
 /**
  * ユーザーを削除する
  * @returns 削除に成功したかどうか
  */
-export async function deleteUserEntity(
+export async function deleteUserRecord(
   ctx: RequestContext,
   params: { userId: string },
 ): Promise<boolean> {

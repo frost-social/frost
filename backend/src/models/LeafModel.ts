@@ -1,14 +1,5 @@
 import type { RequestContext } from "../core/restApi.js";
 
-export type LeafEntity = {
-  leafId: string;
-  leafKind: string;
-  userId: string;
-  chatRoomId?: string;
-  createdAt: string;
-  content: string;
-};
-
 export type LeafRow = {
   leaf_id: string;
   leaf_kind: string;
@@ -18,8 +9,17 @@ export type LeafRow = {
   content: string;
 };
 
-export function mapLeafEntity(row: LeafRow): LeafEntity {
-  const leaf: LeafEntity = {
+export type LeafObject = {
+  leafId: string;
+  leafKind: string;
+  userId: string;
+  chatRoomId?: string;
+  createdAt: string;
+  content: string;
+};
+
+export function mapLeafObject(row: LeafRow): LeafObject {
+  const leaf: LeafObject = {
     leafId: row.leaf_id,
     leafKind: row.leaf_kind,
     userId: row.user_id,
@@ -37,10 +37,10 @@ export function mapLeafEntity(row: LeafRow): LeafEntity {
 /**
  * 投稿を作成する
  */
-export async function createTimelineLeafEntity(
+export async function createTimelineLeafRecord(
   ctx: RequestContext,
   params: { userId: string; content: string },
-): Promise<LeafEntity> {
+): Promise<LeafObject> {
   const row = await ctx.db.leaf.create({
     data: {
       leaf_kind: "timeline",
@@ -49,16 +49,16 @@ export async function createTimelineLeafEntity(
     },
   });
 
-  return mapLeafEntity(row);
+  return mapLeafObject(row);
 }
 
 /**
  * チャット投稿を作成する
  */
-export async function createChatLeafEntity(
+export async function createChatLeafRecord(
   ctx: RequestContext,
   params: { chatRoomId: string; userId: string; content: string },
-): Promise<LeafEntity> {
+): Promise<LeafObject> {
   const row = await ctx.db.leaf.create({
     data: {
       leaf_kind: "chatroom",
@@ -68,16 +68,16 @@ export async function createChatLeafEntity(
     },
   });
 
-  return mapLeafEntity(row);
+  return mapLeafObject(row);
 }
 
 /**
  * 投稿を取得する
  */
-export async function getLeafEntity(
+export async function getLeafRecord(
   ctx: RequestContext,
   params: { leafId: string },
-): Promise<LeafEntity | undefined> {
+): Promise<LeafObject | undefined> {
   const row = await ctx.db.leaf.findFirst({
     where: {
       leaf_id: params.leafId,
@@ -88,13 +88,13 @@ export async function getLeafEntity(
     return undefined;
   }
 
-  return mapLeafEntity(row);
+  return mapLeafObject(row);
 }
 
 /**
  * 投稿を削除する
  */
-export async function deleteLeafEntity(
+export async function deleteLeafRecord(
   ctx: RequestContext,
   params: { leafId: string },
 ): Promise<void> {
@@ -109,9 +109,9 @@ export async function deleteLeafEntity(
 }
 
 /**
- * 投稿を削除する
+ * 全ての投稿を削除する
  */
-export async function clearLeafEntitiesOfUser(
+export async function clearLeafRecordsOfUser(
   ctx: RequestContext,
   params: { userId: string },
 ): Promise<number> {

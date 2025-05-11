@@ -1,15 +1,15 @@
 import type { RequestContext } from "../core/restApi.js";
 
-export type TokenEntity = {
+export type TokenObject = {
   userId: string;
   tokenKind: TokenKind;
   token: string;
-  scopes: string[];
+  scopes: TokenScopeObject[];
 };
 
 export type TokenKind = "access_token" | "refresh_token";
 
-export type TokenScopeEntity = string;
+export type TokenScopeObject = { scopeName: string };
 
 export type TokenRow = {
   user_id: string;
@@ -22,23 +22,25 @@ export type TokenScopeRow = {
   scope_name: string;
 };
 
-export function mapTokenEntity(row: TokenRow): TokenEntity {
+export function mapTokenObject(row: TokenRow): TokenObject {
   return {
     userId: row.user_id,
     tokenKind: row.token_kind as TokenKind,
     token: row.token,
-    scopes: row.scopes.map((x) => mapTokenScopeEntity(x)),
+    scopes: row.scopes.map((x) => mapTokenScopeObject(x)),
   };
 }
 
-export function mapTokenScopeEntity(row: TokenScopeRow): TokenScopeEntity {
-  return row.scope_name;
+export function mapTokenScopeObject(row: TokenScopeRow): TokenScopeObject {
+  return {
+    scopeName: row.scope_name,
+  };
 }
 
 /**
  * トークン情報を追加する
  */
-export async function createTokenEntity(
+export async function createTokenRecord(
   ctx: RequestContext,
   params: {
     userId: string;
@@ -46,7 +48,7 @@ export async function createTokenEntity(
     scopes: string[];
     token: string;
   },
-): Promise<TokenEntity> {
+): Promise<TokenObject> {
   const tokenScopes: TokenScopeRow[] = params.scopes.map((scope) => {
     return {
       scope_name: scope,
@@ -70,16 +72,16 @@ export async function createTokenEntity(
     },
   });
 
-  return mapTokenEntity(token);
+  return mapTokenObject(token);
 }
 
 /**
  * トークン情報を取得する
  */
-export async function getTokenEntity(
+export async function getTokenRecord(
   ctx: RequestContext,
   params: { token: string },
-): Promise<TokenEntity | undefined> {
+): Promise<TokenObject | undefined> {
   // トークン情報を取得
   const row = await ctx.db.token.findFirst({
     where: {
@@ -93,16 +95,16 @@ export async function getTokenEntity(
     return undefined;
   }
 
-  return mapTokenEntity(row);
+  return mapTokenObject(row);
 }
 
 /**
  * トークン情報を取得する
  */
-export async function getTokenEntitiesOfUser(
+export async function getTokenRecordsOfUser(
   ctx: RequestContext,
   params: { userId: string },
-): Promise<TokenEntity[]> {
+): Promise<TokenObject[]> {
   // トークン情報を取得
   const rows = await ctx.db.token.findMany({
     where: {
@@ -114,14 +116,14 @@ export async function getTokenEntitiesOfUser(
       scopes: true,
     },
   });
-  return rows.map((row) => mapTokenEntity(row));
+  return rows.map((row) => mapTokenObject(row));
 }
 
 /**
  * トークン情報を削除する
  * @returns 削除に成功したかどうか
  */
-export async function deleteTokenEntity(
+export async function deleteTokenRecord(
   ctx: RequestContext,
   params: { token: string },
 ): Promise<boolean> {

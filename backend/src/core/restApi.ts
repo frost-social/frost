@@ -1,6 +1,6 @@
 import type { Application, NextFunction, Request, Response } from "express";
 import type { SafeParseError } from "zod";
-import { getInternalUser } from "../models/UserModel.js";
+import { getInternalUserRecord } from "../models/UserModel.js";
 import { createApiRouter } from "../routers.js";
 import type { UserObject } from "../services/UserService.js";
 import type { DB } from "./database.js";
@@ -20,7 +20,7 @@ export async function createRequestContext(
 ): Promise<RequestContext> {
   let accessUser = user;
   if (accessUser == null) {
-    accessUser = await getInternalUser(db);
+    accessUser = await getInternalUserRecord(db);
   }
   return {
     user: accessUser,

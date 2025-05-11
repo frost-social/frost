@@ -20,7 +20,7 @@ export function configureAuth(db: DB) {
         const authUser = await getUser(ctx, {
           userId: tokenInfo.userId
         });
-        return done(null, authUser, { scope: tokenInfo.scopes });
+        return done(null, authUser, { scope: tokenInfo.scopes.map(x => x.scopeName) });
       } catch (err) {
         return done(err);
       }
