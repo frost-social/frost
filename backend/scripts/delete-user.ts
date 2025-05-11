@@ -7,10 +7,7 @@ import {
   getTokenRecordsOfUser,
 } from "../src/models/TokenModel.js";
 import { clearUserFollowingRel } from "../src/models/UserFollowingModel.js";
-import {
-  deleteUserRecord,
-  getUserRecord,
-} from "../src/models/UserModel.js";
+import { deleteUserRecord, getUserRecord } from "../src/models/UserModel.js";
 
 async function run() {
   const userName = process.argv[2];
@@ -71,14 +68,18 @@ async function run() {
       );
     }
 
-    success = await deletePasswordRecord(ctx, {
-      userId: user.userId,
-    });
-    if (success) {
-      console.log(`ユーザーID'${user.userId}'の認証情報を削除しました。`);
-    } else {
-      console.log(`ユーザーID'${user.userId}'の認証情報の削除に失敗しました。`);
-      return;
+    if (ctx.user.passwordAuthEnabled) {
+      success = await deletePasswordRecord(ctx, {
+        userId: user.userId,
+      });
+      if (success) {
+        console.log(`ユーザーID'${user.userId}'の認証情報を削除しました。`);
+      } else {
+        console.log(
+          `ユーザーID'${user.userId}'の認証情報の削除に失敗しました。`,
+        );
+        return;
+      }
     }
 
     success = await deleteUserRecord(ctx, {
