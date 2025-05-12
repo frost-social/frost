@@ -4,7 +4,16 @@ Frost開発の環境構築について
 
 ## 手順
 
-VS Code (on Linux or WSL)での開発を想定しています。
+### 前提環境 (Linux系)
+- git
+- Visual Studio Code
+- Docker
+
+### 前提環境 (Windows)
+- WSL Ubuntu
+- git (ホスト側に導入)
+- Visual Studio Code (ホスト側に導入)
+- Docker (ゲスト側に導入)
 
 1. **リポジトリのクローン**\
    本プロジェクトのリポジトリをLinuxもしくはWSL内の任意のディレクトリにcloneする。
