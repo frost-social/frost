@@ -4,7 +4,7 @@ Frost開発の環境構築について
 
 ## 手順
 
-### 前提環境 (Ubuntu)
+### 前提環境 (Linux系)
 - git
 - Visual Studio Code
 - Docker
