@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig to read more about this file */
+    "target": "ES2024",
+    "outDir": "./dist",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "removeComments": false,
+    "skipLibCheck": true
+  }
+}
