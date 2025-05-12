@@ -15,7 +15,7 @@ const server = serve(app, (x) => {
 process.on("SIGINT", () => {
   server.close();
   process.exit(0);
-})
+});
 process.on("SIGTERM", () => {
   server.close((err) => {
     if (err) {
