@@ -1,0 +1,17 @@
+{
+  "name": "hono-expt",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.8.0",
+  "scripts": {
+    "rebuild": "rm -rf dist && tsc --project tsconfig.build.json",
+    "check": "tsc --project tsconfig.check.json",
+    "start": "node dist/main"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@hono/zod-openapi": "^0.19.6",
+    "@types/node": "^22.15.17",
+    "typescript": "^5.8.3"
+  }
+}
