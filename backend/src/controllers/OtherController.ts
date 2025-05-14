@@ -17,9 +17,7 @@ export function otherController(router: Router, db: DB) {
     if (!validation.success) {
       throwsValidationError(validation);
     }
-    res.json({
-      message: validation.data,
-    });
+    res.json(validation.data);
   });
 
   // Echo (POST)
@@ -28,8 +26,6 @@ export function otherController(router: Router, db: DB) {
     if (!validation.success) {
       throwsValidationError(validation);
     }
-    res.json({
-      message: validation.data,
-    });
+    res.json(validation.data);
   });
 }

@@ -1,16 +1,16 @@
 import { Button, Group } from "@mantine/core";
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
-
-import { DeleteParrot } from "./-components/DeleteParrot";
+import { MrhcInput } from "./-components/MrhcInput";
 
 export const Route = createLazyFileRoute("/")({
   component: Home,
 });
 
 function Home() {
+
   return (
     <>
-      <DeleteParrot />
+      <MrhcInput />
       <Group justify="center" mt="lg">
         <Button component={Link} to="/login">
           LOGIN

@@ -35,3 +35,6 @@ Frost開発の環境構築について
    そのままだとFrontendの`vite dev`が見れないので、Windows側でコマンドを実行します\
    `netsh interface portproxy add v4tov4 listenport=<5173> listenaddress=0.0.0.0 connectport=<5173> connectaddress=(wsl hostname -i)`\
    ref: [ローカル エリア ネットワーク (LAN) からの WSL 2 ディストリビューションへのアクセス](https://learn.microsoft.com/ja-jp/windows/wsl/networking#accessing-a-wsl-2-distribution-from-your-local-area-network-lan)
+1. **FEからAPIへのリクエストを行うオリジンの設定**\
+   `frontend/.env`に`VITE_API_ORIGIN`を指定するとそのオリジンにAPIアクセスを行います\
+   設定しない場合は`http://localhost:3000`が利用されます
