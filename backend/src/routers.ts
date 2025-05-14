@@ -1,39 +1,47 @@
-import express, { type Router } from "express";
+import express from "express";
 import { authController } from "./controllers/AuthController.js";
 import { chatRoomController } from "./controllers/ChatRoomController.js";
 import { leafController } from "./controllers/LeafController.js";
 import { otherController } from "./controllers/OtherController.js";
 import { userController } from "./controllers/UserController.js";
 import type { DB } from "./core/database.js";
-import { EndpointNotFound, RestError, corsApi } from "./core/restApi.js";
+import { EndpointNotFound, RestError, buildRestApiError, corsApi } from "./core/restApi.js";
 
 // const zUuid = z.string().length(36);
 // const zNumericString = z
 //   .string()
 //   .regex(/^[+-]?\d*\.?\d+$/, { message: "invalid numeric string" });
 
-export function createApiRouter(db: DB) {
-  const baseRouter = express.Router();
+export function baseRouter(db: DB) {
+  const router = express.Router();
 
-  const apiRouter = express.Router();
-  apiRouter.use(express.json());
-  apiRouter.use(corsApi());
-  apiControllers(apiRouter, db);
-  apiRouter.use((req, res, next) => {
+  return router;
+}
+
+export function apiVersion1Router(db: DB) {
+  const router = express.Router();
+  router.use(express.json());
+  router.use(corsApi());
+
+  // controllers
+  authController(router, db);
+  chatRoomController(router, db);
+  leafController(router, db);
+  otherController(router, db);
+  userController(router, db);
+
+  router.use((req, res, next) => {
     next(new RestError(new EndpointNotFound()));
   });
 
-  baseRouter.use("/api/v1", apiRouter);
+  // @ts-ignore
+  router.use((err, req, res, next) => {
+    const errorResponse = buildRestApiError(err);
+    res.status(errorResponse.error.status).json(errorResponse);
+    return;
+  });
 
-  return baseRouter;
-}
-
-function apiControllers(apiRouter: Router, db: DB) {
-  authController(apiRouter, db);
-  chatRoomController(apiRouter, db);
-  leafController(apiRouter, db);
-  otherController(apiRouter, db);
-  userController(apiRouter, db);
+  return router;
 }
 
 // registerRoute(router, db, {

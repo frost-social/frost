@@ -3,7 +3,7 @@ import { configureAuth } from "./core/authorization.js";
 import { connectDB } from "./core/database.js";
 import { getEnvInteger } from "./core/env.js";
 import { createHttpServer, listenHttpServer } from "./core/httpServer.js";
-import { configureRestApi } from "./core/restApi.js";
+import { apiVersion1Router, baseRouter } from "./routers.js";
 
 async function bootstrap() {
   const projectInfo = JSON.parse(await readFile("../package.json", { encoding: "utf8" }));
@@ -21,7 +21,8 @@ async function bootstrap() {
   configureAuth(db);
 
   const http = createHttpServer();
-  configureRestApi(http, db);
+  http.use("/", baseRouter(db));
+  http.use("/api/v1", apiVersion1Router(db));
 
   // listen http
   const listenPort = getEnvInteger("LISTEN_PORT", 3000);
