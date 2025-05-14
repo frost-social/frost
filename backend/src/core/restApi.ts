@@ -1,7 +1,6 @@
-import type { Application, NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { SafeParseError } from "zod";
 import { getInternalUserRecord } from "../models/UserModel.js";
-import { createApiRouter } from "../routers.js";
 import type { UserObject } from "../services/UserService.js";
 import type { DB } from "./database.js";
 
@@ -41,7 +40,7 @@ export function throwsValidationError<T>(validation: SafeParseError<T>): never {
 /**
  * 任意のエラー情報を元にREST APIのエラーを組み立てます。
  */
-function buildRestApiError(err: unknown): { error: ErrorObject } {
+export function buildRestApiError(err: unknown): { error: ErrorObject } {
   // app error
   if (err instanceof RestError) {
     return {
@@ -54,17 +53,6 @@ function buildRestApiError(err: unknown): { error: ErrorObject } {
   return {
     error: new ServerError(),
   };
-}
-
-export function configureRestApi(app: Application, db: DB) {
-  app.use(createApiRouter(db));
-
-  // @ts-ignore
-  app.use((err, req, res, next) => {
-    const errorResponse = buildRestApiError(err);
-    res.status(errorResponse.error.status).json(errorResponse);
-    return;
-  });
 }
 
 export function corsApi() {
