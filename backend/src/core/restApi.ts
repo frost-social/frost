@@ -1,8 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
-import type { SafeParseError } from "zod";
+import type { SafeParseError, z } from "zod";
 import { getInternalUserRecord } from "../models/UserModel.js";
 import type { UserObject } from "../services/UserService.js";
 import type { DB } from "./database.js";
+
+// const zNumericString = z
+//   .string()
+//   .regex(/^[+-]?\d*\.?\d+$/, { message: "invalid numeric string" });
 
 export type RequestContext = {
   user: UserObject;
@@ -73,6 +77,38 @@ export function corsApi() {
 
     next();
   };
+}
+
+export function validateApiData<T>(validator: z.ZodType<T>, data: unknown): T {
+  const valid = validator.safeParse(data);
+
+  if (!valid.success) {
+    throw new RestError(
+      new BadRequest(
+        valid.error.issues.map((x) => {
+          return { code: x.code, path: x.path, message: x.message };
+        }),
+      ),
+    );
+  }
+
+  return valid.data;
+}
+
+export interface ApiRouteInfo<In = unknown, Out = unknown> {
+  method: string,
+  path: string,
+  inputSchema: z.ZodType<In>,
+  outputSchema: z.ZodType<Out>,
+};
+
+export function defineApiRoute<In, Out>(opts: {
+  method: string,
+  path: string,
+  inputSchema: z.ZodType<In>,
+  outputSchema: z.ZodType<Out>,
+}): ApiRouteInfo<In, Out> {
+  return opts;
 }
 
 export interface ErrorObject {
