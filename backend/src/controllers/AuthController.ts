@@ -4,25 +4,54 @@ import { checkScope, tokenAuth } from "../core/authorization.js";
 import type { DB } from "../core/database.js";
 import {
   createRequestContext,
-  throwsValidationError,
+  defineApiRoute,
+  validateApiData,
 } from "../core/restApi.js";
 import { signin, signup } from "../services/AuthenticationService.js";
 import type { UserObject } from "../services/UserService.js";
+import { userSchema } from "./UserController.js";
+
+export const apiBasePath = "/api/v1";
+
+export const tokenSchema = z.object({
+  token: z.string(),
+  scopes: z.string().array(),
+});
 
 // Signup
-const signupInput = z.object({
-  userName: z.string().min(3),
-  displayName: z.string().min(1).optional(),
-  password: z.string().min(5).optional(),
+const signupRoute = defineApiRoute({
+  method: "post",
+  path: `${apiBasePath}/auth/signup`,
+  inputSchema: z.object({
+    userName: z.string().min(3),
+    displayName: z.string().min(1).optional(),
+    password: z.string().min(5).optional(),
+  }),
+  outputSchema: z.object({
+    accessToken: tokenSchema,
+    refreshToken: tokenSchema,
+    user: userSchema,
+  }),
 });
-export type SignupInput = z.infer<typeof signupInput>;
+export type SignupInputSchema = z.infer<typeof signupRoute.inputSchema>;
+export type SignupOutputSchema = z.infer<typeof signupRoute.outputSchema>;
 
 // Signin
-const signinInput = z.object({
-  userName: z.string().min(3),
-  password: z.string().min(5).optional(),
+const signinRoute = defineApiRoute({
+  method: "post",
+  path: `${apiBasePath}/auth/signin`,
+  inputSchema: z.object({
+    userName: z.string().min(3),
+    password: z.string().min(5).optional(),
+  }),
+  outputSchema: z.object({
+    accessToken: tokenSchema,
+    refreshToken: tokenSchema,
+    user: userSchema,
+  }),
 });
-export type SigninInput = z.infer<typeof signinInput>;
+export type SigninInputSchema = z.infer<typeof signinRoute.inputSchema>;
+export type SigninOutputSchema = z.infer<typeof signinRoute.outputSchema>;
 
 export function authController(router: Router, db: DB) {
   // Signup
@@ -32,12 +61,10 @@ export function authController(router: Router, db: DB) {
     checkScope("user.auth"),
     async (req, res) => {
       const ctx = await createRequestContext(req.user as UserObject, db);
-      const validation = signupInput.safeParse(req.body);
-      if (!validation.success) {
-        throwsValidationError(validation);
-      }
-      const signupOutput = await signup(ctx, validation.data);
-      res.json(signupOutput);
+      const params = validateApiData(signupRoute.inputSchema, req.body);
+      const result = await signup(ctx, params);
+      validateApiData(signupRoute.outputSchema, result);
+      res.json(result);
     },
   );
 
@@ -48,12 +75,10 @@ export function authController(router: Router, db: DB) {
     checkScope("user.auth"),
     async (req, res) => {
       const ctx = await createRequestContext(req.user as UserObject, db);
-      const validation = signinInput.safeParse(req.body);
-      if (!validation.success) {
-        throwsValidationError(validation);
-      }
-      const signinOutput = await signin(ctx, validation.data);
-      res.json(signinOutput);
+      const params = validateApiData(signinRoute.inputSchema, req.body);
+      const result = await signin(ctx, params);
+      validateApiData(signinRoute.outputSchema, result);
+      res.json(result);
     },
   );
 }

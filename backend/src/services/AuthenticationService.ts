@@ -1,8 +1,10 @@
 import crypto from "node:crypto";
 import type { components } from "../../openapi/generated/schema.js";
 import type {
-  SigninInput,
-  SignupInput,
+  SigninInputSchema,
+  SigninOutputSchema,
+  SignupInputSchema,
+  SignupOutputSchema,
 } from "../controllers/AuthController.js";
 import {
   BadRequest,
@@ -26,8 +28,8 @@ export type AuthResultObject = components["schemas"]["Api.v1.AuthInfo"];
  */
 export async function signup(
   ctx: RequestContext,
-  params: SignupInput,
-): Promise<AuthResultObject> {
+  params: SignupInputSchema,
+): Promise<SignupOutputSchema> {
   if (params.password == null) {
     throw new RestError({
       code: "authMethodRequired",
@@ -80,8 +82,8 @@ export async function signup(
  */
 export async function signin(
   ctx: RequestContext,
-  params: SigninInput,
-): Promise<AuthResultObject> {
+  params: SigninInputSchema,
+): Promise<SigninOutputSchema> {
   const user = await getUserRecord(ctx, {
     userName: params.userName,
   });
