@@ -40,7 +40,7 @@ export const getHomeTimelineRoute = defineApiRoute({
   inputSchema: z.object({
     prevCursor: z.string().uuid().optional(),
     nextCursor: z.string().uuid().optional(),
-    limit: z.number().optional(),
+    limit: z.coerce.number().optional(), // convert to number
   }),
   outputSchema: z.object({
     items: leafSchema.array(),
@@ -94,7 +94,19 @@ export function userController(router: Router, db: DB) {
   );
 
   // SearchUsers
-
+  router.get(
+    "/user/searchUsers",
+    tokenAuth(),
+    checkScope("user.read"),
+    async (req, res) => {
+      throw new Error("not implemented");
+      // const ctx = await createRequestContext(req.user as UserObject, db);
+      // const params = validateApiData(searchUsersRoute.inputSchema, req.query);
+      // const result = await searchUsers(ctx, params);
+      // validateApiData(searchUsersRoute.outputSchema, result);
+      // res.json(result);
+    },
+  );
 }
 
 // registerRoute(router, db, {
@@ -184,69 +196,6 @@ export function userController(router: Router, db: DB) {
 //       ctx.db,
 //     );
 //     return result;
-//   },
-// });
-
-// registerRoute(router, db, {
-//   method: "GET",
-//   path: "/user/getHomeTimeline",
-//   scope: ["user.read", "leaf.read"],
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/user/getHomeTimeline"]["result"]> {
-//     const params: Endpoints["/api/v1/user/getHomeTimeline"]["query"] =
-//       ctx.validateParams(
-//         z.object({
-//           nextCursor: z.string().length(36).optional(),
-//           prevCursor: z.string().length(36).optional(),
-//           limit: zNumericString.optional(),
-//         }),
-//       );
-//     const params2 = {
-//       kind: "home",
-//       ...params,
-//       limit: Number(params.limit),
-//     };
-//     const result = await LeafsQueryService.fetchHomeTimeline(
-//       params2,
-//       { userId: ctx.getUser().userId },
-//       ctx.db,
-//     );
-//     return result;
-//   },
-// });
-
-// registerRoute(router, db, {
-//   method: "GET",
-//   path: "/user/getUser",
-//   scope: "user.read",
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/user/getUser"]["result"]> {
-//     const params: Endpoints["/api/v1/user/getUser"]["query"] =
-//       ctx.validateParams(
-//         z.object({
-//           userId: zUuid.optional(),
-//           userName: z.string().min(1).optional(),
-//         }),
-//       );
-//     const result = await UserService.getUser(
-//       params,
-//       { userId: ctx.getUser().userId },
-//       ctx.db,
-//     );
-//     return result;
-//   },
-// });
-
-// registerRoute(router, db, {
-//   method: "GET",
-//   path: "/user/searchUsers",
-//   scope: "user.read",
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/user/searchUsers"]["result"]> {
-//     throw new Error("not implemented");
 //   },
 // });
 
