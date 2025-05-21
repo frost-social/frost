@@ -7,10 +7,9 @@ import type { LeafObject } from "./LeafService.js";
  * タイムラインを取得する\
  * prevCursorとnextCursorはleafIdを指定します。
  */
-export async function fetchHomeTimeline(
+export async function getHomeTimeline(
   ctx: RequestContext,
   params: {
-    kind: string;
     prevCursor?: string;
     nextCursor?: string;
     limit?: number;

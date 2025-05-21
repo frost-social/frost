@@ -7,7 +7,9 @@ import {
   defineApiRoute,
   validateApiData,
 } from "../core/restApi.js";
+import { getHomeTimeline } from "../services/LeafQueryService.js";
 import { type UserObject, getUser } from "../services/UserService.js";
+import { leafSchema } from "./LeafController.js";
 
 export const apiBasePath = "/api/v1";
 
@@ -15,7 +17,6 @@ export const userSchema = z.object({
   userId: z.string(),
   userName: z.string(),
   displayName: z.string(),
-  passwordAuthEnabled: z.boolean(),
 });
 export type UserSchema = z.infer<typeof userSchema>;
 
@@ -32,6 +33,37 @@ export const getUserRoute = defineApiRoute({
 export type GetUserInputSchema = z.infer<typeof getUserRoute.inputSchema>;
 export type GetUserOutputSchema = z.infer<typeof getUserRoute.outputSchema>;
 
+// GetHomeTimeline
+export const getHomeTimelineRoute = defineApiRoute({
+  method: "get",
+  path: `${apiBasePath}/user/getUser`,
+  inputSchema: z.object({
+    prevCursor: z.string().uuid().optional(),
+    nextCursor: z.string().uuid().optional(),
+    limit: z.number().optional(),
+  }),
+  outputSchema: z.object({
+    items: leafSchema.array(),
+  }),
+});
+export type GetHomeTimelineInputSchema = z.infer<typeof getHomeTimelineRoute.inputSchema>;
+export type GetHomeTimelineOutputSchema = z.infer<typeof getHomeTimelineRoute.outputSchema>;
+
+// SearchUsers
+export const searchUsersRoute = defineApiRoute({
+  method: "get",
+  path: `${apiBasePath}/user/searchUsers`,
+  inputSchema: z.object({
+    userName: z.string().min(1).optional(),
+    displayName: z.string().optional(),
+  }),
+  outputSchema: z.object({
+    items: userSchema.array(),
+  }),
+});
+export type SearchUsersInputSchema = z.infer<typeof searchUsersRoute.inputSchema>;
+export type SearchUsersOutputSchema = z.infer<typeof searchUsersRoute.outputSchema>;
+
 export function userController(router: Router, db: DB) {
   // GetUser
   router.get(
@@ -46,6 +78,23 @@ export function userController(router: Router, db: DB) {
       res.json(result);
     },
   );
+
+  // GetHomeTimeline
+  router.get(
+    "/user/getHomeTimeline",
+    tokenAuth(),
+    checkScope("user.read", "leaf.read"),
+    async (req, res) => {
+      const ctx = await createRequestContext(req.user as UserObject, db);
+      const params = validateApiData(getHomeTimelineRoute.inputSchema, req.query);
+      const result = await getHomeTimeline(ctx, params);
+      validateApiData(getHomeTimelineRoute.outputSchema, result);
+      res.json(result);
+    },
+  );
+
+  // SearchUsers
+
 }
 
 // registerRoute(router, db, {
