@@ -1,5 +1,5 @@
 import type { components } from "../../openapi/generated/schema.js";
-import type { GetUserInputSchema, GetUserOutputSchema } from "../controllers/UserController.js";
+import type { GetUserInputSchema, GetUserOutputSchema, UserSchema } from "../controllers/UserController.js";
 import {
   BadRequest,
   type RequestContext,
@@ -21,14 +21,22 @@ export type AuthResultObject = components["schemas"]["Api.v1.AuthInfo"];
 export async function createUser(
   params: { userName: string; displayName?: string },
   ctx: RequestContext,
-): Promise<UserObject> {
+): Promise<UserSchema> {
   const user = await createUserRecord(ctx, {
     userName: params.userName,
     displayName: params.displayName,
     passwordAuthEnabled: true,
   });
 
-  return user;
+  return mapUser(user);
+}
+
+export function mapUser(user: UserObject): UserSchema {
+  return {
+    userId: user.userId,
+    userName: user.userName,
+    displayName: user.displayName,
+  };
 }
 
 /**
@@ -54,7 +62,7 @@ export async function getUser(
     throw new RestError(new ResourceNotFound("User"));
   }
 
-  return userEntity;
+  return mapUser(userEntity);
 }
 
 /**
