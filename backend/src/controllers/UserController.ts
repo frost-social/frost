@@ -107,115 +107,19 @@ export function userController(router: Router, db: DB) {
       // res.json(result);
     },
   );
+
+  // DeleteUser
+  router.post(
+    "/user/deleteUser",
+    tokenAuth(),
+    checkScope("user.delete"),
+    async (req, res) => {
+      throw new Error("not implemented");
+      // const ctx = await createRequestContext(req.user as UserObject, db);
+      // const params = validateApiData(deleteUserRoute.inputSchema, req.body);
+      // const result = await deleteUser(ctx, params);
+      // validateApiData(deleteUserRoute.outputSchema, result);
+      // res.json(result);
+    },
+  );
 }
-
-// registerRoute(router, db, {
-//   method: "POST",
-//   path: "/user/deleteUser",
-//   scope: "user.delete",
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/leaf/deleteLeaf"]["result"]> {
-//     throw new Error("not implemented");
-//   },
-// });
-
-// registerRoute(router, db, {
-//   method: "POST",
-//   path: "/user/followUser",
-//   scope: "user.write",
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/user/followUser"]["result"]> {
-//     const params: Endpoints["/api/v1/user/followUser"]["body"] =
-//       ctx.validateParams(
-//         z.object({
-//           userId: zUuid,
-//         }),
-//       );
-//     await UserFollowingService.followUser(
-//       params,
-//       { userId: ctx.getUser().userId },
-//       ctx.db,
-//     );
-//   },
-// });
-
-// registerRoute(router, db, {
-//   method: "GET",
-//   path: "/user/listFollowing",
-//   scope: "user.read",
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/user/listFollowing"]["result"]> {
-//     const params: Endpoints["/api/v1/user/listFollowing"]["query"] =
-//       ctx.validateParams(
-//         z.object({
-//           offset: zNumericString.optional(),
-//           limit: zNumericString.optional(),
-//           userId: zUuid,
-//         }),
-//       );
-//     const params2 = {
-//       ...params,
-//       offset: params.offset != null ? Number(params.offset) : undefined,
-//       limit: params.limit != null ? Number(params.limit) : undefined,
-//     };
-//     const result = await UserFollowingService.getFollowings(
-//       params2,
-//       { userId: ctx.getUser().userId },
-//       ctx.db,
-//     );
-//     return result;
-//   },
-// });
-
-// registerRoute(router, db, {
-//   method: "GET",
-//   path: "/user/listFollowedBy",
-//   scope: "user.read",
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/user/listFollowedBy"]["result"]> {
-//     const params: Endpoints["/api/v1/user/listFollowedBy"]["query"] =
-//       ctx.validateParams(
-//         z.object({
-//           offset: zNumericString.optional(),
-//           limit: zNumericString.optional(),
-//           userId: zUuid,
-//         }),
-//       );
-//     const params2 = {
-//       ...params,
-//       offset: params.offset != null ? Number(params.offset) : undefined,
-//       limit: params.limit != null ? Number(params.limit) : undefined,
-//     };
-//     const result = await UserFollowingService.getFollowedBy(
-//       params2,
-//       { userId: ctx.getUser().userId },
-//       ctx.db,
-//     );
-//     return result;
-//   },
-// });
-
-// registerRoute(router, db, {
-//   method: "POST",
-//   path: "/user/unfollowUser",
-//   scope: "user.write",
-//   async requestHandler(
-//     ctx,
-//   ): Promise<Endpoints["/api/v1/user/unfollowUser"]["result"]> {
-//     const params: Endpoints["/api/v1/user/unfollowUser"]["body"] =
-//       ctx.validateParams(
-//         z.object({
-//           userId: zUuid,
-//         }),
-//       );
-//     await UserFollowingService.unfollowUser(
-//       params,
-//       { userId: ctx.getUser().userId },
-//       ctx.db,
-//     );
-//   },
-// });

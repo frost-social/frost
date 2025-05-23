@@ -4,6 +4,7 @@ import { chatRoomController } from "./controllers/ChatRoomController.js";
 import { leafController } from "./controllers/LeafController.js";
 import { otherController } from "./controllers/OtherController.js";
 import { userController } from "./controllers/UserController.js";
+import { userRelationController } from "./controllers/UserRelationController.js";
 import type { DB } from "./core/database.js";
 import { EndpointNotFound, RestError, buildRestApiError, corsApi } from "./core/restApi.js";
 
@@ -24,6 +25,7 @@ export function apiVersion1Router(db: DB) {
   leafController(router, db);
   otherController(router, db);
   userController(router, db);
+  userRelationController(router, db);
 
   router.use((req, res, next) => {
     next(new RestError(new EndpointNotFound()));
