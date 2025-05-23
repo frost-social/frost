@@ -14,5 +14,5 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-.temp/
-.tmp/
+*.temp/
+*.tmp/

@@ -1,8 +1,8 @@
-using TypeSpec.OpenAPI;
-using TypeSpec.Http;
-using TypeSpec.Rest;
+import "@typespec/http";
 
-namespace Frost.Api.v1;
+using Http;
+
+namespace FrostService;
 
 // models
 
