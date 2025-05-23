@@ -1,21 +1,24 @@
 {
   "name": "frost-spec",
   "version": "0.1.0",
-  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903",
   "type": "module",
-  "scripts": {
-    "build": "mkdir -p generated && pnpm build:openapi && pnpm build:types",
-    "build:openapi": "tsp compile ./src && cp -rf tsp-output/@typespec/openapi3/* generated",
-    "build:types": "openapi-typescript ./generated/openapi.yaml -o ./generated/schema.d.ts",
-    "rebuild": "rm -rf tsp-output generated && pnpm build"
+  "peerDependencies": {
+    "@typespec/compiler": "latest",
+    "@typespec/http": "latest",
+    "@typespec/rest": "latest",
+    "@typespec/openapi": "latest",
+    "@typespec/openapi3": "latest"
   },
   "devDependencies": {
     "@typespec/compiler": "latest",
     "@typespec/http": "latest",
-    "@typespec/openapi": "latest",
-    "@typespec/openapi3": "latest",
     "@typespec/rest": "latest",
-    "openapi-typescript": "^7.3.0"
+    "@typespec/openapi": "latest",
+    "@typespec/openapi3": "latest"
   },
-  "private": true
+  "private": true,
+  "packageManager": "npm@11.4.1+sha512.fcee43884166b6f9c5d04535fb95650e9708b6948a1f797eddf40e9778646778a518dfa32651b1c62ff36f4ac42becf177ca46ca27d53f24b539190c8d91802b",
+  "scripts": {
+    "build": "tsp compile ./src"
+  }
 }
