@@ -1,7 +1,7 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: Frost
-  version: 0.1.0
+  version: 0.0.0
 tags:
   - name: Auth
   - name: User
@@ -10,9 +10,6 @@ tags:
 paths:
   /api/v1/auth/signin:
     post:
-      tags:
-        - Auth
-        - User
       operationId: AuthApi_Signin
       parameters: []
       responses:
@@ -21,18 +18,48 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.AuthInfo'
+                $ref: '#/components/schemas/AuthInfo'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Auth
+        - User
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.SigninBody'
+              $ref: '#/components/schemas/SigninBody'
   /api/v1/auth/signup:
     post:
-      tags:
-        - Auth
-        - User
       operationId: AuthApi_Signup
       parameters: []
       responses:
@@ -41,17 +68,48 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.AuthInfo'
+                $ref: '#/components/schemas/AuthInfo'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Auth
+        - User
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.SignupBody'
+              $ref: '#/components/schemas/SignupBody'
   /api/v1/chatRoom/createChatRoom:
     post:
-      tags:
-        - ChatRoom
       operationId: ChatRoomApi_CreateChatRoom
       parameters: []
       responses:
@@ -60,18 +118,47 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.ChatRoom'
+                $ref: '#/components/schemas/ChatRoom'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - ChatRoom
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.CreateChatRoomBody'
+              $ref: '#/components/schemas/CreateChatRoomBody'
   /api/v1/chatRoom/createLeaf:
     post:
-      tags:
-        - ChatRoom
-        - Leaf
       operationId: ChatRoomApi_CreateLeaf
       parameters: []
       responses:
@@ -80,67 +167,188 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.Leaf'
+                $ref: '#/components/schemas/Leaf'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - ChatRoom
+        - Leaf
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.CreateChatRoomLeafBody'
+              $ref: '#/components/schemas/CreateChatRoomLeafBody'
   /api/v1/chatRoom/deleteChatRoom:
     post:
-      tags:
-        - ChatRoom
       operationId: ChatRoomApi_DeleteChatRoom
       parameters: []
       responses:
         '204':
           description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - ChatRoom
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.DeleteChatRoomBody'
+              $ref: '#/components/schemas/DeleteChatRoomBody'
   /api/v1/chatRoom/getChatRoom:
     get:
-      tags:
-        - ChatRoom
       operationId: ChatRoomApi_GetChatRoom
       parameters:
-        - $ref: '#/components/parameters/Api.v1.GetChatRoomQueryString'
+        - $ref: '#/components/parameters/GetChatRoomQueryString'
       responses:
         '200':
           description: The request has succeeded.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.ChatRoom'
+                $ref: '#/components/schemas/ChatRoom'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - ChatRoom
   /api/v1/chatRoom/getTimeline:
     get:
+      operationId: ChatRoomApi_GetTimeline
+      parameters:
+        - $ref: '#/components/parameters/CursorControl.nextCursor'
+        - $ref: '#/components/parameters/CursorControl.prevCursor'
+        - $ref: '#/components/parameters/CursorControl.limit'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTimelineResult'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       tags:
         - ChatRoom
         - Leaf
-      operationId: ChatRoomApi_GetTimeline
-      parameters:
-        - $ref: '#/components/parameters/Api.v1.CursorControl.nextCursor'
-        - $ref: '#/components/parameters/Api.v1.CursorControl.prevCursor'
-        - $ref: '#/components/parameters/Api.v1.CursorControl.limit'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Api.v1.GetTimelineResult'
   /api/v1/chatRoom/searchChatRooms:
     get:
-      tags:
-        - ChatRoom
       operationId: ChatRoomApi_SearchChatRooms
       parameters:
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
+        - $ref: '#/components/parameters/OffsetControl.offset'
+        - $ref: '#/components/parameters/OffsetControl.limit'
       responses:
         '200':
           description: The request has succeeded.
@@ -149,30 +357,90 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Api.v1.ChatRoom'
+                  $ref: '#/components/schemas/ChatRoom'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - ChatRoom
   /api/v1/echo:
     get:
-      operationId: RootApi_GetEcho
+      operationId: EchoApi_echoGet
+      description: Echo a text with GET
       parameters:
         - name: message
           in: query
           required: true
           schema:
             type: string
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
+                $ref: '#/components/schemas/EchoResult'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
-      operationId: RootApi_PostEcho
+      operationId: EchoApi_echoPost
+      description: Echo a text with POST
       parameters: []
       responses:
         '200':
@@ -180,12 +448,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
+                $ref: '#/components/schemas/EchoResult'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       requestBody:
         required: true
         content:
@@ -199,8 +492,6 @@ paths:
                 - message
   /api/v1/leaf/createLeaf:
     post:
-      tags:
-        - Leaf
       operationId: LeafApi_CreateLeaf
       parameters: []
       responses:
@@ -209,50 +500,140 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.Leaf'
+                $ref: '#/components/schemas/Leaf'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Leaf
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.CreateLeafBody'
+              $ref: '#/components/schemas/CreateLeafBody'
   /api/v1/leaf/deleteLeaf:
     post:
-      tags:
-        - Leaf
       operationId: LeafApi_DeleteLeaf
       parameters: []
       responses:
         '204':
           description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Leaf
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.DeleteLeafBody'
+              $ref: '#/components/schemas/DeleteLeafBody'
   /api/v1/leaf/getLeaf:
     get:
-      tags:
-        - Leaf
       operationId: LeafApi_GetLeaf
       parameters:
-        - $ref: '#/components/parameters/Api.v1.GetLeafQueryString'
+        - $ref: '#/components/parameters/GetLeafQueryString'
       responses:
         '200':
           description: The request has succeeded.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.Leaf'
-  /api/v1/leaf/searchLeafs:
-    get:
+                $ref: '#/components/schemas/Leaf'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       tags:
         - Leaf
+  /api/v1/leaf/searchLeafs:
+    get:
       operationId: LeafApi_SearchLeafs
       parameters:
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
+        - $ref: '#/components/parameters/OffsetControl.offset'
+        - $ref: '#/components/parameters/OffsetControl.limit'
       responses:
         '200':
           description: The request has succeeded.
@@ -261,78 +642,228 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Api.v1.Leaf'
+                  $ref: '#/components/schemas/Leaf'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - Leaf
   /api/v1/user/deleteUser:
     post:
-      tags:
-        - User
       operationId: UserApi_DeleteUser
       parameters: []
       responses:
         '204':
           description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - User
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.DeleteUserBody'
+              $ref: '#/components/schemas/DeleteUserBody'
   /api/v1/user/followUser:
     post:
-      tags:
-        - User
       operationId: UserApi_FollowUser
       parameters: []
       responses:
         '204':
           description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - User
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.FollowUserBody'
+              $ref: '#/components/schemas/FollowUserBody'
   /api/v1/user/getHomeTimeline:
     get:
+      operationId: UserApi_GetHomeTimeline
+      parameters:
+        - $ref: '#/components/parameters/CursorControl.nextCursor'
+        - $ref: '#/components/parameters/CursorControl.prevCursor'
+        - $ref: '#/components/parameters/CursorControl.limit'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTimelineResult'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       tags:
         - User
         - Leaf
-      operationId: UserApi_GetHomeTimeline
-      parameters:
-        - $ref: '#/components/parameters/Api.v1.CursorControl.nextCursor'
-        - $ref: '#/components/parameters/Api.v1.CursorControl.prevCursor'
-        - $ref: '#/components/parameters/Api.v1.CursorControl.limit'
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Api.v1.GetTimelineResult'
   /api/v1/user/getUser:
     get:
-      tags:
-        - User
       operationId: UserApi_GetUser
       parameters:
-        - $ref: '#/components/parameters/Api.v1.GetUserQueryString.userId'
-        - $ref: '#/components/parameters/Api.v1.GetUserQueryString.userName'
+        - $ref: '#/components/parameters/GetUserQueryString.userId'
+        - $ref: '#/components/parameters/GetUserQueryString.userName'
       responses:
         '200':
           description: The request has succeeded.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Api.v1.User'
+                $ref: '#/components/schemas/User'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - User
   /api/v1/user/listFollowedBy:
     get:
-      tags:
-        - User
       operationId: UserApi_ListFollowedBy
       parameters:
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
-        - $ref: '#/components/parameters/Api.v1.ListFollowedByQueryString.userId'
+        - $ref: '#/components/parameters/OffsetControl.offset'
+        - $ref: '#/components/parameters/OffsetControl.limit'
+        - $ref: '#/components/parameters/ListFollowedByQueryString.userId'
       responses:
         '200':
           description: The request has succeeded.
@@ -341,16 +872,46 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Api.v1.User'
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - User
   /api/v1/user/listFollowing:
     get:
-      tags:
-        - User
       operationId: UserApi_ListFollowing
       parameters:
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
-        - $ref: '#/components/parameters/Api.v1.ListFollowingQueryString.userId'
+        - $ref: '#/components/parameters/OffsetControl.offset'
+        - $ref: '#/components/parameters/OffsetControl.limit'
+        - $ref: '#/components/parameters/ListFollowingQueryString.userId'
       responses:
         '200':
           description: The request has succeeded.
@@ -359,15 +920,45 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Api.v1.User'
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - User
   /api/v1/user/searchUsers:
     get:
-      tags:
-        - User
       operationId: UserApi_SearchUsers
       parameters:
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.offset'
-        - $ref: '#/components/parameters/Api.v1.OffsetControl.limit'
+        - $ref: '#/components/parameters/OffsetControl.offset'
+        - $ref: '#/components/parameters/OffsetControl.limit'
       responses:
         '200':
           description: The request has succeeded.
@@ -376,92 +967,165 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Api.v1.User'
-  /api/v1/user/unfollowUser:
-    post:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       tags:
         - User
+  /api/v1/user/unfollowUser:
+    post:
       operationId: UserApi_UnfollowUser
       parameters: []
       responses:
         '204':
           description: 'There is no content to send for this request, but the headers may be useful. '
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - User
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Api.v1.UnfollowUserBody'
+              $ref: '#/components/schemas/UnfollowUserBody'
 components:
   parameters:
-    Api.v1.CursorControl.limit:
+    CursorControl.limit:
       name: limit
       in: query
       required: false
       schema:
         type: string
-    Api.v1.CursorControl.nextCursor:
+      explode: false
+    CursorControl.nextCursor:
       name: nextCursor
       in: query
       required: false
       schema:
         type: string
-    Api.v1.CursorControl.prevCursor:
+      explode: false
+    CursorControl.prevCursor:
       name: prevCursor
       in: query
       required: false
       schema:
         type: string
-    Api.v1.GetChatRoomQueryString:
+      explode: false
+    GetChatRoomQueryString:
       name: chatRoomId
       in: query
       required: true
       schema:
         type: string
-    Api.v1.GetLeafQueryString:
+      explode: false
+    GetLeafQueryString:
       name: leafId
       in: query
       required: true
       schema:
         type: string
-    Api.v1.GetUserQueryString.userId:
+      explode: false
+    GetUserQueryString.userId:
       name: userId
       in: query
       required: false
       schema:
         type: string
-    Api.v1.GetUserQueryString.userName:
+      explode: false
+    GetUserQueryString.userName:
       name: userName
       in: query
       required: false
       schema:
         type: string
-    Api.v1.ListFollowedByQueryString.userId:
+      explode: false
+    ListFollowedByQueryString.userId:
       name: userId
       in: query
       required: true
       schema:
         type: string
-    Api.v1.ListFollowingQueryString.userId:
+      explode: false
+    ListFollowingQueryString.userId:
       name: userId
       in: query
       required: true
       schema:
         type: string
-    Api.v1.OffsetControl.limit:
+      explode: false
+    OffsetControl.limit:
       name: limit
       in: query
       required: false
       schema:
         type: string
-    Api.v1.OffsetControl.offset:
+      explode: false
+    OffsetControl.offset:
       name: offset
       in: query
       required: false
       schema:
         type: string
+      explode: false
   schemas:
-    Api.v1.AuthInfo:
+    AuthInfo:
       type: object
       required:
         - accessToken
@@ -469,12 +1133,12 @@ components:
         - user
       properties:
         accessToken:
-          $ref: '#/components/schemas/Api.v1.Token'
+          $ref: '#/components/schemas/Token'
         refreshToken:
-          $ref: '#/components/schemas/Api.v1.Token'
+          $ref: '#/components/schemas/Token'
         user:
-          $ref: '#/components/schemas/Api.v1.User'
-    Api.v1.ChatRoom:
+          $ref: '#/components/schemas/User'
+    ChatRoom:
       type: object
       required:
         - chatRoomId
@@ -487,7 +1151,7 @@ components:
           type: string
         description:
           type: string
-    Api.v1.CreateChatRoomBody:
+    CreateChatRoomBody:
       type: object
       required:
         - title
@@ -497,7 +1161,7 @@ components:
           type: string
         description:
           type: string
-    Api.v1.CreateChatRoomLeafBody:
+    CreateChatRoomLeafBody:
       type: object
       required:
         - chatRoomId
@@ -507,42 +1171,64 @@ components:
           type: string
         content:
           type: string
-    Api.v1.CreateLeafBody:
+    CreateLeafBody:
       type: object
       required:
         - content
       properties:
         content:
           type: string
-    Api.v1.DeleteChatRoomBody:
+    DeleteChatRoomBody:
       type: object
       required:
         - chatRoomId
       properties:
         chatRoomId:
           type: string
-    Api.v1.DeleteLeafBody:
+    DeleteLeafBody:
       type: object
       required:
         - leafId
       properties:
         leafId:
           type: string
-    Api.v1.DeleteUserBody:
+    DeleteUserBody:
       type: object
       required:
         - userId
       properties:
         userId:
           type: string
-    Api.v1.FollowUserBody:
+    EchoResult:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+          required:
+            - code
+            - message
+    FollowUserBody:
       type: object
       required:
         - userId
       properties:
         userId:
           type: string
-    Api.v1.GetChatRoomTimelineQueryString:
+    GetChatRoomTimelineQueryString:
       type: object
       properties:
         nextCursor:
@@ -551,7 +1237,7 @@ components:
           type: string
         limit:
           type: string
-    Api.v1.GetHomeTimelineQueryString:
+    GetHomeTimelineQueryString:
       type: object
       properties:
         nextCursor:
@@ -560,7 +1246,7 @@ components:
           type: string
         limit:
           type: string
-    Api.v1.GetTimelineResult:
+    GetTimelineResult:
       type: object
       required:
         - leafs
@@ -568,12 +1254,12 @@ components:
         leafs:
           type: array
           items:
-            $ref: '#/components/schemas/Api.v1.Leaf'
+            $ref: '#/components/schemas/Leaf'
         nextCursor:
           type: string
         prevCursor:
           type: string
-    Api.v1.Leaf:
+    Leaf:
       type: object
       required:
         - leafId
@@ -591,28 +1277,28 @@ components:
           type: string
         createdAt:
           type: string
-    Api.v1.SearchChatRoomsQueryString:
+    SearchChatRoomsQueryString:
       type: object
       properties:
         offset:
           type: string
         limit:
           type: string
-    Api.v1.SearchLeafsQueryString:
+    SearchLeafsQueryString:
       type: object
       properties:
         offset:
           type: string
         limit:
           type: string
-    Api.v1.SearchUsersQueryString:
+    SearchUsersQueryString:
       type: object
       properties:
         offset:
           type: string
         limit:
           type: string
-    Api.v1.SigninBody:
+    SigninBody:
       type: object
       required:
         - userName
@@ -621,7 +1307,7 @@ components:
           type: string
         password:
           type: string
-    Api.v1.SignupBody:
+    SignupBody:
       type: object
       required:
         - userName
@@ -633,7 +1319,7 @@ components:
           type: string
         displayName:
           type: string
-    Api.v1.Token:
+    Token:
       type: object
       required:
         - token
@@ -645,14 +1331,14 @@ components:
           type: array
           items:
             type: string
-    Api.v1.UnfollowUserBody:
+    UnfollowUserBody:
       type: object
       required:
         - userId
       properties:
         userId:
           type: string
-    Api.v1.User:
+    User:
       type: object
       required:
         - userId

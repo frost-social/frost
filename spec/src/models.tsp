@@ -6,6 +6,10 @@ namespace FrostService;
 
 // models
 
+model EchoResult {
+  message: string;
+}
+
 model AuthInfo {
   accessToken: Token;
   refreshToken: Token;
