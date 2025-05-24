@@ -14,7 +14,7 @@ export function configureAuth(db: DB) {
         const tokenInfo = await getTokenInfo(ctx, {
           token
         });
-        if (tokenInfo.tokenKind != "access_token") {
+        if (tokenInfo.tokenKind !== "access_token") {
           return done(new RestError(new Unauthenticated()));
         }
         const authUser = await getUser(ctx, {

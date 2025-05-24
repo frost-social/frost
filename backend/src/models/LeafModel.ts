@@ -103,7 +103,7 @@ export async function deleteLeafRecord(
       leaf_id: params.leafId,
     },
   });
-  if (result.count == 0) {
+  if (result.count === 0) {
     throw new Error("failed to remove a resource.");
   }
 }
