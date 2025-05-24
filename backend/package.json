@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate dev --skip-generate --skip-seed",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --skip-generate --skip-seed",
-    "update-spec": "mkdir -p openapi/generated && cp -r ../spec/generated/* openapi/generated",
+    "update-spec": "mkdir -p openapi/generated && cp -r ../spec/tsp-output/schema/* openapi/generated",
     "start": "node --enable-source-maps dist/main",
     "start:dev": "node --enable-source-maps --watch dist/main",
     "start:prod": "node dist/main",
