@@ -69,7 +69,7 @@ export async function deleteLeaf(
   }
 
   // 作成者以外は削除できない
-  if (leaf.userId != ctx.user.userId) {
+  if (leaf.userId !== ctx.user.userId) {
     throw new RestError(new AccessDenied());
   }
 

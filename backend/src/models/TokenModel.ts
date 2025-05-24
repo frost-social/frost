@@ -144,7 +144,7 @@ export async function deleteTokenRecord(
       token_id: tokenRecord.token_id,
     },
   });
-  if (result.count == 0) {
+  if (result.count === 0) {
     return false;
   }
 

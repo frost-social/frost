@@ -47,7 +47,7 @@ function createMiddlewareStack<R>(
 
   // authenticate
   if (requiredScope != null) {
-    if (typeof requiredScope == "string" || requiredScope.length > 0) {
+    if (typeof requiredScope === "string" || requiredScope.length > 0) {
       middlewares.push(tokenAuth(), checkScope(...requiredScope));
     }
   }
@@ -59,9 +59,9 @@ function createMiddlewareStack<R>(
 
     // ハンドラ用のパラメータオブジェクト
     let params: any;
-    if (method == "GET" || method == "DELETE") {
+    if (method === "GET" || method === "DELETE") {
       params = req.query;
-    } else if (method == "POST") {
+    } else if (method === "POST") {
       params = req.body;
     } else {
       return next(new Error("unsupported http method"));
@@ -80,7 +80,7 @@ function createMiddlewareStack<R>(
         new ApiRouteContext(params, db, req, res, user, scopes),
       );
       // ハンドラ内でレスポンスが設定されなければレスポンスを生成する。
-      if (res.statusCode == 0) {
+      if (res.statusCode === 0) {
         if (returnValue != null) {
           res.status(200).json(returnValue);
         } else {

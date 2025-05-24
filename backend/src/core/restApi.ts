@@ -64,7 +64,7 @@ export function corsApi() {
     res.setHeader("Access-Control-Allow-Origin", "*");
 
     // preflight request
-    if (req.method == "OPTIONS") {
+    if (req.method === "OPTIONS") {
       res.setHeader("Access-Control-Allow-Methods", "POST,GET,DELETE,OPTIONS");
       res.setHeader(
         "Access-Control-Allow-Headers",
