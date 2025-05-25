@@ -344,7 +344,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteLeafBody'
+              $ref: '#/components/schemas/DeleteChatLeafBody'
   /api/v1/chatRoom/leaf/getTimeline:
     get:
       operationId: ChatRoomLeafApi_GetTimeline
@@ -1283,6 +1283,13 @@ components:
         - content
       properties:
         content:
+          type: string
+    DeleteChatLeafBody:
+      type: object
+      required:
+        - leafId
+      properties:
+        leafId:
           type: string
     DeleteChatRoomBody:
       type: object

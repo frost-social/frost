@@ -55,31 +55,6 @@ interface TestingApi {
   @post echoPost(@body body: EchoPostParams): EchoResult | Error;
 }
 
-// Auth
-
-model Token {
-  token: string;
-  scopes: string[];
-}
-
-model AuthInfo {
-  accessToken: Token;
-  refreshToken: Token;
-  user: User;
-}
-
-model SignupBody {
-  userName: string;
-  password?: string;
-  displayName: string;
-}
-
-model SigninBody {
-  userName: string;
-  password?: string;
-}
-
-
 // User
 
 model User {
@@ -101,59 +76,6 @@ model DeleteUserBody {
   userId: string;
 }
 
-
-// Timeline and user relations
-
-model Leaf {
-  leafId: string;
-  chatRoomId?: string;
-  userId: string;
-  content: string;
-  createdAt: string;
-}
-
-model CreateLeafBody {
-  content: string;
-}
-
-model GetLeafQueryString {
-  @query leafId: string;
-}
-
-model SearchLeafsQueryString is OffsetControl {
-}
-
-model DeleteLeafBody {
-  leafId: string;
-}
-
-model ListFollowingQueryString is OffsetControl {
-  @query userId: string;
-}
-
-model ListFollowedByQueryString is OffsetControl {
-  @query userId: string;
-}
-
-model FollowUserBody {
-  userId: string;
-}
-
-model UnfollowUserBody {
-  userId: string;
-}
-
-model GetUserTimelineQueryString is CursorControl {
-}
-model GetHomeTimelineQueryString is CursorControl {
-}
-
-model GetTimelineResult {
-  leafs: Leaf[];
-  nextCursor?: string;
-  prevCursor?: string;
-}
-
 interface UserApi {
   @route("/user/getUser")
   @tag("User")
@@ -168,6 +90,30 @@ interface UserApi {
   @post DeleteUser(@body body: DeleteUserBody): void | Error;
 }
 
+// User Auth
+
+model AuthInfo {
+  accessToken: Token;
+  refreshToken: Token;
+  user: User;
+}
+
+model Token {
+  token: string;
+  scopes: string[];
+}
+
+model SignupBody {
+  userName: string;
+  password?: string;
+  displayName: string;
+}
+
+model SigninBody {
+  userName: string;
+  password?: string;
+}
+
 @tag("User")
 @tag("Auth")
 interface UserAuthApi {
@@ -176,6 +122,24 @@ interface UserAuthApi {
 
   @route("/auth/signin")
   @post Signin(@body body: SigninBody): AuthInfo | Error;
+}
+
+// User Relation
+
+model FollowUserBody {
+  userId: string;
+}
+
+model UnfollowUserBody {
+  userId: string;
+}
+
+model ListFollowingQueryString is OffsetControl {
+  @query userId: string;
+}
+
+model ListFollowedByQueryString is OffsetControl {
+  @query userId: string;
 }
 
 @tag("User")
@@ -194,6 +158,23 @@ interface UserRelationApi {
   @get ListFollowedBy(...ListFollowedByQueryString): User[] | Error;
 }
 
+// Leaf
+
+model Leaf {
+  leafId: string;
+  chatRoomId?: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+}
+
+model GetLeafQueryString {
+  @query leafId: string;
+}
+
+model SearchLeafsQueryString is OffsetControl {
+}
+
 @tag("Leaf")
 interface LeafApi {
   @route("/leaf/getLeaf")
@@ -201,6 +182,28 @@ interface LeafApi {
 
   @route("/leaf/searchLeafs")
   @get SearchLeafs(...SearchLeafsQueryString): Leaf[] | Error;
+}
+
+// User Leaf
+
+model CreateLeafBody {
+  content: string;
+}
+
+model DeleteLeafBody {
+  leafId: string;
+}
+
+model GetUserTimelineQueryString is CursorControl {
+}
+
+model GetHomeTimelineQueryString is CursorControl {
+}
+
+model GetTimelineResult {
+  leafs: Leaf[];
+  nextCursor?: string;
+  prevCursor?: string;
 }
 
 @tag("User")
@@ -214,7 +217,7 @@ interface UserLeafApi {
 
   @route("/user/leaf/getUserTimeline")
   @tag("Timeline")
-  @get GetUserTimeline(...GetHomeTimelineQueryString): GetTimelineResult | Error;
+  @get GetUserTimeline(...GetUserTimelineQueryString): GetTimelineResult | Error;
 
   @route("/user/leaf/getHomeTimeline")
   @tag("Timeline")
@@ -268,6 +271,11 @@ interface ChatRoomApi {
   @post DeleteChatRoom(@body body: DeleteChatRoomBody): void | Error;
 }
 
+// ChatRoom Leaf
+
+model DeleteChatLeafBody is DeleteLeafBody {
+}
+
 @tag("ChatRoom")
 @tag("Leaf")
 interface ChatRoomLeafApi {
@@ -275,7 +283,7 @@ interface ChatRoomLeafApi {
   @post CreateLeaf(@body body: CreateChatRoomLeafBody): Leaf | Error;
 
   @route("/chatRoom/leaf/deleteLeaf")
-  @post DeleteLeaf(@body body: DeleteLeafBody): void | Error;
+  @post DeleteLeaf(@body body: DeleteChatLeafBody): void | Error;
 
   @route("/chatRoom/leaf/getTimeline")
   @tag("Timeline")
