@@ -6,6 +6,9 @@
 A software of social media.
 </p>
 
+> [!IMPORTANT]
+> Development of this project has been suspended indefinitely.
+
 ## Development Community
 ### Discord (Archived)
 Everyone is welcome to join! We also hold Frost development meetings here, where you can see the development status.\
