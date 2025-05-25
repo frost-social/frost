@@ -1473,7 +1473,6 @@ components:
         - userId
         - userName
         - displayName
-        - passwordAuthEnabled
       properties:
         userId:
           type: string
@@ -1481,8 +1480,6 @@ components:
           type: string
         displayName:
           type: string
-        passwordAuthEnabled:
-          type: boolean
 servers:
   - url: http://localhost:3000
     description: local server
