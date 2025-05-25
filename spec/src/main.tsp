@@ -1,12 +1,13 @@
 import "@typespec/http";
-import "./models.tsp";
 
 using Http;
 
 @service(#{ title: "Frost" })
 @server("http://localhost:3000", "local server")
 @route("/api/v1")
-namespace FrostService;
+namespace FrostApi.Version1;
+
+// Common
 
 @error
 model Error {
@@ -18,89 +19,272 @@ model Error {
   };
 }
 
-@route("/echo")
-interface EchoApi {
-  /** Echo a text with GET */
-  @get echoGet(@query message: string): EchoResult | Error;
-  /** Echo a text with POST */
-  @post echoPost(@body body: { message: string }): EchoResult | Error;
+model OffsetControl {
+  @query offset?: string;
+  @query limit?: string;
 }
 
-@route("/auth")
-@tag("Auth") @tag("User")
-interface AuthApi {
-  @route("/signup")
+model CursorControl {
+  @query nextCursor?: string;
+  @query prevCursor?: string;
+  @query limit?: string;
+}
+
+// Testing
+
+model EchoGetParams {
+  @query message: string;
+}
+
+model EchoPostParams {
+  message: string;
+}
+
+model EchoResult {
+  message: string;
+}
+
+@tag("Testing")
+interface TestingApi {
+  /** Echo a text with GET method */
+  @route("/echo")
+  @get echoGet(...EchoGetParams): EchoResult | Error;
+
+  /** Echo a text with POST method */
+  @route("/echo")
+  @post echoPost(@body body: EchoPostParams): EchoResult | Error;
+}
+
+// User
+
+model User {
+  userId: string;
+  userName: string;
+  displayName: string;
+}
+
+model GetUserQueryString {
+  @query userId?: string;
+  @query userName?: string;
+}
+
+model SearchUsersQueryString is OffsetControl {
+}
+
+model DeleteUserBody {
+  userId: string;
+}
+
+interface UserApi {
+  @route("/user/getUser")
+  @tag("User")
+  @get GetUser(...GetUserQueryString): User | Error;
+
+  @route("/user/searchUsers")
+  @tag("User")
+  @get SearchUsers(...SearchUsersQueryString): User[] | Error;
+
+  @route("/user/deleteUser")
+  @tag("User")
+  @post DeleteUser(@body body: DeleteUserBody): void | Error;
+}
+
+// User Auth
+
+model AuthInfo {
+  accessToken: Token;
+  refreshToken: Token;
+  user: User;
+}
+
+model Token {
+  token: string;
+  scopes: string[];
+}
+
+model SignupBody {
+  userName: string;
+  password?: string;
+  displayName: string;
+}
+
+model SigninBody {
+  userName: string;
+  password?: string;
+}
+
+@tag("User")
+@tag("Auth")
+interface UserAuthApi {
+  @route("/auth/signup")
   @post Signup(@body body: SignupBody): AuthInfo | Error;
 
-  @route("/signin")
+  @route("/auth/signin")
   @post Signin(@body body: SigninBody): AuthInfo | Error;
 }
 
-@route("/user")
+// User Relation
+
+model FollowUserBody {
+  userId: string;
+}
+
+model UnfollowUserBody {
+  userId: string;
+}
+
+model ListFollowingQueryString is OffsetControl {
+  @query userId: string;
+}
+
+model ListFollowedByQueryString is OffsetControl {
+  @query userId: string;
+}
+
 @tag("User")
-interface UserApi {
-  @route("/getUser")
-  @get GetUser(...GetUserQueryString): User | Error;
-
-  @route("/searchUsers")
-  @get SearchUsers(...SearchUsersQueryString): User[] | Error;
-
-  @route("/deleteUser")
-  @post DeleteUser(@body body: DeleteUserBody): void | Error;
-
-  @route("/listFollowing")
-  @get ListFollowing(...ListFollowingQueryString): User[] | Error;
-
-  @route("/listFollowedBy")
-  @get ListFollowedBy(...ListFollowedByQueryString): User[] | Error;
-
-  @route("/followUser")
+@tag("UserRelation")
+interface UserRelationApi {
+  @route("/user/followUser")
   @post FollowUser(@body body: FollowUserBody): void | Error;
 
-  @route("/unfollowUser")
+  @route("/user/unfollowUser")
   @post UnfollowUser(@body body: UnfollowUserBody): void | Error;
 
-  @route("/getHomeTimeline")
-  @tag("Leaf")
+  @route("/user/listFollowing")
+  @get ListFollowing(...ListFollowingQueryString): User[] | Error;
+
+  @route("/user/listFollowedBy")
+  @get ListFollowedBy(...ListFollowedByQueryString): User[] | Error;
+}
+
+// Leaf
+
+model Leaf {
+  leafId: string;
+  chatRoomId?: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+}
+
+model GetLeafQueryString {
+  @query leafId: string;
+}
+
+model SearchLeafsQueryString is OffsetControl {
+}
+
+@tag("Leaf")
+interface LeafApi {
+  @route("/leaf/getLeaf")
+  @get GetLeaf(...GetLeafQueryString): Leaf | Error;
+
+  @route("/leaf/searchLeafs")
+  @get SearchLeafs(...SearchLeafsQueryString): Leaf[] | Error;
+}
+
+// User Leaf
+
+model CreateLeafBody {
+  content: string;
+}
+
+model DeleteLeafBody {
+  leafId: string;
+}
+
+model GetUserTimelineQueryString is CursorControl {
+}
+
+model GetHomeTimelineQueryString is CursorControl {
+}
+
+model GetTimelineResult {
+  leafs: Leaf[];
+  nextCursor?: string;
+  prevCursor?: string;
+}
+
+@tag("User")
+@tag("Leaf")
+interface UserLeafApi {
+  @route("/user/leaf/createLeaf")
+  @post CreateLeaf(@body body: CreateLeafBody): Leaf | Error;
+
+  @route("/user/leaf/deleteLeaf")
+  @post DeleteLeaf(@body body: DeleteLeafBody): void | Error;
+
+  @route("/user/leaf/getUserTimeline")
+  @tag("Timeline")
+  @get GetUserTimeline(...GetUserTimelineQueryString): GetTimelineResult | Error;
+
+  @route("/user/leaf/getHomeTimeline")
+  @tag("Timeline")
   @get GetHomeTimeline(...GetHomeTimelineQueryString): GetTimelineResult | Error;
 }
 
-@route("/leaf")
-@tag("Leaf")
-interface LeafApi {
-  @route("/createLeaf")
-  @post CreateLeaf(@body body: CreateLeafBody): Leaf | Error;
+// ChatRoom
 
-  @route("/getLeaf")
-  @get GetLeaf(...GetLeafQueryString): Leaf | Error;
-
-  @route("/searchLeafs")
-  @get SearchLeafs(...SearchLeafsQueryString): Leaf[] | Error;
-
-  @route("/deleteLeaf")
-  @post DeleteLeaf(@body body: DeleteLeafBody): void | Error;
+model ChatRoom {
+  chatRoomId: string;
+  title: string;
+  description: string;
 }
 
-@route("/chatRoom")
+model CreateChatRoomBody {
+  title: string;
+  description: string;
+}
+
+model GetChatRoomQueryString {
+  @query chatRoomId: string;
+}
+
+model SearchChatRoomsQueryString is OffsetControl {
+}
+
+model DeleteChatRoomBody {
+  chatRoomId: string;
+}
+
+model CreateChatRoomLeafBody {
+  chatRoomId: string;
+  content: string;
+}
+
+model GetChatRoomTimelineQueryString is CursorControl {
+}
+
 @tag("ChatRoom")
 interface ChatRoomApi {
-  @route("/createChatRoom")
+  @route("/chatRoom/createChatRoom")
   @post CreateChatRoom(@body body: CreateChatRoomBody): ChatRoom | Error;
 
-  @route("/getChatRoom")
+  @route("/chatRoom/getChatRoom")
   @get GetChatRoom(...GetChatRoomQueryString): ChatRoom | Error;
 
-  @route("/searchChatRooms")
+  @route("/chatRoom/searchChatRooms")
   @get SearchChatRooms(...SearchChatRoomsQueryString): ChatRoom[] | Error;
 
-  @route("/deleteChatRoom")
+  @route("/chatRoom/deleteChatRoom")
   @post DeleteChatRoom(@body body: DeleteChatRoomBody): void | Error;
+}
 
-  @route("/createLeaf")
-  @tag("Leaf")
+// ChatRoom Leaf
+
+model DeleteChatLeafBody is DeleteLeafBody {
+}
+
+@tag("ChatRoom")
+@tag("Leaf")
+interface ChatRoomLeafApi {
+  @route("/chatRoom/leaf/createLeaf")
   @post CreateLeaf(@body body: CreateChatRoomLeafBody): Leaf | Error;
 
-  @route("/getTimeline")
-  @tag("Leaf")
+  @route("/chatRoom/leaf/deleteLeaf")
+  @post DeleteLeaf(@body body: DeleteChatLeafBody): void | Error;
+
+  @route("/chatRoom/leaf/getTimeline")
+  @tag("Timeline")
   @get GetTimeline(...GetChatRoomTimelineQueryString): GetTimelineResult | Error;
 }
