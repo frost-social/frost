@@ -61,7 +61,6 @@ model User {
   userId: string;
   userName: string;
   displayName: string;
-  passwordAuthEnabled: boolean;
 }
 
 model GetUserQueryString {
